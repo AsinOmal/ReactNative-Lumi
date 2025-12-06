@@ -1055,6 +1055,8 @@ PODS:
     - React-jsi (= 0.73.3)
     - React-logger (= 0.73.3)
     - React-perflogger (= 0.73.3)
+  - RNSVG (15.15.1):
+    - React-Core
   - SocketRocket (0.6.1)
   - ViroKit (1.0):
     - React
@@ -1114,6 +1116,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - "ViroKit (from `../node_modules/@reactvision/react-viro/ios/dist/ViroRenderer/`)"
   - "ViroReact (from `../node_modules/@reactvision/react-viro/ios/`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -1222,6 +1225,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   ViroKit:
     :path: "../node_modules/@reactvision/react-viro/ios/dist/ViroRenderer/"
   ViroReact:
@@ -1280,6 +1285,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: f49563abf7590f60501f0ac5c0ef7d730d62894a
   React-utils: f2d847abe621c4dfa0f5a2968c080cbc50660d95
   ReactCommon: 55b0ff6881f30c25713c0ba6bc4e30af3d4aa261
+  RNSVG: a807c48b50ef7efee52a1fa610a23c9df1bcb2f9
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   ViroKit: 728e2547f4ac693a69fa7652813ec178a361dbd6
   ViroReact: 0fe7ad200cee750209ef1e767f677a90f4736bf0
