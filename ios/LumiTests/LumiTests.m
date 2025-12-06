@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface ViroStarterKitTests : XCTestCase
+@interface LumiTests : XCTestCase
 
 @end
 
-@implementation ViroStarterKitTests
+@implementation LumiTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
