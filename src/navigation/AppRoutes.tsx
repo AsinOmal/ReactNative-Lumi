@@ -1,44 +1,58 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from "react-router";
-import { HomeScreen } from "../screens/HomeScreen";
-import { ScanScreen } from "../screens/ScanScreen";
-import { LoginScreen } from "../screens/LoginScreen";
-import { useAuthStore } from "../store/useAuthStore";
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { useAuthStore } from '../store/useAuthStore';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
-import { View, ActivityIndicator } from 'react-native';
+import { LoginScreen } from '../screens/LoginScreen';
+import { MainTabNavigator } from './MainTabNavigator';
+import { createUserIfNew } from '../services/userService';
 
 export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();
 
   useEffect(() => {
     const authInstance = getAuth(getApp());
-    const subscriber = onAuthStateChanged(authInstance, (userState) => {
+    const subscriber = onAuthStateChanged(authInstance, async (userState) => {
       setUser(userState);
       if (initializing) setInitializing(false);
+
+      // Auto-create Firestore user doc on first sign-in
+      if (userState) {
+        try {
+          await createUserIfNew(userState);
+        } catch (e) {
+          console.warn('Firestore user create failed:', e);
+        }
+      }
     });
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, []);
 
   if (initializing) {
     return (
-      <View className="flex-1 bg-[#1A1A2E] items-center justify-center">
-        <ActivityIndicator size="large" color="#ffffff" />
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#5B2DC0" />
       </View>
     );
   }
 
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   return (
-    <Routes>
-      {!user ? (
-        <Route path="*" element={<LoginScreen />} />
-      ) : (
-        <>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/scan" element={<ScanScreen />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </>
-      )}
-    </Routes>
+    <NavigationContainer>
+      <MainTabNavigator />
+    </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    backgroundColor: '#F0EBFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

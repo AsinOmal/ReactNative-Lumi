@@ -1,11 +1,11 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { ViroARSceneNavigator } from "@reactvision/react-viro";
-import { useNavigate } from "react-router-native";
+import { useNavigation } from "@react-navigation/native";
 import { TestScene } from "../components/ar/TestScene";
 
 export const ScanScreen = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -19,7 +19,7 @@ export const ScanScreen = () => {
       {/* Back button overlay */}
       <TouchableOpacity 
         style={styles.backButton}
-        onPress={() => navigate(-1)}
+        onPress={() => navigation.goBack()}
       >
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>

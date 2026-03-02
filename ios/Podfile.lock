@@ -2463,7 +2463,16 @@ PODS:
   - RNGoogleSignin (16.1.2):
     - GoogleSignIn (~> 9.0)
     - React-Core
+  - RNScreens (3.35.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - React-RCTImage
   - RNSVG (14.2.0):
+    - React-Core
+  - RNVectorIcons (10.3.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - SocketRocket (0.6.1)
   - ViroKit (1.0):
@@ -2529,7 +2538,9 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - "ViroKit (from `../node_modules/@reactvision/react-viro/ios/dist/ViroRenderer/`)"
   - "ViroReact (from `../node_modules/@reactvision/react-viro/ios/`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2672,8 +2683,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNVectorIcons:
+    :path: "../node_modules/react-native-vector-icons"
   ViroKit:
     :path: "../node_modules/@reactvision/react-viro/ios/dist/ViroRenderer/"
   ViroReact:
@@ -2761,12 +2776,14 @@ SPEC CHECKSUMS:
   RNFBAuth: a5964ccae9b457415bad15ab69809e98f2ccdb67
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
   RNGoogleSignin: b11289afb825c32c250272e4d92446f71091814e
+  RNScreens: b8cead5eb79b58d78348094d62f154ffd163361d
   RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
+  RNVectorIcons: 433d2e7249acbcd2921118a2ea5f254cba798d31
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   ViroKit: 728e2547f4ac693a69fa7652813ec178a361dbd6
   ViroReact: 0fe7ad200cee750209ef1e767f677a90f4736bf0
   Yoga: ff0382b894475dba0b4d2a5fda860bfee5a9afad
 
-PODFILE CHECKSUM: 5673b637a4f238cfad16cb94911d391fc2ac98fa
+PODFILE CHECKSUM: b7447bbbef5635c8a0cb77e9e18c21dfd9a95677
 
 COCOAPODS: 1.16.2
