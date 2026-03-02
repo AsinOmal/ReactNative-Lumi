@@ -8,12 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* LumiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* LumiTests.m */; };
+		060F4EE8000C4F5D98D7274F /* Fredoka-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D51DBDA73B6449A59DE15D31 /* Fredoka-Bold.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-Lumi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Lumi.a */; };
+		102B82C930D946CEB8C004D4 /* Catchy-Melody.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B83D5A8BEA544D28ACEC161A /* Catchy-Melody.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		3DA54C259B154B99AECE1FC2 /* Fredoka-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C20DFABE40B4785B268300C /* Fredoka-Regular.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-Lumi-LumiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Lumi-LumiTests.a */; };
+		7F76C9C2CAF644C482FB2791 /* Fredoka-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8DB37A11B3754A85A1E155D7 /* Fredoka-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B7DBDFDCC3DF460ABDFBF666 /* Fredoka-SemiBold.ttf */; };
+		93F8CF13612048FF9D6163E9 /* Fredoka-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */; };
+		9C5351FDCCD4475DA9B6C7AD /* SpicyRice-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1314E620953B409993ED47A9 /* SpicyRice-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +37,7 @@
 		00E356EE1AD99517003FC87E /* LumiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* LumiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LumiTests.m; sourceTree = "<group>"; };
+		1314E620953B409993ED47A9 /* SpicyRice-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SpicyRice-Regular.ttf"; path = "../src/assets/fonts/SpicyRice-Regular.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Lumi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lumi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Lumi/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Lumi/AppDelegate.mm; sourceTree = "<group>"; };
@@ -37,12 +45,18 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Lumi/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Lumi/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-Lumi-LumiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lumi-LumiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Medium.ttf"; path = "../src/assets/fonts/Fredoka-Medium.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Lumi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi.debug.xcconfig"; path = "Target Support Files/Pods-Lumi/Pods-Lumi.debug.xcconfig"; sourceTree = "<group>"; };
+		3C20DFABE40B4785B268300C /* Fredoka-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Regular.ttf"; path = "../src/assets/fonts/Fredoka-Regular.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Lumi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi.release.xcconfig"; path = "Target Support Files/Pods-Lumi/Pods-Lumi.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-Lumi-LumiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi-LumiTests.debug.xcconfig"; path = "Target Support Files/Pods-Lumi-LumiTests/Pods-Lumi-LumiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Lumi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lumi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Lumi/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Lumi-LumiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi-LumiTests.release.xcconfig"; path = "Target Support Files/Pods-Lumi-LumiTests/Pods-Lumi-LumiTests.release.xcconfig"; sourceTree = "<group>"; };
+		8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Light.ttf"; path = "../src/assets/fonts/Fredoka-Light.ttf"; sourceTree = "<group>"; };
+		B7DBDFDCC3DF460ABDFBF666 /* Fredoka-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-SemiBold.ttf"; path = "../src/assets/fonts/Fredoka-SemiBold.ttf"; sourceTree = "<group>"; };
+		B83D5A8BEA544D28ACEC161A /* Catchy-Melody.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Catchy-Melody.ttf"; path = "../src/assets/fonts/Catchy-Melody.ttf"; sourceTree = "<group>"; };
+		D51DBDA73B6449A59DE15D31 /* Fredoka-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Bold.ttf"; path = "../src/assets/fonts/Fredoka-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -122,6 +136,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				D16257418FBC419DBBE8752E /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -146,6 +161,21 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-Lumi-LumiTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D16257418FBC419DBBE8752E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D51DBDA73B6449A59DE15D31 /* Fredoka-Bold.ttf */,
+				8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */,
+				2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */,
+				3C20DFABE40B4785B268300C /* Fredoka-Regular.ttf */,
+				B7DBDFDCC3DF460ABDFBF666 /* Fredoka-SemiBold.ttf */,
+				1314E620953B409993ED47A9 /* SpicyRice-Regular.ttf */,
+				B83D5A8BEA544D28ACEC161A /* Catchy-Melody.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,6 +273,13 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				060F4EE8000C4F5D98D7274F /* Fredoka-Bold.ttf in Resources */,
+				93F8CF13612048FF9D6163E9 /* Fredoka-Light.ttf in Resources */,
+				7F76C9C2CAF644C482FB2791 /* Fredoka-Medium.ttf in Resources */,
+				3DA54C259B154B99AECE1FC2 /* Fredoka-Regular.ttf in Resources */,
+				8DB37A11B3754A85A1E155D7 /* Fredoka-SemiBold.ttf in Resources */,
+				9C5351FDCCD4475DA9B6C7AD /* SpicyRice-Regular.ttf in Resources */,
+				102B82C930D946CEB8C004D4 /* Catchy-Melody.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,7 +587,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -632,7 +669,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

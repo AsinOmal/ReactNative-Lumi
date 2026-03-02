@@ -1,5 +1,7 @@
 PODS:
   - boost (1.83.0)
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.73.3)
   - FBReactNativeSpec (0.73.3):
@@ -886,7 +888,7 @@ PODS:
   - React-Mapbuffer (0.73.3):
     - glog
     - React-debug
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (4.14.1):
     - React-Core
   - React-nativeconfig (0.73.3)
   - React-NativeModulesApple (0.73.3):
@@ -1055,7 +1057,7 @@ PODS:
     - React-jsi (= 0.73.3)
     - React-logger (= 0.73.3)
     - React-perflogger (= 0.73.3)
-  - RNSVG (15.15.1):
+  - RNSVG (14.2.0):
     - React-Core
   - SocketRocket (0.6.1)
   - ViroKit (1.0):
@@ -1066,6 +1068,7 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -1130,6 +1133,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -1236,6 +1241,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: 70590b4f9e8ae9b0ce076efacea3abd7bc585ace
   FBReactNativeSpec: e47ea8c8f044c25e41a4fa5e8b7ff3923d3e0a94
@@ -1264,7 +1270,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 6fad0fe14882fb6b1c32e5cc8a4bd3d33a8b6790
   React-logger: 026c4699c71b179283959f13583507a06099fbde
   React-Mapbuffer: 62a470fa4b06d7ca94d7d49c3e9f3a0aeb4cebef
-  react-native-safe-area-context: 6c8805194166a9d6b3e53ba69ca76756c9bfb052
+  react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
   React-nativeconfig: 4d3076dc3dc498ec49819e4e4225b55d3507f902
   React-NativeModulesApple: e335068b1e202c9f3190e84c158c7f29db9236c6
   React-perflogger: 27ccacf853ba725524ef2b4e444f14e34d0837b0
@@ -1285,7 +1291,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: f49563abf7590f60501f0ac5c0ef7d730d62894a
   React-utils: f2d847abe621c4dfa0f5a2968c080cbc50660d95
   ReactCommon: 55b0ff6881f30c25713c0ba6bc4e30af3d4aa261
-  RNSVG: a807c48b50ef7efee52a1fa610a23c9df1bcb2f9
+  RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   ViroKit: 728e2547f4ac693a69fa7652813ec178a361dbd6
   ViroReact: 0fe7ad200cee750209ef1e767f677a90f4736bf0

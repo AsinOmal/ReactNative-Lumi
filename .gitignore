@@ -64,3 +64,6 @@ yarn-error.log
 
 # testing
 /coverage
+
+# Project Documentation
+Lumi_Blueprint.md
