@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "991654335767",
+    "project_id": "lumi-f7098",
+    "storage_bucket": "lumi-f7098.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991654335767:android:41685d0a1c443d39ee5352",
+        "android_client_info": {
+          "package_name": "com.lumi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "991654335767-m8c1aeeio6b9sa9tvidfq31k52c1j3pf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_GPs4ZFDui5E5TkxQBQF1kLdOdzQvyxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "991654335767-m8c1aeeio6b9sa9tvidfq31k52c1j3pf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.asinomal.lumi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

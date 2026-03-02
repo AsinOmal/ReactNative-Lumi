@@ -59,5 +59,16 @@
 		<string>SpicyRice-Regular.ttf</string>
 		<string>Catchy-Melody.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

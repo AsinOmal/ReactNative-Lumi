@@ -1,3 +1,4 @@
+/// <reference types="nativewind/types" />
 import React from 'react';
 import { NativeRouter } from 'react-router-native';
 import { AppRoutes } from './src/navigation/AppRoutes';
