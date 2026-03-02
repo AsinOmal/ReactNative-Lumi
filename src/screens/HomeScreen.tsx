@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
+import { usePackStore } from '../store/usePackStore';
 import { DiscoveredWordCard } from '../components/home/DiscoveredWordCard';
 import { PackCard } from '../components/library/PackCard';
 
-// Placeholder discovered words (will come from Firestore later)
+// Placeholder discovered words (will come from Firestore user progress later)
 const MOCK_FOUND_WORDS = [
   { word: 'Dragon', emoji: '🐉' },
   { word: 'Train', emoji: '🚂' },
@@ -21,19 +23,16 @@ const MOCK_FOUND_WORDS = [
   { word: 'Castle', emoji: '🏰' },
 ];
 
-// Pack data (will come from Firestore later)
-const MOCK_PACKS = [
-  { id: 'fruits', name: 'Fruits', emoji: '🍎', progress: 5, total: 10, isPremium: false, isUnlocked: true },
-  { id: 'space', name: 'Space', emoji: '🚀', progress: 0, total: 10, isPremium: false, isUnlocked: true },
-  { id: 'animals', name: 'Animals', emoji: '🦁', progress: 0, total: 15, isPremium: true, isUnlocked: false },
-  { id: 'vehicles', name: 'Vehicles', emoji: '🚗', progress: 0, total: 12, isPremium: true, isUnlocked: false },
-];
-
 export const HomeScreen = () => {
   const { user } = useAuthStore();
+  const { packs, loading, userProgress, loadPacks } = usePackStore();
   const navigation = useNavigation();
 
   const firstName = user?.displayName?.split(' ')[0] ?? 'Seeker';
+
+  useEffect(() => {
+    loadPacks();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -77,20 +76,24 @@ export const HomeScreen = () => {
 
           {/* ── Explore ── */}
           <Text style={styles.sectionTitle}>Explore</Text>
-          <View style={styles.grid}>
-            {MOCK_PACKS.map((pack) => (
-              <PackCard
-                key={pack.id}
-                id={pack.id}
-                name={pack.name}
-                emoji={pack.emoji}
-                progress={pack.progress}
-                total={pack.total}
-                isPremium={pack.isPremium}
-                isUnlocked={pack.isUnlocked}
-              />
-            ))}
-          </View>
+          {loading ? (
+            <ActivityIndicator size="small" color="#5B2DC0" style={{ marginVertical: 16 }} />
+          ) : (
+            <View style={styles.grid}>
+              {packs.map((pack) => (
+                <PackCard
+                  key={pack.id}
+                  id={pack.id}
+                  name={pack.name}
+                  emoji={pack.emoji}
+                  progress={userProgress[pack.id] ?? 0}
+                  total={pack.wordCount}
+                  isPremium={pack.isPremium}
+                  isUnlocked={!pack.isPremium}
+                />
+              ))}
+            </View>
+          )}
 
           {/* Space for floating tab bar */}
           <View style={{ height: 100 }} />

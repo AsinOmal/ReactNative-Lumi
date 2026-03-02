@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 interface AuthState {
   user: FirebaseAuthTypes.User | null;
