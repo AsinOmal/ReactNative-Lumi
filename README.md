@@ -1,22 +1,70 @@
-# Viro Starter Kit
+# 🌟 Lumi — AR Word Explorer
 
-This is a new [**React Native**](https://reactnative.dev) project, set up with `@reactvision/react-viro`.
+> *"Every word a child sees in the real world becomes an interactive 3D experience — making reading the game, not just a way to play one."*
 
-## How to Install Viro in an existing project?
+Lumi is a mobile application for children aged **5–10** that uses **Augmented Reality (AR)** and **Optical Character Recognition (OCR)** to bring words to life as 3D models in the real world. A child points their phone's camera at any written word — in a book, on a label, on a cereal box — and the matching 3D animated model appears anchored in the physical space around them.
 
-If you are integrating ViroReact into an existing project, have a look at our [Installation instructions](https://viro-community.readme.io/docs/installation-instructions).
+---
 
-## Getting Started
+> [!CAUTION]
+> **This app is designed to run on physical devices ONLY.**
+> AR features rely on ARKit (iOS) and ARCore (Android) — neither of which is available on simulators or emulators. Do not attempt to run Lumi on the iOS Simulator or Android Emulator — it will not work.
 
-> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions. Stop before you get to the `Creating a new application` section; we have done that for you!
+---
 
-## Step 1: Install Dependencies
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | React Native (Bare CLI) |
+| AR Engine | `@reactvision/react-viro` (ViroReact) |
+| 3D Models | `.glb` (binary GLTF) |
+| Auth | Firebase Auth (Google Sign-in) |
+| Database | Firebase Firestore |
+| State | Zustand |
+| Navigation | React Navigation (Bottom Tabs) |
+| Icons | react-native-vector-icons (Ionicons) |
+
+---
+
+## Prerequisites
+
+Before installing, make sure you have:
+
+- **Node.js** ≥ 18
+- **Xcode** ≥ 15 (for iOS builds)
+- **Android Studio** + NDK (for Android builds)
+- **CocoaPods** (for iOS native dependencies)
+- **A physical iOS or Android device** (AR will not run on simulators/emulators)
+- A Firebase project with:
+  - Google Sign-in enabled
+  - Firestore database created
+  - `GoogleService-Info.plist` (iOS) and `google-services.json` (Android) downloaded
+
+---
+
+## Installation
+
+### 1. Clone and install dependencies
 
 ```bash
+git clone https://github.com/AsinOmal/ReactNative-Lumi.git
+cd ReactNative-Lumi
 npm install
 ```
 
-### iOS only:
+### 2. Add Firebase config files
+
+Place your Firebase config files in the correct locations:
+
+```
+ios/Lumi/GoogleService-Info.plist
+android/app/google-services.json
+```
+
+> These files are gitignored. You must obtain them from your Firebase Console → Project Settings → Your Apps.
+
+### 3. iOS — Install Pods
 
 ```bash
 cd ios
@@ -24,62 +72,138 @@ pod install
 cd ..
 ```
 
-## Step 2: Start the Metro Server
+> Minimum iOS deployment target: **15.1** (required by ViroReact + react-native-screens)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+### 4. iOS — Add URL scheme for Google Sign-in
 
-To start Metro, run the following command from the _root_ of your React Native project:
+In Xcode, open `ios/Lumi/Info.plist` and add your `REVERSED_CLIENT_ID` from `GoogleService-Info.plist` as a URL scheme under `CFBundleURLTypes`. (This is required for Google Sign-in redirect to work.)
+
+### 5. iOS — Register the Ionicons font
+
+Add `Ionicons.ttf` to `UIAppFonts` in `Info.plist`:
+
+```xml
+<key>UIAppFonts</key>
+<array>
+  <string>Ionicons.ttf</string>
+</array>
+```
+
+> [!NOTE]
+> The font file is located in `node_modules/react-native-vector-icons/Fonts/Ionicons.ttf`. You do not need to copy it manually — the build process handles it when the font is declared in `Info.plist`.
+
+---
+
+## Running the App
+
+### Start Metro
 
 ```bash
 npm start
 ```
 
-## Step 3: Start your Application
+### Run on iOS (physical device)
 
-> **Warning**: Due to limitations of the Apple Simulator and the Android Emulator, you must run your project on a physical device.
+1. Open `ios/Lumi.xcworkspace` in Xcode (not `.xcodeproj`)
+2. Select your connected physical iPhone as the target
+3. Press **Run** (⌘R)
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+### Run on Android (physical device)
 
-```bash
-# iOS
-npx react-native run-ios
-# Android
-npx react-native run-android
-```
-
-If everything is set up _correctly_, you should see your new app running on you device.
-
-#### Install CocoaPods
+Enable **USB debugging** on your device, then:
 
 ```bash
-cd ios
-pod install
-cd ..
+npm run android
 ```
 
-```bash
-# using npm
-npm run ios
+---
 
-# OR using Yarn
-yarn ios
+## Project Structure
+
+```
+src/
+├── assets/
+│   ├── fonts/          # Fredoka, SpicyRice, CatchyMelody
+│   ├── models/
+│   │   └── fruits/     # 10 GLB models (apple, banana, cherry…)
+│   └── sounds/
+├── components/
+│   ├── ar/
+│   │   └── ARWordScene.tsx   # Viro AR scene with tap-to-place
+│   ├── home/
+│   └── library/
+├── navigation/
+│   ├── AppRoutes.tsx         # Auth-gated routing
+│   └── MainTabNavigator.tsx  # Custom floating pill tab bar
+├── screens/
+│   ├── HomeScreen.tsx        # Explore packs + live Firestore data
+│   ├── LoginScreen.tsx       # Google Sign-in
+│   ├── ProfileScreen.tsx
+│   └── ScanScreen.tsx        # AR tap-to-place experience
+├── services/
+│   ├── packService.ts        # Firestore pack seeding & fetching
+│   └── userService.ts        # Firestore user document management
+├── store/
+│   ├── useAuthStore.ts       # Zustand auth state
+│   └── usePackStore.ts       # Zustand pack data state
+└── utils/
+    └── modelRegistry.ts      # word → GLB file + scale mapping
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+---
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+## Features (Phase 1 & 2 — Current)
 
-## Step 4: Modifying your App
+- ✅ Google Sign-in with Firebase Auth
+- ✅ Firestore user profiles (auto-created on first sign-in)
+- ✅ Firestore `packs` collection (seeded on first launch)
+- ✅ HomeScreen with live pack data from Firestore
+- ✅ Custom floating-pill tab bar (Home / Scan / Profile)
+- ✅ AR scene with tap-to-place model anchoring
+- ✅ Surface detection reticle (purple disc shows where model will land)
+- ✅ 10 fruit 3D models loaded from bundled GLB files
+- ✅ Per-word fun facts and result card
+- ✅ Slow rotation animation on placed models
 
-Now that you have successfully run the app, let's modify it.
+## Planned (Phases 3–10)
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+- 🔲 OCR text recognition via ML Kit (Phase 3)
+- 🔲 Real-world word-to-model pipeline (Phase 3)
+- 🔲 Pronunciation audio & syllable breakdown (Phase 4)
+- 🔲 Daily Word Hunt missions (Phase 5)
+- 🔲 Badge & achievement system (Phase 5)
+- 🔲 Parent Dashboard (Phase 6)
+- 🔲 AI fun facts via Claude API (Phase 7)
+- 🔲 In-app purchases & premium packs (Phase 8)
 
-## Next Steps
+---
 
-Check out our [documentation](https://viro-community.readme.io/) for guides, examples, and more!
+## Pack System
 
-## Need help?
+Lumi uses a **pack-based content system**:
 
-[Reach us in Discord.](https://discord.gg/YfxDBGTxvG) or submit an issue!
+| Pack | Type | Words |
+|---|---|---|
+| Fruits | Free (bundled) | Apple, Banana, Cherry, Grape, Lemon, Mango, Orange, Pineapple, Strawberry, Watermelon |
+| Vegetables | Free (coming soon) | Carrot, Tomato, Brinjal, Potato… |
+| Dinosaurs | Premium — $1.99 | T-Rex, Triceratops, Brachiosaurus… |
+| Space | Premium — $1.99 | Rocket, Planet, Astronaut… |
+| Deep Ocean | Premium — $1.99 | Anglerfish, Blue Whale, Giant Squid… |
+
+---
+
+## Known Limitations
+
+- AR requires good ambient lighting — very dark environments may reduce surface detection accuracy
+- Orange and Strawberry GLB models have PBR metallic-roughness materials that appear with reduced colour without an IBL environment (replacement models planned)
+- Simulators / Emulators: **not supported** — AR will crash or produce a black screen
+
+---
+
+## Final Year Project
+
+Lumi is developed as a Final Year Project submission. The full product vision, technical architecture, monetisation strategy, and UX design rationale are documented in [`Lumi_Blueprint.md`](./Lumi_Blueprint.md).
+
+---
+
+*Built with React Native, ViroReact, Firebase, and a lot of ☕*
