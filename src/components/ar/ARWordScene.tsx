@@ -71,9 +71,7 @@ export const ARWordScene = (props: any) => {
 
       {/* 3D Model */}
       {modelEntry && !modelError && (
-        <ViroNode
-          position={[0, -0.3, -0.8]}
-        >
+        <ViroNode position={[0, -0.2, -1.5]}>
           <Viro3DObject
             source={modelEntry.source}
             type="GLB"

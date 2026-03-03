@@ -14,16 +14,16 @@ interface ModelEntry {
 
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // ── Fruits Pack ─────────────────────────────────────────────────────
-  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.12, 0.12, 0.12] },
-  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.12, 0.12, 0.12] },
-  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.10, 0.10, 0.10] },
-  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.12, 0.12, 0.12] },
-  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.11, 0.11, 0.11] },
-  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.12, 0.12, 0.12] },
-  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.12, 0.12, 0.12] },
-  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [0.14, 0.14, 0.14] },
-  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.10, 0.10, 0.10] },
-  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.15, 0.15, 0.15] },
+  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.06, 0.06, 0.06] },
+  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.03, 0.03, 0.03] },
+  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.05, 0.05, 0.05] },
+  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.04, 0.04, 0.04] },
+  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.06, 0.06, 0.06] },
+  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.06, 0.06, 0.06] },
+  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.04, 0.04, 0.04] },
+  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [0.06, 0.06, 0.06] },
+  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.06, 0.06, 0.06] },
+  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.04, 0.04, 0.04] },
 };
 
 /** Returns the model entry for a given word, or null if not found. */

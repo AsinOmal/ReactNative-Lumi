@@ -38,7 +38,8 @@ export const ScanScreen = () => {
   const navigation = useNavigation();
   const [activeWord, setActiveWord] = useState<string>('apple');
   const [modelLoaded, setModelLoaded] = useState(false);
-  const cardAnim = useRef(new Animated.Value(200)).current; // starts off-screen
+  const [sceneKey, setSceneKey] = useState(0); // increment to force full scene remount
+  const cardAnim = useRef(new Animated.Value(200)).current;
 
   const handleModelLoaded = () => {
     setModelLoaded(true);
@@ -51,9 +52,17 @@ export const ScanScreen = () => {
   };
 
   const handleWordChange = (word: string) => {
+    // Remount entire AR scene to prevent model stacking
+    setSceneKey(prev => prev + 1);
     setActiveWord(word);
     setModelLoaded(false);
-    cardAnim.setValue(200); // hide card while new model loads
+    cardAnim.setValue(200);
+  };
+
+  const handleReset = () => {
+    setSceneKey(prev => prev + 1);
+    setModelLoaded(false);
+    cardAnim.setValue(200);
   };
 
   const fact = WORD_FACTS[activeWord] ?? 'This is a fun word to discover! ✨';
@@ -65,6 +74,7 @@ export const ScanScreen = () => {
 
       {/* AR View */}
       <ViroARSceneNavigator
+        key={sceneKey}
         initialScene={{ scene: ARWordScene as any }}
         viroAppProps={{
           word: activeWord,
@@ -77,6 +87,11 @@ export const ScanScreen = () => {
       {/* Back button */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="chevron-back" size={22} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Reset button */}
+      <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+        <Ionicons name="refresh" size={20} color="#fff" />
       </TouchableOpacity>
 
       {/* Active pack badge */}
@@ -169,6 +184,17 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetButton: {
+    position: 'absolute',
+    top: 56,
+    right: 16,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(91,45,192,0.75)',
     alignItems: 'center',
     justifyContent: 'center',
   },
