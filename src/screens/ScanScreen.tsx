@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
 
   resultCard: {
     position: 'absolute',
-    bottom: 16,            // sits just above the tab bar
+    bottom: 95,            // clears the custom tab bar (~85px)
     left: 16, right: 16,
     backgroundColor: '#FFFFFF',
     borderRadius: 24, padding: 20,
