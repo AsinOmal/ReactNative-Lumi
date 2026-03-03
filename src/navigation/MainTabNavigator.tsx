@@ -12,6 +12,9 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
 
+  // Full-screen immersive mode — hide tab bar on Scan/camera tab
+  if (state.index === 1) return null;
+
   const tabs = [
     { name: 'Home',    iconActive: 'home',           iconInactive: 'home-outline',    label: 'Home' },
     { name: 'Scan',    iconActive: 'camera',         iconInactive: 'camera',          label: '' },   // center

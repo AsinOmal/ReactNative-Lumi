@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
 
   resultCard: {
     position: 'absolute',
-    bottom: 95,            // clears the custom tab bar (~85px)
+    bottom: 24,            // tab bar is hidden on ScanScreen, just clear home indicator
     left: 16, right: 16,
     backgroundColor: '#FFFFFF',
     borderRadius: 24, padding: 20,
