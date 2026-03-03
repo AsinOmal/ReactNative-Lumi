@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ViroARScene,
   ViroAmbientLight,
@@ -9,43 +9,23 @@ import {
 } from '@reactvision/react-viro';
 import { getModel } from '../../utils/modelRegistry';
 
-// Register animations
-ViroAnimations.registerAnimations({
-  floatUp: {
-    properties: { positionY: '+=0.05' },
-    duration: 1200,
-    easing: 'EaseInEaseOut',
-  },
-  floatDown: {
-    properties: { positionY: '-=0.05' },
-    duration: 1200,
-    easing: 'EaseInEaseOut',
-  },
-  rotate: {
-    properties: { rotateY: '+=360' },
-    duration: 6000,
-    easing: 'Linear',
-  },
-  scaleIn: {
-    properties: { scaleX: 1, scaleY: 1, scaleZ: 1 },
-    duration: 500,
-    easing: 'Bounce',
-  },
-});
-
-interface ARWordSceneProps {
-  sceneNavigator: {
-    viroAppProps: {
-      word: string;
-      onModelLoaded?: () => void;
-    };
-  };
-}
-
 export const ARWordScene = (props: any) => {
   const word: string = props?.sceneNavigator?.viroAppProps?.word ?? 'apple';
   const onModelLoaded: (() => void) | undefined = props?.sceneNavigator?.viroAppProps?.onModelLoaded;
   const [modelError, setModelError] = useState(false);
+  const [animReady, setAnimReady] = useState(false);
+
+  // Register animations AFTER mount so the native bridge is ready
+  useEffect(() => {
+    ViroAnimations.registerAnimations({
+      rotate: {
+        properties: { rotateY: '+=360' },
+        duration: 5000,
+        easing: 'Linear',
+      },
+    });
+    setAnimReady(true);
+  }, []);
 
   const modelEntry = getModel(word);
 
@@ -60,17 +40,23 @@ export const ARWordScene = (props: any) => {
 
   return (
     <ViroARScene>
-      {/* Lighting */}
-      <ViroAmbientLight color="#ffffff" intensity={200} />
+      {/* Lighting — strong ambient + directional to illuminate all model surfaces */}
+      <ViroAmbientLight color="#ffffff" intensity={500} />
       <ViroDirectionalLight
         color="#ffffff"
         direction={[0, -1, -0.2]}
+        intensity={500}
+        castsShadow={false}
+      />
+      <ViroDirectionalLight
+        color="#fffbe6"
+        direction={[0.5, -0.5, -1]}
         intensity={300}
-        castsShadow
+        castsShadow={false}
       />
 
       {/* 3D Model */}
-      {modelEntry && !modelError && (
+      {modelEntry && !modelError && animReady && (
         <ViroNode
           position={modelEntry.position}
           animation={{ name: 'rotate', run: true, loop: true }}
