@@ -1,62 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ViroARScene,
   ViroAmbientLight,
   ViroDirectionalLight,
   Viro3DObject,
-  ViroAnimations,
   ViroNode,
 } from '@reactvision/react-viro';
 import { getModel } from '../../utils/modelRegistry';
+
+// Animations are registered in index.js at startup (once, before any scene mounts)
 
 export const ARWordScene = (props: any) => {
   const word: string = props?.sceneNavigator?.viroAppProps?.word ?? 'apple';
   const onModelLoaded: (() => void) | undefined = props?.sceneNavigator?.viroAppProps?.onModelLoaded;
   const [modelError, setModelError] = useState(false);
-  const [animReady, setAnimReady] = useState(false);
-
-  // Register animations AFTER mount so the native bridge is ready
-  useEffect(() => {
-    ViroAnimations.registerAnimations({
-      rotate: {
-        properties: { rotateY: '+=360' },
-        duration: 5000,
-        easing: 'Linear',
-      },
-    });
-    setAnimReady(true);
-  }, []);
 
   const modelEntry = getModel(word);
 
-  const handleModelLoaded = () => {
-    if (onModelLoaded) onModelLoaded();
-  };
-
-  const handleModelError = (event: any) => {
-    console.warn('AR Model load error:', event);
-    setModelError(true);
-  };
-
   return (
     <ViroARScene>
-      {/* Lighting — strong ambient + directional to illuminate all model surfaces */}
-      <ViroAmbientLight color="#ffffff" intensity={500} />
-      <ViroDirectionalLight
-        color="#ffffff"
-        direction={[0, -1, -0.2]}
-        intensity={500}
-        castsShadow={false}
-      />
-      <ViroDirectionalLight
-        color="#fffbe6"
-        direction={[0.5, -0.5, -1]}
-        intensity={300}
-        castsShadow={false}
-      />
+      {/* Multiple lights to ensure all PBR materials are illuminated */}
+      <ViroAmbientLight color="#ffffff" intensity={600} />
+      <ViroDirectionalLight color="#ffffff" direction={[0, -1, -0.2]} intensity={600} castsShadow={false} />
+      <ViroDirectionalLight color="#fff5e0" direction={[1, -0.5, -1]} intensity={400} castsShadow={false} />
+      <ViroDirectionalLight color="#e0f0ff" direction={[-1, -0.5, -1]} intensity={300} castsShadow={false} />
 
-      {/* 3D Model */}
-      {modelEntry && !modelError && animReady && (
+      {/* 3D Model — animation registered in index.js so always available */}
+      {modelEntry && !modelError && (
         <ViroNode
           position={modelEntry.position}
           animation={{ name: 'rotate', run: true, loop: true }}
@@ -65,8 +35,11 @@ export const ARWordScene = (props: any) => {
             source={modelEntry.source}
             type="GLB"
             scale={modelEntry.scale}
-            onLoadEnd={handleModelLoaded}
-            onError={handleModelError}
+            onLoadEnd={() => onModelLoaded?.()}
+            onError={(e: any) => {
+              console.warn('AR model error:', e);
+              setModelError(true);
+            }}
           />
         </ViroNode>
       )}

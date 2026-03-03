@@ -34,9 +34,9 @@ export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050], position: [0,  0.0, -1.0] },
   grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.012, 0.012, 0.012], position: [0,  0.0, -1.0] },
   lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.038, 0.038, 0.038], position: [0,  0.0, -1.0] },
-  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.40,  0.40,  0.40 ], position: [0,  0.0, -0.7] },
-  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.40,  0.40,  0.40 ], position: [0,  0.0, -0.7] },
-  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [2.0,   2.0,   2.0  ], position: [0,  0.0, -1.0] },
+  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.25,  0.25,  0.25 ], position: [0,  0.0, -0.5] },
+  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.25,  0.25,  0.25 ], position: [0,  0.0, -0.5] },
+  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [3.5,   3.5,   3.5  ], position: [0,  0.0, -0.8] },
   strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.60,  0.60,  0.60 ], position: [0,  0.0, -1.0] },
   watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.052, 0.052, 0.052], position: [0,  0.0, -1.0] },
 };
