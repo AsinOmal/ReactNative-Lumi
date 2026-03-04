@@ -17,6 +17,7 @@ import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
 import { matchWord } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
+import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -34,10 +35,7 @@ const WORD_FACTS: Record<string, string> = {
   watermelon: "Watermelons are 92% water — that's how they got their name! 💧",
 };
 
-const FRUITS_WORDS = [
-  'apple', 'banana', 'cherry', 'grape', 'lemon',
-  'mango', 'orange', 'pineapple', 'strawberry', 'watermelon',
-];
+const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
 
 const SCAN_INTERVAL_MS = 1000; // run OCR every 1 second
 
@@ -96,7 +94,7 @@ export const ScanScreen = () => {
     try {
       const snapshot = await cameraRef.current.takePhoto();
       const text = await recognizeTextInImage(snapshot.path);
-      const matched = matchWord(text, FRUITS_WORDS);
+      const matched = matchWord(text, ALL_SUPPORTED_WORDS);
       setDetectedWord(matched);
     } catch {
       // Silently ignore — camera unavailable when backgrounded/locked
@@ -199,10 +197,6 @@ export const ScanScreen = () => {
           <Ionicons name="chevron-back" size={22} color="#fff" />
         </TouchableOpacity>
 
-        <View style={styles.packBadge}>
-          <Text style={styles.packBadgeText}>🍎 Fruits Pack</Text>
-        </View>
-
         {/* Scanning status indicator */}
         <View style={styles.statusBar}>
           <View style={styles.statusDot} />
@@ -216,7 +210,7 @@ export const ScanScreen = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.wordSelectorContent}
           >
-            {FRUITS_WORDS.map((word) => (
+            {ALL_SUPPORTED_WORDS.map((word) => (
               <TouchableOpacity
                 key={word}
                 style={[styles.wordChip, activeWord === word && styles.wordChipActive]}
@@ -256,10 +250,6 @@ export const ScanScreen = () => {
         <Ionicons name="refresh" size={20} color="#fff" />
       </TouchableOpacity>
 
-      <View style={styles.packBadge}>
-        <Text style={styles.packBadgeText}>🍎 Fruits Pack</Text>
-      </View>
-
       {/* Word selector */}
       <View style={styles.wordSelectorWrapper}>
         <ScrollView
@@ -267,7 +257,7 @@ export const ScanScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.wordSelectorContent}
         >
-          {FRUITS_WORDS.map((word) => (
+          {ALL_SUPPORTED_WORDS.map((word) => (
             <TouchableOpacity
               key={word}
               style={[styles.wordChip, activeWord === word && styles.wordChipActive]}
