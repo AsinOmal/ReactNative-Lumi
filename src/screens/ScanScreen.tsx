@@ -7,6 +7,8 @@ import {
   Animated,
   ScrollView,
   StatusBar,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
@@ -59,6 +61,24 @@ export const ScanScreen = () => {
 
   const isScanning = useRef(false);
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
+
+  // ── App State (stop camera when locked / backgrounded) ────────────────────
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {
+      const active = nextState === 'active';
+      setIsAppActive(active);
+      if (!active) {
+        // Clear OCR loop immediately when leaving foreground
+        if (scanTimerRef.current) {
+          clearInterval(scanTimerRef.current);
+          scanTimerRef.current = null;
+        }
+        isScanning.current = false;
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   // ── Camera Permission ────────────────────────────────────────────────────
 
@@ -71,31 +91,28 @@ export const ScanScreen = () => {
   // Runs only in Scan mode when a camera is available.
 
   const runOCR = useCallback(async () => {
-    if (!cameraRef.current || mode !== 'scan' || isScanning.current) return;
+    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive) return;
     isScanning.current = true;
     try {
       const snapshot = await cameraRef.current.takePhoto();
-      console.log('[ScanScreen] 📸 snapshot path:', snapshot.path);
       const text = await recognizeTextInImage(snapshot.path);
-      console.log('[ScanScreen] 📝 text length:', text.length, '| first 80:', text.slice(0, 80));
       const matched = matchWord(text, FRUITS_WORDS);
-      console.log('[ScanScreen] 🎯 matched:', matched);
       setDetectedWord(matched);
-    } catch (e) {
-      console.warn('[ScanScreen] ❌ OCR error:', e);
+    } catch {
+      // Silently ignore — camera unavailable when backgrounded/locked
     } finally {
       isScanning.current = false;
     }
-  }, [mode]);
+  }, [mode, isAppActive]);
 
   useEffect(() => {
-    if (mode === 'scan') {
+    if (mode === 'scan' && isAppActive) {
       scanTimerRef.current = setInterval(runOCR, SCAN_INTERVAL_MS);
     }
     return () => {
       if (scanTimerRef.current) clearInterval(scanTimerRef.current);
     };
-  }, [mode, runOCR]);
+  }, [mode, isAppActive, runOCR]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -159,7 +176,7 @@ export const ScanScreen = () => {
             ref={cameraRef}
             style={StyleSheet.absoluteFill}
             device={device}
-            isActive
+            isActive={isAppActive}
             photo
           />
         ) : (
