@@ -74,7 +74,7 @@ export const ScanScreen = () => {
     if (!cameraRef.current || mode !== 'scan' || isScanning.current) return;
     isScanning.current = true;
     try {
-      const snapshot = await cameraRef.current.takeSnapshot({ quality: 60 });
+      const snapshot = await cameraRef.current.takePhoto();
       console.log('[ScanScreen] 📸 snapshot path:', snapshot.path);
       const text = await recognizeTextInImage(snapshot.path);
       console.log('[ScanScreen] 📝 text length:', text.length, '| first 80:', text.slice(0, 80));

@@ -22,6 +22,8 @@
 		93F8CF13612048FF9D6163E9 /* Fredoka-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */; };
 		9C5351FDCCD4475DA9B6C7AD /* SpicyRice-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1314E620953B409993ED47A9 /* SpicyRice-Regular.ttf */; };
 		E5C3E271CEB5BBA954BA606B /* GoogleService-Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 230D6605A428AC9107212170 /* GoogleService-Info.plist */; };
+		44CA06202F5876BB0078D79E /* LumiVisionOCR.m in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */; };
+		44CA06212F5876BB0078D79E /* LumiVisionOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -471,6 +473,8 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				E5C3E271CEB5BBA954BA606B /* GoogleService-Info.plist in Sources */,
+				44CA06202F5876BB0078D79E /* LumiVisionOCR.m in Sources */,
+				44CA06212F5876BB0078D79E /* LumiVisionOCR.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
