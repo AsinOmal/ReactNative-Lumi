@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,15 @@ import {
   StatusBar,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
+import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import { ARWordScene } from '../components/ar/ARWordScene';
+import { OCROverlay } from '../components/ar/OCROverlay';
+import { matchWord } from '../utils/wordMatcher';
+import { recognizeTextInImage } from '../utils/visionOCR';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const WORD_FACTS: Record<string, string> = {
   apple:      'Apples float in water because they are 25% air! 🌊',
@@ -31,15 +37,84 @@ const FRUITS_WORDS = [
   'mango', 'orange', 'pineapple', 'strawberry', 'watermelon',
 ];
 
+const SCAN_INTERVAL_MS = 1000; // run OCR every 1 second
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+type Mode = 'scan' | 'ar';
+
 export const ScanScreen = () => {
   const navigation = useNavigation();
+  const device = useCameraDevice('back');
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const cameraRef = useRef<Camera>(null);
+
+  // ── State
+  const [mode, setMode] = useState<Mode>('scan');
   const [activeWord, setActiveWord] = useState<string>('apple');
+  const [detectedWord, setDetectedWord] = useState<string | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
-  // Start far enough off-screen that the card doesn't peek behind the tab bar
   const cardAnim = useRef(new Animated.Value(400)).current;
 
-  const handleModelLoaded = () => {
+  const isScanning = useRef(false);
+  const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ── Camera Permission ────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!hasPermission) requestPermission();
+  }, []);
+
+  // ── Snapshot OCR Loop ─────────────────────────────────────────────────────
+  // Every SCAN_INTERVAL_MS, take a snapshot and run Apple Vision OCR on it.
+  // Runs only in Scan mode when a camera is available.
+
+  const runOCR = useCallback(async () => {
+    if (!cameraRef.current || mode !== 'scan' || isScanning.current) return;
+    isScanning.current = true;
+    try {
+      const snapshot = await cameraRef.current.takeSnapshot({
+        quality: 60,
+      });
+      const text = await recognizeTextInImage(snapshot.path);
+      const matched = matchWord(text, FRUITS_WORDS);
+      setDetectedWord(matched);
+    } catch {
+      // Ignore snapshot/OCR errors silently
+    } finally {
+      isScanning.current = false;
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === 'scan') {
+      scanTimerRef.current = setInterval(runOCR, SCAN_INTERVAL_MS);
+    }
+    return () => {
+      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
+    };
+  }, [mode, runOCR]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleViewInAR = useCallback((word?: string) => {
+    const target = word ?? detectedWord ?? activeWord;
+    setActiveWord(target);
+    setSceneKey(k => k + 1);
+    setModelLoaded(false);
+    cardAnim.setValue(400);
+    setMode('ar');
+  }, [detectedWord, activeWord]);
+
+  const handleBackToScan = useCallback(() => {
+    setMode('scan');
+    setDetectedWord(null);
+    setModelLoaded(false);
+    cardAnim.setValue(400);
+  }, []);
+
+  const handleModelLoaded = useCallback(() => {
     setModelLoaded(true);
     Animated.spring(cardAnim, {
       toValue: 0,
@@ -47,48 +122,115 @@ export const ScanScreen = () => {
       tension: 60,
       friction: 9,
     }).start();
-  };
+  }, []);
 
-  const handleWordChange = (word: string) => {
-    setSceneKey(k => k + 1);
+  const handleWordChipPress = useCallback((word: string) => {
     setActiveWord(word);
-    setModelLoaded(false);
-    cardAnim.setValue(400);
-  };
+    handleViewInAR(word);
+  }, [handleViewInAR]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSceneKey(k => k + 1);
     setModelLoaded(false);
     cardAnim.setValue(400);
-  };
+  }, []);
 
-  const dismissCard = () => {
+  const dismissCard = useCallback(() => {
     Animated.timing(cardAnim, {
       toValue: 400,
       duration: 250,
       useNativeDriver: true,
     }).start(() => setModelLoaded(false));
-  };
+  }, []);
 
   const fact = WORD_FACTS[activeWord] ?? 'This is a fun word to discover! ✨';
+
+  // ── SCAN MODE ─────────────────────────────────────────────────────────────
+
+  if (mode === 'scan') {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
+
+        {/* Camera feed */}
+        {device && hasPermission ? (
+          <Camera
+            ref={cameraRef}
+            style={StyleSheet.absoluteFill}
+            device={device}
+            isActive
+            photo
+          />
+        ) : (
+          <View style={[StyleSheet.absoluteFill, styles.noCamera]}>
+            <Ionicons name="camera-off-outline" size={42} color="rgba(255,255,255,0.4)" />
+            <Text style={styles.noCameraText}>
+              {hasPermission ? 'Camera unavailable' : 'Camera permission required'}
+            </Text>
+          </View>
+        )}
+
+        {/* OCR scanning reticle + detected word chip */}
+        <OCROverlay
+          detectedWord={detectedWord}
+          onViewInAR={() => handleViewInAR()}
+        />
+
+        {/* Top HUD */}
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={22} color="#fff" />
+        </TouchableOpacity>
+
+        <View style={styles.packBadge}>
+          <Text style={styles.packBadgeText}>🍎 Fruits Pack</Text>
+        </View>
+
+        {/* Scanning status indicator */}
+        <View style={styles.statusBar}>
+          <View style={styles.statusDot} />
+          <Text style={styles.statusText}>Scanning for words…</Text>
+        </View>
+
+        {/* Word chip row — manual override */}
+        <View style={styles.wordSelectorWrapper}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.wordSelectorContent}
+          >
+            {FRUITS_WORDS.map((word) => (
+              <TouchableOpacity
+                key={word}
+                style={[styles.wordChip, activeWord === word && styles.wordChipActive]}
+                onPress={() => handleWordChipPress(word)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.wordChipText, activeWord === word && styles.wordChipTextActive]}>
+                  {word}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }
+
+  // ── AR MODE ───────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* AR View */}
       <ViroARSceneNavigator
         key={sceneKey}
         initialScene={{ scene: ARWordScene as any }}
-        viroAppProps={{
-          word: activeWord,
-          onModelLoaded: handleModelLoaded,
-        }}
+        viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }}
         style={styles.arView}
       />
 
-      {/* ── Top HUD ── */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      {/* Top HUD */}
+      <TouchableOpacity style={styles.backButton} onPress={handleBackToScan}>
         <Ionicons name="chevron-back" size={22} color="#fff" />
       </TouchableOpacity>
 
@@ -96,12 +238,11 @@ export const ScanScreen = () => {
         <Ionicons name="refresh" size={20} color="#fff" />
       </TouchableOpacity>
 
-      {/* Active pack badge */}
       <View style={styles.packBadge}>
         <Text style={styles.packBadgeText}>🍎 Fruits Pack</Text>
       </View>
 
-      {/* ── Word Selector ── */}
+      {/* Word selector */}
       <View style={styles.wordSelectorWrapper}>
         <ScrollView
           horizontal
@@ -112,7 +253,7 @@ export const ScanScreen = () => {
             <TouchableOpacity
               key={word}
               style={[styles.wordChip, activeWord === word && styles.wordChipActive]}
-              onPress={() => handleWordChange(word)}
+              onPress={() => handleWordChipPress(word)}
               activeOpacity={0.8}
             >
               <Text style={[styles.wordChipText, activeWord === word && styles.wordChipTextActive]}>
@@ -123,7 +264,7 @@ export const ScanScreen = () => {
         </ScrollView>
       </View>
 
-      {/* ── Result Card (slides up when model finishes loading) ── */}
+      {/* Result card */}
       <Animated.View style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}>
         <View style={styles.resultCardHandle} />
         <View style={styles.resultCardRow}>
@@ -155,9 +296,14 @@ export const ScanScreen = () => {
   );
 };
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   arView: { flex: 1 },
+
+  noCamera: { justifyContent: 'center', alignItems: 'center', gap: 12, backgroundColor: '#0d0d0d' },
+  noCameraText: { fontFamily: 'Fredoka-Regular', fontSize: 16, color: 'rgba(255,255,255,0.4)', textAlign: 'center', paddingHorizontal: 32 },
 
   backButton: {
     position: 'absolute', top: 56, left: 16,
@@ -180,7 +326,17 @@ const styles = StyleSheet.create({
   },
   packBadgeText: { fontFamily: 'Fredoka-SemiBold', fontSize: 14, color: '#fff' },
 
-  wordSelectorWrapper: { position: 'absolute', top: 110, left: 0, right: 0 },
+  statusBar: {
+    position: 'absolute', top: 104,
+    alignSelf: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4,
+  },
+  statusDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#4ADE80' },
+  statusText: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: 'rgba(255,255,255,0.8)' },
+
+  wordSelectorWrapper: { position: 'absolute', top: 126, left: 0, right: 0 },
   wordSelectorContent: { paddingHorizontal: 16, gap: 8 },
   wordChip: {
     backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 20,
@@ -195,20 +351,14 @@ const styles = StyleSheet.create({
   wordChipTextActive: { color: '#fff' },
 
   resultCard: {
-    position: 'absolute',
-    bottom: 24,            // tab bar is hidden on ScanScreen, just clear home indicator
-    left: 16, right: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24, padding: 20,
-    shadowColor: '#5B2DC0',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15, shadowRadius: 20,
-    elevation: 12,
+    position: 'absolute', bottom: 24, left: 16, right: 16,
+    backgroundColor: '#FFFFFF', borderRadius: 24, padding: 20,
+    shadowColor: '#5B2DC0', shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15, shadowRadius: 20, elevation: 12,
   },
   resultCardHandle: {
     width: 36, height: 4, borderRadius: 2,
-    backgroundColor: '#E0D7F5',
-    alignSelf: 'center', marginBottom: 16,
+    backgroundColor: '#E0D7F5', alignSelf: 'center', marginBottom: 16,
   },
   resultCardRow: {
     flexDirection: 'row', alignItems: 'center',
@@ -219,26 +369,22 @@ const styles = StyleSheet.create({
   resultPack: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: '#9B87CC', marginTop: 1 },
   pronunciationBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#5B2DC0',
-    alignItems: 'center', justifyContent: 'center', marginLeft: 12,
+    backgroundColor: '#5B2DC0', alignItems: 'center', justifyContent: 'center', marginLeft: 12,
   },
   factBox: {
     flexDirection: 'row', backgroundColor: '#F0EBFF',
-    borderRadius: 14, padding: 12, gap: 8,
-    marginBottom: 16, alignItems: 'flex-start',
+    borderRadius: 14, padding: 12, gap: 8, marginBottom: 16, alignItems: 'flex-start',
   },
   factEmoji: { fontSize: 16, marginTop: 1 },
   factText: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#4B3D7A', flex: 1, lineHeight: 20 },
   cardActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   dismissBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#F0EBFF',
-    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center',
   },
   saveBtn: {
     flexDirection: 'row', backgroundColor: '#5B2DC0',
-    borderRadius: 24, paddingHorizontal: 20, paddingVertical: 10,
-    alignItems: 'center', gap: 6,
+    borderRadius: 24, paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center', gap: 6,
   },
   saveBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 15, color: '#fff' },
 });
