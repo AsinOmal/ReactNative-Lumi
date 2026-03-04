@@ -74,14 +74,15 @@ export const ScanScreen = () => {
     if (!cameraRef.current || mode !== 'scan' || isScanning.current) return;
     isScanning.current = true;
     try {
-      const snapshot = await cameraRef.current.takeSnapshot({
-        quality: 60,
-      });
+      const snapshot = await cameraRef.current.takeSnapshot({ quality: 60 });
+      console.log('[ScanScreen] 📸 snapshot path:', snapshot.path);
       const text = await recognizeTextInImage(snapshot.path);
+      console.log('[ScanScreen] 📝 text length:', text.length, '| first 80:', text.slice(0, 80));
       const matched = matchWord(text, FRUITS_WORDS);
+      console.log('[ScanScreen] 🎯 matched:', matched);
       setDetectedWord(matched);
-    } catch {
-      // Ignore snapshot/OCR errors silently
+    } catch (e) {
+      console.warn('[ScanScreen] ❌ OCR error:', e);
     } finally {
       isScanning.current = false;
     }
