@@ -16,7 +16,8 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
 import { SyllablePlayer } from '../components/ar/SyllablePlayer';
-import { matchWord } from '../utils/wordMatcher';
+import { SpellCorrectionBadge } from '../components/ar/SpellCorrectionBadge';
+import { matchWord, MatchResult } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { MODEL_REGISTRY, getModel } from '../utils/modelRegistry';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -53,7 +54,7 @@ export const ScanScreen = () => {
   // ── State
   const [mode, setMode] = useState<Mode>('scan');
   const [activeWord, setActiveWord] = useState<string>('apple');
-  const [detectedWord, setDetectedWord] = useState<string | null>(null);
+  const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
@@ -62,6 +63,10 @@ export const ScanScreen = () => {
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
   const [isScreenFocused, setIsScreenFocused] = useState(true);
+  // Debounce: word must appear in 2 consecutive frames before triggering
+  const lastCandidateRef = useRef<string | null>(null);
+  const consecutiveCountRef = useRef(0);
+  const REQUIRED_CONSECUTIVE = 2;
 
   // ── Stop camera & OCR when navigating away from this screen ───────────────
   useFocusEffect(
@@ -113,7 +118,25 @@ export const ScanScreen = () => {
       const snapshot = await cameraRef.current.takePhoto();
       const text = await recognizeTextInImage(snapshot.path);
       const matched = matchWord(text, ALL_SUPPORTED_WORDS);
-      setDetectedWord(matched);
+
+      // ── Consecutive frame debounce ────────────────────────────────────
+      // A word must be detected in REQUIRED_CONSECUTIVE frames in a row
+      // before we accept it. This filters out transient background text.
+      if (matched?.word === lastCandidateRef.current) {
+        consecutiveCountRef.current += 1;
+      } else {
+        lastCandidateRef.current = matched?.word ?? null;
+        consecutiveCountRef.current = matched ? 1 : 0;
+      }
+
+      if (
+        matched &&
+        consecutiveCountRef.current >= REQUIRED_CONSECUTIVE
+      ) {
+        setMatchResult(matched);
+      } else if (!matched) {
+        setMatchResult(null);
+      }
     } catch {
       // Silently ignore — camera unavailable when backgrounded/locked
     } finally {
@@ -133,17 +156,17 @@ export const ScanScreen = () => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleViewInAR = useCallback((word?: string) => {
-    const target = word ?? detectedWord ?? activeWord;
+    const target = word ?? matchResult?.word ?? activeWord;
     setActiveWord(target);
     setSceneKey(k => k + 1);
     setModelLoaded(false);
     cardAnim.setValue(400);
     setMode('ar');
-  }, [detectedWord, activeWord]);
+  }, [matchResult, activeWord]);
 
   const handleBackToScan = useCallback(() => {
     setMode('scan');
-    setDetectedWord(null);
+    setMatchResult(null);
     setModelLoaded(false);
     cardAnim.setValue(400);
   }, []);
@@ -206,7 +229,7 @@ export const ScanScreen = () => {
 
         {/* OCR scanning reticle + detected word chip */}
         <OCROverlay
-          detectedWord={detectedWord}
+          detectedWord={matchResult?.word ?? null}
           onViewInAR={() => handleViewInAR()}
         />
 
@@ -303,6 +326,13 @@ export const ScanScreen = () => {
         </View>
         {/* Pronunciation + syllable chips */}
         <SyllablePlayer entry={getModel(activeWord)} />
+        {/* Spell correction badge — only shows on Levenshtein distance=2 matches */}
+        {matchResult?.isCorrection && (
+          <SpellCorrectionBadge
+            scannedAs={matchResult.scannedAs}
+            correct={matchResult.word}
+          />
+        )}
         <View style={styles.factBox}>
           <Text style={styles.factText}>{fact}</Text>
         </View>

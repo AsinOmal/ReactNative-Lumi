@@ -1,22 +1,27 @@
 /**
  * wordMatcher.ts
- * Matches a raw OCR text string against a list of known pack words.
+ * Matches a raw OCR text string against a list of known words.
  *
- * Strategy:
- *  1. Exact match (case-insensitive, trimmed)
- *  2. Levenshtein distance ≤ 1 (single typo / misread character tolerance)
+ * Strategy (two-pass to avoid fuzzy false positives):
+ *  Pass 1 — Scan ALL tokens for an exact match first.
+ *  Pass 2 — Only if no exact match found, scan ALL tokens for Levenshtein ≤ 2.
  *
- * Returns the canonical matched word or null.
+ * This ensures that background text like "brave" doesn't trip a distance-2
+ * match to "grape" if the real word "apple" is also in the frame.
+ *
+ * Levenshtein thresholds:
+ *   distance = 0   → exact match           → isCorrection: false
+ *   distance = 1   → OCR camera noise      → isCorrection: false (silent)
+ *   distance = 2   → human misspelling     → isCorrection: true  (show badge)
  */
 
 /** Compute Levenshtein edit distance between two strings */
 function levenshtein(a: string, b: string): number {
   const m = a.length;
   const n = b.length;
-  // Early exits
   if (m === 0) return n;
   if (n === 0) return m;
-  if (Math.abs(m - n) > 2) return 99; // can't be ≤ 1 if length diff > 2
+  if (Math.abs(m - n) > 3) return 99; // can't be ≤ 2 if length diff > 3
 
   const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
     Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
@@ -33,36 +38,55 @@ function levenshtein(a: string, b: string): number {
   return dp[m][n];
 }
 
+/** Result returned from matchWord */
+export interface MatchResult {
+  word: string;          // canonical matched word, e.g. "apple"
+  scannedAs: string;     // what OCR actually read, e.g. "aple"
+  isCorrection: boolean; // true when distance === 2 (human misspelling)
+}
+
 /**
- * Extract individual words from an OCR result string and try to match
- * any of them against the pack word list.
+ * Two-pass word match against the known word list.
  *
- * @param ocrText Raw string from ML Kit text recognition
- * @param packWords Lowercase canonical words from the active pack
- * @returns The matched canonical word, or null
+ * @param ocrText   Raw string from OCR
+ * @param packWords Lowercase canonical words to match against
+ * @returns MatchResult or null if nothing matched
  */
 export function matchWord(
   ocrText: string,
   packWords: string[],
-): string | null {
+): MatchResult | null {
   if (!ocrText?.trim()) return null;
 
-  // Split recognized text into individual tokens (letters only)
   const tokens = ocrText
     .toLowerCase()
     .split(/[\s\n,.!?;:()\[\]{}"']+/)
     .map(t => t.replace(/[^a-z]/g, ''))
-    .filter(t => t.length >= 3); // ignore very short tokens
+    .filter(t => t.length >= 3);
 
+  // ── Pass 1: Exact match across ALL tokens ─────────────────────────────────
   for (const token of tokens) {
-    // 1. Exact match
-    if (packWords.includes(token)) return token;
-
-    // 2. Levenshtein ≤ 1 (only for words of similar length)
-    for (const word of packWords) {
-      if (levenshtein(token, word) <= 1) return word;
+    if (packWords.includes(token)) {
+      return { word: token, scannedAs: token, isCorrection: false };
     }
   }
 
-  return null;
+  // ── Pass 2: Levenshtein ≤ 2 across ALL tokens (only if no exact match) ───
+  // Collect all fuzzy matches, then pick the one with the smallest distance.
+  // This avoids returning the first fuzzy hit when a better match exists.
+  let best: { result: MatchResult; dist: number } | null = null;
+
+  for (const token of tokens) {
+    for (const word of packWords) {
+      const dist = levenshtein(token, word);
+      if (dist <= 2 && (best === null || dist < best.dist)) {
+        best = {
+          result: { word, scannedAs: token, isCorrection: dist === 2 },
+          dist,
+        };
+      }
+    }
+  }
+
+  return best?.result ?? null;
 }

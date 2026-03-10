@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -15,19 +16,28 @@ interface OCROverlayProps {
 
 /**
  * OCROverlay — renders on top of the camera view during Scan Mode.
- * Shows a scanning reticle and pulses when a word is matched.
+ *
+ * The reticle box dimensions (70% × 30% of screen) deliberately match
+ * the center-crop zone in LumiVisionOCR.swift so what's inside the box
+ * is exactly what the OCR engine reads — nothing outside is processed.
  */
 export const OCROverlay: React.FC<OCROverlayProps> = ({ detectedWord, onViewInAR }) => {
+  const { width, height } = useWindowDimensions();
+
+  // Match the Swift crop: 70% width × 30% height of the captured frame.
+  const RETICLE_W = width * 0.70;
+  const RETICLE_H = height * 0.30;
+
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const chipAnim = useRef(new Animated.Value(0)).current;
+  const chipAnim = useRef(new Animated.Value(60)).current;
   const prevWord = useRef<string | null>(null);
 
-  // Pulse the reticle continuously
+  // Subtle pulse on the reticle border
   useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.15, duration: 900, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.012, duration: 1000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
       ]),
     );
     pulse.start();
@@ -54,19 +64,43 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({ detectedWord, onViewInAR
   return (
     <View style={styles.overlay} pointerEvents="box-none">
 
-      {/* Scanning reticle */}
-      <View style={styles.reticleContainer}>
-        <Animated.View style={[styles.reticleOuter, { transform: [{ scale: pulseAnim }] }]}>
-          {/* Corner brackets */}
-          <View style={[styles.corner, styles.cornerTL]} />
-          <View style={[styles.corner, styles.cornerTR]} />
-          <View style={[styles.corner, styles.cornerBL]} />
-          <View style={[styles.corner, styles.cornerBR]} />
-        </Animated.View>
-        <Text style={styles.reticleHint}>
-          {detectedWord ? '✓ Word found!' : 'Point at a fruit word…'}
-        </Text>
+      {/* Dark vignette outside the scan zone */}
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        {/* Top mask */}
+        <View style={[styles.mask, { height: (height - RETICLE_H) / 2 }]} />
+        {/* Middle row: left mask | scan zone | right mask */}
+        <View style={{ flexDirection: 'row', height: RETICLE_H }}>
+          <View style={[styles.mask, { flex: 1 }]} />
+          {/* The transparent window — exactly the scan zone */}
+          <View style={{ width: RETICLE_W }} />
+          <View style={[styles.mask, { flex: 1 }]} />
+        </View>
+        {/* Bottom mask */}
+        <View style={[styles.mask, { flex: 1 }]} />
       </View>
+
+      {/* Reticle border (corner brackets) centered on screen */}
+      <Animated.View
+        style={[
+          styles.reticle,
+          {
+            width: RETICLE_W,
+            height: RETICLE_H,
+            transform: [{ scale: pulseAnim }],
+          },
+        ]}
+        pointerEvents="none"
+      >
+        <View style={[styles.corner, styles.cornerTL]} />
+        <View style={[styles.corner, styles.cornerTR]} />
+        <View style={[styles.corner, styles.cornerBL]} />
+        <View style={[styles.corner, styles.cornerBR]} />
+      </Animated.View>
+
+      {/* Hint text just below the reticle */}
+      <Text style={[styles.reticleHint, { marginTop: RETICLE_H / 2 + 16 }]}>
+        {detectedWord ? '✓ Word found!' : 'Point the word inside the box'}
+      </Text>
 
       {/* Detected word chip + AR button */}
       {detectedWord && (
@@ -90,7 +124,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({ detectedWord, onViewInAR
   );
 };
 
-const CORNER_SIZE = 22;
+const CORNER_SIZE = 24;
 const CORNER_THICKNESS = 3;
 
 const styles = StyleSheet.create({
@@ -99,57 +133,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  // Reticle
-  reticleContainer: {
-    alignItems: 'center',
-    gap: 16,
+  // Semi-transparent mask for areas outside scan zone
+  mask: {
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
   },
-  reticleOuter: {
-    width: 200,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+  // Reticle border box
+  reticle: {
+    position: 'absolute',
+    borderRadius: 12,
   },
   corner: {
     position: 'absolute',
     width: CORNER_SIZE,
     height: CORNER_SIZE,
-    borderColor: 'rgba(138, 92, 246, 0.9)',
+    borderColor: 'rgba(138, 92, 246, 0.95)',
   },
-  cornerTL: {
-    top: 0, left: 0,
-    borderTopWidth: CORNER_THICKNESS,
-    borderLeftWidth: CORNER_THICKNESS,
-    borderTopLeftRadius: 4,
-  },
-  cornerTR: {
-    top: 0, right: 0,
-    borderTopWidth: CORNER_THICKNESS,
-    borderRightWidth: CORNER_THICKNESS,
-    borderTopRightRadius: 4,
-  },
-  cornerBL: {
-    bottom: 0, left: 0,
-    borderBottomWidth: CORNER_THICKNESS,
-    borderLeftWidth: CORNER_THICKNESS,
-    borderBottomLeftRadius: 4,
-  },
-  cornerBR: {
-    bottom: 0, right: 0,
-    borderBottomWidth: CORNER_THICKNESS,
-    borderRightWidth: CORNER_THICKNESS,
-    borderBottomRightRadius: 4,
-  },
+  cornerTL: { top: 0, left: 0, borderTopWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderTopLeftRadius: 6 },
+  cornerTR: { top: 0, right: 0, borderTopWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderTopRightRadius: 6 },
+  cornerBL: { bottom: 0, left: 0, borderBottomWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderBottomLeftRadius: 6 },
+  cornerBR: { bottom: 0, right: 0, borderBottomWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderBottomRightRadius: 6 },
+
   reticleHint: {
+    position: 'absolute',
     fontFamily: 'Fredoka-Regular',
     fontSize: 14,
-    color: 'rgba(255,255,255,0.75)',
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
   },
 
-  // Detected word row
+  // Detected word chip + AR button row
   detectedRow: {
     position: 'absolute',
     bottom: 130,
