@@ -2,9 +2,11 @@
  * SyllablePlayer.tsx
  *
  * Displays a word as tappable syllable chips (e.g. [Ap] · [ple]).
- * The 🔊 button plays the full-word pronunciation audio via expo-av.
- * Tapping a chip triggers a brief pulse animation (visual feedback only —
- * full per-syllable audio is a stretch goal requiring separate audio clips).
+ * The 🔊 button plays the full-word pronunciation audio via react-native-sound.
+ * Tapping a chip triggers a brief spring-pulse animation.
+ *
+ * Audio files must be copied to the iOS main bundle.
+ * See: ios/Lumi/Base.lproj or drag-drop into Xcode target.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,92 +17,86 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { Audio } from 'expo-av';
+import Sound from 'react-native-sound';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { ModelEntry } from '../../utils/modelRegistry';
+
+// Allow audio to play even when the iPhone silent switch is on
+Sound.setCategory('Playback');
 
 interface Props {
   entry: ModelEntry | null;
 }
 
 export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const soundRef = useRef<Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSyllable, setActiveSyllable] = useState<number | null>(null);
+  const chipScales = useRef<Animated.Value[]>([]);
 
   // ── Load audio whenever the word changes ──────────────────────────────────
   useEffect(() => {
-    let mounted = true;
+    // Cleanup previous sound before loading new one
+    if (soundRef.current) {
+      soundRef.current.release();
+      soundRef.current = null;
+    }
+    setIsPlaying(false);
+    setActiveSyllable(null);
 
-    const loadSound = async () => {
-      // Unload previous sound before loading new one
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
+    if (!entry?.audio) return;
+
+    // react-native-sound loads files by name from the app's main bundle.
+    // The .mp3 files must be added to the Xcode target's "Copy Bundle Resources".
+    const sound = new Sound(entry.audio, Sound.MAIN_BUNDLE, (error) => {
+      if (!error) {
+        soundRef.current = sound;
       }
-      if (!entry?.audio) return;
+    });
 
-      try {
-        const { sound } = await Audio.Sound.createAsync(entry.audio, {
-          shouldPlay: false,
-        });
-        if (mounted) {
-          soundRef.current = sound;
-          sound.setOnPlaybackStatusUpdate(status => {
-            if (status.isLoaded && status.didJustFinish) {
-              setIsPlaying(false);
-              setActiveSyllable(null);
-            }
-          });
-        } else {
-          await sound.unloadAsync(); // mounted check too late
-        }
-      } catch {
-        // Audio load failure is non-fatal
-      }
-    };
-
-    loadSound();
     return () => {
-      mounted = false;
+      sound.release();
+      soundRef.current = null;
     };
   }, [entry?.audio]);
 
   // Unload on unmount
   useEffect(() => {
     return () => {
-      soundRef.current?.unloadAsync();
+      soundRef.current?.release();
     };
   }, []);
 
   // ── Play full word ────────────────────────────────────────────────────────
-  const playWord = useCallback(async () => {
-    if (!soundRef.current || isPlaying) return;
-    try {
-      await soundRef.current.setPositionAsync(0);
-      await soundRef.current.playAsync();
+  const playWord = useCallback(() => {
+    const sound = soundRef.current;
+    if (!sound || isPlaying) return;
+
+    sound.stop(() => {
+      sound.setCurrentTime(0);
       setIsPlaying(true);
-    } catch {
-      setIsPlaying(false);
-    }
+      sound.play(() => {
+        setIsPlaying(false);
+        setActiveSyllable(null);
+      });
+    });
   }, [isPlaying]);
 
-  // ── Syllable chip tap — pulse animation + play full word ─────────────────
-  const chipScales = useRef<Animated.Value[]>([]);
-
+  // ── Syllable chip tap — pulse animation + play ────────────────────────────
   const onChipPress = useCallback(
     (index: number) => {
-      // Animate the tapped chip
-      if (!chipScales.current[index]) return;
+      const scale = chipScales.current[index];
+      if (!scale) return;
+
       setActiveSyllable(index);
       Animated.sequence([
-        Animated.spring(chipScales.current[index], {
+        Animated.spring(scale, {
           toValue: 1.2,
           useNativeDriver: true,
           tension: 200,
           friction: 5,
         }),
-        Animated.spring(chipScales.current[index], {
+        Animated.spring(scale, {
           toValue: 1,
           useNativeDriver: true,
           tension: 200,
@@ -108,15 +104,16 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         }),
       ]).start();
 
-      playWord(); // plays the full word for now
+      playWord();
     },
     [playWord],
   );
 
   if (!entry) return null;
 
-  // Ensure we have an Animated.Value per syllable
-  const syllables = entry.syllables;
+  const { syllables } = entry;
+
+  // Ensure we have an Animated.Value per syllable (stable across renders)
   while (chipScales.current.length < syllables.length) {
     chipScales.current.push(new Animated.Value(1));
   }
@@ -136,7 +133,7 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         />
       </TouchableOpacity>
 
-      {/* Syllable chips */}
+      {/* Syllable chips with · separator */}
       <View style={styles.chipsRow}>
         {syllables.map((syllable, i) => (
           <React.Fragment key={i}>
@@ -145,7 +142,7 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
                 style={[
                   styles.chip,
                   activeSyllable === i && styles.chipActive,
-                  { transform: [{ scale: chipScales.current[i] ?? new Animated.Value(1) }] },
+                  { transform: [{ scale: chipScales.current[i] || new Animated.Value(1) }] },
                 ]}
               >
                 <Text style={[styles.chipText, activeSyllable === i && styles.chipTextActive]}>
@@ -153,7 +150,6 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
                 </Text>
               </Animated.View>
             </TouchableOpacity>
-            {/* Separator dot between chips (not after the last one) */}
             {i < syllables.length - 1 && (
               <Text style={styles.dot}>·</Text>
             )}
@@ -172,6 +168,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginTop: 4,
+    marginBottom: 4,
   },
   playBtn: {
     width: 36,

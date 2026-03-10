@@ -26,22 +26,22 @@ export interface ModelEntry {
   scale: [number, number, number];
   position: [number, number, number]; // AR world position [x, y, z]
   syllables: string[];                // e.g. ['Ap', 'ple']
-  audio: number;                      // require('../assets/audio/apple.mp3')
+  audio: string;                      // filename in iOS main bundle, e.g. 'apple.mp3'
 }
 
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // ── Fruits Pack ───────────────────────────────────────────────────────────
   //                                                         scale                            position   syllables                          audio
-  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.0037, 0.0037, 0.0037],   position: [0, 0.0, -1.0],  syllables: ['Ap', 'ple'],              audio: require('../assets/audio/apple.mp3') },
-  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.00065, 0.00065, 0.00065], position: [0, 0.0, -1.0], syllables: ['Ba', 'na', 'na'],         audio: require('../assets/audio/banana.mp3') },
-  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050],      position: [0, 0.0, -1.0],  syllables: ['Cher', 'ry'],             audio: require('../assets/audio/cherry.mp3') },
-  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.012, 0.012, 0.012],      position: [0, 0.0, -1.0],  syllables: ['Grape'],                  audio: require('../assets/audio/grape.mp3') },
-  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.038, 0.038, 0.038],      position: [0, 0.0, -1.0],  syllables: ['Lem', 'on'],              audio: require('../assets/audio/lemon.mp3') },
-  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.20,  0.20,  0.20 ],      position: [0, 0.0, -0.35], syllables: ['Man', 'go'],              audio: require('../assets/audio/mango.mp3') },
-  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.20,  0.20,  0.20 ],      position: [0, 0.0, -0.35], syllables: ['Or', 'ange'],             audio: require('../assets/audio/orange.mp3') },
-  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [3.5,   3.5,   3.5  ],      position: [0, 0.0, -0.8],  syllables: ['Pine', 'ap', 'ple'],      audio: require('../assets/audio/pineapple.mp3') },
-  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.60,  0.60,  0.60 ],      position: [0, 0.0, -1.0],  syllables: ['Straw', 'ber', 'ry'],     audio: require('../assets/audio/strawberry.mp3') },
-  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.052, 0.052, 0.052],      position: [0, 0.0, -1.0],  syllables: ['Wa', 'ter', 'mel', 'on'], audio: require('../assets/audio/watermelon.mp3') },
+  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.0037, 0.0037, 0.0037],   position: [0, 0.0, -1.0],  syllables: ['Ap', 'ple'],              audio: 'apple.mp3' },
+  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.00065, 0.00065, 0.00065], position: [0, 0.0, -1.0], syllables: ['Ba', 'na', 'na'],         audio: 'banana.mp3' },
+  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050],      position: [0, 0.0, -1.0],  syllables: ['Cher', 'ry'],             audio: 'cherry.mp3' },
+  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.012, 0.012, 0.012],      position: [0, 0.0, -1.0],  syllables: ['Grape'],                  audio: 'grape.mp3' },
+  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.038, 0.038, 0.038],      position: [0, 0.0, -1.0],  syllables: ['Lem', 'on'],              audio: 'lemon.mp3' },
+  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.20,  0.20,  0.20 ],      position: [0, 0.0, -0.35], syllables: ['Man', 'go'],              audio: 'mango.mp3' },
+  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.20,  0.20,  0.20 ],      position: [0, 0.0, -0.35], syllables: ['Or', 'ange'],             audio: 'orange.mp3' },
+  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [3.5,   3.5,   3.5  ],      position: [0, 0.0, -0.8],  syllables: ['Pine', 'ap', 'ple'],      audio: 'pineapple.mp3' },
+  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.60,  0.60,  0.60 ],      position: [0, 0.0, -1.0],  syllables: ['Straw', 'ber', 'ry'],     audio: 'strawberry.mp3' },
+  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.052, 0.052, 0.052],      position: [0, 0.0, -1.0],  syllables: ['Wa', 'ter', 'mel', 'on'], audio: 'watermelon.mp3' },
 };
 
 /** Returns the model entry for a given word, or null if not found. */
