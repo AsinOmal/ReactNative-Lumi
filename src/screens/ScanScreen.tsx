@@ -298,13 +298,12 @@ export const ScanScreen = () => {
             <Text style={styles.resultWord}>
               {activeWord.charAt(0).toUpperCase() + activeWord.slice(1)}
             </Text>
-            <Text style={styles.resultPack}>Fruits Pack 🍎</Text>
+            <Text style={styles.resultPack}>Fruits Pack</Text>
           </View>
         </View>
         {/* Pronunciation + syllable chips */}
         <SyllablePlayer entry={getModel(activeWord)} />
         <View style={styles.factBox}>
-          <Text style={styles.factEmoji}>💡</Text>
           <Text style={styles.factText}>{fact}</Text>
         </View>
         <View style={styles.cardActions}>
