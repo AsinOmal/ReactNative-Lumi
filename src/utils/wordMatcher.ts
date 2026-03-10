@@ -81,7 +81,7 @@ export function matchWord(
       const dist = levenshtein(token, word);
       if (dist <= 2 && (best === null || dist < best.dist)) {
         best = {
-          result: { word, scannedAs: token, isCorrection: dist === 2 },
+          result: { word, scannedAs: token, isCorrection: dist > 0 },
           dist,
         };
       }

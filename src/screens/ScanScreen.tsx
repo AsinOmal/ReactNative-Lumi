@@ -66,6 +66,9 @@ export const ScanScreen = () => {
   // Debounce: word must appear in 2 consecutive frames before triggering
   const lastCandidateRef = useRef<string | null>(null);
   const consecutiveCountRef = useRef(0);
+  // Stores MatchResult from the FIRST frame of the current streak so that
+  // isCorrection:true (misspelling) is not overwritten by a later exact read.
+  const firstCandidateResultRef = useRef<import('../utils/wordMatcher').MatchResult | null>(null);
   const REQUIRED_CONSECUTIVE = 2;
 
   // ── Stop camera & OCR when navigating away from this screen ───────────────
@@ -121,19 +124,18 @@ export const ScanScreen = () => {
 
       // ── Consecutive frame debounce ────────────────────────────────────
       // A word must be detected in REQUIRED_CONSECUTIVE frames in a row
-      // before we accept it. This filters out transient background text.
+      // before we accept it. We fire with the FIRST frame's MatchResult so
+      // that isCorrection:true is not lost if a later frame reads it exactly.
       if (matched?.word === lastCandidateRef.current) {
         consecutiveCountRef.current += 1;
       } else {
         lastCandidateRef.current = matched?.word ?? null;
         consecutiveCountRef.current = matched ? 1 : 0;
+        firstCandidateResultRef.current = matched; // capture first result of streak
       }
 
-      if (
-        matched &&
-        consecutiveCountRef.current >= REQUIRED_CONSECUTIVE
-      ) {
-        setMatchResult(matched);
+      if (matched && consecutiveCountRef.current >= REQUIRED_CONSECUTIVE) {
+        setMatchResult(firstCandidateResultRef.current ?? matched);
       } else if (!matched) {
         setMatchResult(null);
       }
