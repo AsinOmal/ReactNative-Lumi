@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
 import { SyllablePlayer } from '../components/ar/SyllablePlayer';
@@ -61,6 +61,23 @@ export const ScanScreen = () => {
   const isScanning = useRef(false);
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
+
+  // ── Stop camera & OCR when navigating away from this screen ───────────────
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenFocused(true);
+      return () => {
+        // Screen is losing focus (navigating away) — stop OCR immediately
+        setIsScreenFocused(false);
+        if (scanTimerRef.current) {
+          clearInterval(scanTimerRef.current);
+          scanTimerRef.current = null;
+        }
+        isScanning.current = false;
+      };
+    }, []),
+  );
 
   // ── App State (stop camera when locked / backgrounded) ────────────────────
   useEffect(() => {
@@ -90,7 +107,7 @@ export const ScanScreen = () => {
   // Runs only in Scan mode when a camera is available.
 
   const runOCR = useCallback(async () => {
-    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive) return;
+    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive || !isScreenFocused) return;
     isScanning.current = true;
     try {
       const snapshot = await cameraRef.current.takePhoto();
@@ -102,16 +119,16 @@ export const ScanScreen = () => {
     } finally {
       isScanning.current = false;
     }
-  }, [mode, isAppActive]);
+  }, [mode, isAppActive, isScreenFocused]);
 
   useEffect(() => {
-    if (mode === 'scan' && isAppActive) {
+    if (mode === 'scan' && isAppActive && isScreenFocused) {
       scanTimerRef.current = setInterval(runOCR, SCAN_INTERVAL_MS);
     }
     return () => {
       if (scanTimerRef.current) clearInterval(scanTimerRef.current);
     };
-  }, [mode, isAppActive, runOCR]);
+  }, [mode, isAppActive, isScreenFocused, runOCR]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
