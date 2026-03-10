@@ -2472,9 +2472,10 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTImage
-  - RNSound (0.13.0):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
+  - RNSound (0.11.2):
+    - React-Core
+    - RNSound/Core (= 0.11.2)
+  - RNSound/Core (0.11.2):
     - React-Core
   - RNSVG (14.2.0):
     - React-Core
@@ -2807,7 +2808,7 @@ SPEC CHECKSUMS:
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
   RNGoogleSignin: b11289afb825c32c250272e4d92446f71091814e
   RNScreens: b8cead5eb79b58d78348094d62f154ffd163361d
-  RNSound: 831c69d22424f6a1d6927b9f3387197130573be1
+  RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
   RNVectorIcons: 433d2e7249acbcd2921118a2ea5f254cba798d31
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
