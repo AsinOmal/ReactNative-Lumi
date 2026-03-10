@@ -1,12 +1,9 @@
 /**
  * SyllablePlayer.tsx
  *
- * Displays a word as tappable syllable chips (e.g. [Ap] · [ple]).
- * The 🔊 button plays the full-word pronunciation audio via react-native-sound.
- * Tapping a chip triggers a brief spring-pulse animation.
- *
- * Audio files must be copied to the iOS main bundle.
- * See: ios/Lumi/Base.lproj or drag-drop into Xcode target.
+ * Shows the word broken into syllables as plain display text (e.g. Ap · ple).
+ * The 🔊 button plays the full word at normal speed.
+ * The "Slow" toggle plays at 0.5× speed so kids can hear each part clearly.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,14 +11,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
   StyleSheet,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { ModelEntry } from '../../utils/modelRegistry';
 
-// Allow audio to play even when the iPhone silent switch is on
+// Play even when iPhone silent switch is on
 Sound.setCategory('Playback');
 
 interface Props {
@@ -31,99 +27,50 @@ interface Props {
 export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
   const soundRef = useRef<Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [activeSyllable, setActiveSyllable] = useState<number | null>(null);
-  const chipScales = useRef<Animated.Value[]>([]);
+  const [slowMode, setSlowMode] = useState(false);
 
-  // ── Load audio whenever the word changes ──────────────────────────────────
+  // ── Load audio when word changes ─────────────────────────────────────────
   useEffect(() => {
-    // Cleanup previous sound before loading new one
     if (soundRef.current) {
       soundRef.current.release();
       soundRef.current = null;
     }
     setIsPlaying(false);
-    setActiveSyllable(null);
 
     if (!entry?.audio) return;
 
-    // react-native-sound loads files by name from the app's main bundle.
-    // The .mp3 files must be added to the Xcode target's "Copy Bundle Resources".
     const sound = new Sound(entry.audio, Sound.MAIN_BUNDLE, (error) => {
-      if (!error) {
-        soundRef.current = sound;
-      }
+      if (!error) soundRef.current = sound;
     });
 
-    return () => {
-      sound.release();
-      soundRef.current = null;
-    };
+    return () => { sound.release(); soundRef.current = null; };
   }, [entry?.audio]);
 
-  // Unload on unmount
-  useEffect(() => {
-    return () => {
-      soundRef.current?.release();
-    };
-  }, []);
+  useEffect(() => () => { soundRef.current?.release(); }, []);
 
-  // ── Play full word ────────────────────────────────────────────────────────
-  const playWord = useCallback(() => {
+  // ── Playback ──────────────────────────────────────────────────────────────
+  const play = useCallback(() => {
     const sound = soundRef.current;
     if (!sound || isPlaying) return;
 
     sound.stop(() => {
       sound.setCurrentTime(0);
+      sound.setSpeed(slowMode ? 0.5 : 1.0);
       setIsPlaying(true);
-      sound.play(() => {
-        setIsPlaying(false);
-        setActiveSyllable(null);
-      });
+      sound.play(() => setIsPlaying(false));
     });
-  }, [isPlaying]);
-
-  // ── Syllable chip tap — pulse animation + play ────────────────────────────
-  const onChipPress = useCallback(
-    (index: number) => {
-      const scale = chipScales.current[index];
-      if (!scale) return;
-
-      setActiveSyllable(index);
-      Animated.sequence([
-        Animated.spring(scale, {
-          toValue: 1.2,
-          useNativeDriver: true,
-          tension: 200,
-          friction: 5,
-        }),
-        Animated.spring(scale, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 200,
-          friction: 8,
-        }),
-      ]).start();
-
-      playWord();
-    },
-    [playWord],
-  );
+  }, [isPlaying, slowMode]);
 
   if (!entry) return null;
 
   const { syllables } = entry;
-
-  // Ensure we have an Animated.Value per syllable (stable across renders)
-  while (chipScales.current.length < syllables.length) {
-    chipScales.current.push(new Animated.Value(1));
-  }
 
   return (
     <View style={styles.container}>
       {/* 🔊 Play button */}
       <TouchableOpacity
         style={[styles.playBtn, isPlaying && styles.playBtnActive]}
-        onPress={playWord}
+        onPress={play}
         activeOpacity={0.7}
       >
         <Ionicons
@@ -133,29 +80,28 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         />
       </TouchableOpacity>
 
-      {/* Syllable chips with · separator */}
-      <View style={styles.chipsRow}>
+      {/* Syllable display — plain text, no buttons */}
+      <View style={styles.syllablesRow}>
         {syllables.map((syllable, i) => (
           <React.Fragment key={i}>
-            <TouchableOpacity onPress={() => onChipPress(i)} activeOpacity={0.75}>
-              <Animated.View
-                style={[
-                  styles.chip,
-                  activeSyllable === i && styles.chipActive,
-                  { transform: [{ scale: chipScales.current[i] || new Animated.Value(1) }] },
-                ]}
-              >
-                <Text style={[styles.chipText, activeSyllable === i && styles.chipTextActive]}>
-                  {syllable}
-                </Text>
-              </Animated.View>
-            </TouchableOpacity>
+            <Text style={styles.syllableText}>{syllable}</Text>
             {i < syllables.length - 1 && (
               <Text style={styles.dot}>·</Text>
             )}
           </React.Fragment>
         ))}
       </View>
+
+      {/* Slow toggle */}
+      <TouchableOpacity
+        style={[styles.slowBtn, slowMode && styles.slowBtnActive]}
+        onPress={() => setSlowMode(prev => !prev)}
+        activeOpacity={0.75}
+      >
+        <Text style={[styles.slowBtnText, slowMode && styles.slowBtnTextActive]}>
+          🐢 Slow
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -166,9 +112,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: 10,
-    marginTop: 4,
-    marginBottom: 4,
+    marginTop: 6,
+    marginBottom: 2,
   },
   playBtn: {
     width: 36,
@@ -181,38 +128,41 @@ const styles = StyleSheet.create({
   playBtnActive: {
     backgroundColor: '#9B59B6',
   },
-  chipsRow: {
+  syllablesRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
+    gap: 5,
   },
-  chip: {
+  syllableText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 16,
+    color: '#5B2DC0',
+    letterSpacing: 0.5,
+  },
+  dot: {
+    fontSize: 18,
+    color: 'rgba(108, 74, 182, 0.35)',
+    fontWeight: 'bold',
+  },
+  slowBtn: {
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: 'rgba(108, 74, 182, 0.5)',
-    backgroundColor: 'rgba(108, 74, 182, 0.08)',
+    borderColor: 'rgba(108, 74, 182, 0.35)',
+    backgroundColor: 'transparent',
   },
-  chipActive: {
+  slowBtnActive: {
     backgroundColor: '#6C4AB6',
     borderColor: '#6C4AB6',
   },
-  chipText: {
+  slowBtnText: {
     fontFamily: 'Fredoka-Regular',
-    fontSize: 14,
-    color: '#5B2DC0',
-    letterSpacing: 0.3,
+    fontSize: 13,
+    color: '#6C4AB6',
   },
-  chipTextActive: {
+  slowBtnTextActive: {
     color: '#fff',
     fontFamily: 'Fredoka-SemiBold',
-  },
-  dot: {
-    fontSize: 16,
-    color: 'rgba(108, 74, 182, 0.4)',
-    fontWeight: 'bold',
-    marginHorizontal: -2,
   },
 });
