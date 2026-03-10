@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
 import { SyllablePlayer } from '../components/ar/SyllablePlayer';
@@ -20,7 +20,7 @@ import { SpellCorrectionBadge } from '../components/ar/SpellCorrectionBadge';
 import { matchWord, MatchResult } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { MODEL_REGISTRY, getModel } from '../utils/modelRegistry';
-import { recordScan, checkPerfectScan, getProgress } from '../utils/achievementStore';
+import { recordScan, removeScan, getProgress } from '../utils/achievementStore';
 import { Achievement } from '../utils/achievementRegistry';
 import { AchievementToast } from '../components/AchievementToast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -60,6 +60,7 @@ export const ScanScreen = () => {
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [isWordSaved, setIsWordSaved] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
   // Achievement toast queue
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
@@ -68,6 +69,8 @@ export const ScanScreen = () => {
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
   const [isScreenFocused, setIsScreenFocused] = useState(true);
+  const isFocused = useIsFocused(); // True native navigation focus state
+  
   // Debounce: word must appear in 2 consecutive frames before triggering
   const lastCandidateRef = useRef<string | null>(null);
   const consecutiveCountRef = useRef(0);
@@ -120,7 +123,9 @@ export const ScanScreen = () => {
   // Runs only in Scan mode when a camera is available.
 
   const runOCR = useCallback(async () => {
-    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive || !isScreenFocused) return;
+    // Hard block if not the active screen
+    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive || !isScreenFocused || !isFocused) return;
+    
     isScanning.current = true;
     try {
       const snapshot = await cameraRef.current.takePhoto();
@@ -152,22 +157,37 @@ export const ScanScreen = () => {
   }, [mode, isAppActive, isScreenFocused]);
 
   useEffect(() => {
-    if (mode === 'scan' && isAppActive && isScreenFocused) {
+    // Only set the interval if we are fully active and focused in scan mode
+    if (mode === 'scan' && isAppActive && isScreenFocused && isFocused) {
       scanTimerRef.current = setInterval(runOCR, SCAN_INTERVAL_MS);
+    } else {
+      // Clear immediately if focus is lost
+      if (scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+      }
     }
     return () => {
-      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
+      if (scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+      }
     };
-  }, [mode, isAppActive, isScreenFocused, runOCR]);
+  }, [mode, isAppActive, isScreenFocused, isFocused, runOCR]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  const handleViewInAR = useCallback((word?: string) => {
+  const handleViewInAR = useCallback(async (word?: string) => {
     const target = word ?? matchResult?.word ?? activeWord;
     setActiveWord(target);
     setSceneKey(k => k + 1);
     setModelLoaded(false);
     cardAnim.setValue(400);
+
+    // Check if word is already saved
+    const progress = await getProgress();
+    setIsWordSaved(progress.scannedWords.includes(target));
+
     setMode('ar');
   }, [matchResult, activeWord]);
 
@@ -179,16 +199,22 @@ export const ScanScreen = () => {
   }, []);
 
   const handleSaveWord = useCallback(async () => {
-    const isCorrection = matchResult?.isCorrection ?? false;
-    const progress = await getProgress();
-    const newAchievements = await recordScan(activeWord, isCorrection);
-    // Check perfect_scan separately (exact match)
-    const perfectScan = checkPerfectScan(isCorrection, progress.earnedIds);
-    const all = perfectScan ? [...newAchievements, perfectScan] : newAchievements;
-    if (all.length > 0) {
-      setAchievementQueue(prev => [...prev, ...all]);
+    if (isWordSaved) {
+      // Unsave logic: remove from storage and revert button state
+      setIsWordSaved(false);
+      await removeScan(activeWord);
+      return;
     }
-  }, [activeWord, matchResult]);
+    
+    // Save logic: Mark as saved immediately for UI responsiveness
+    setIsWordSaved(true);
+
+    const isCorrection = matchResult?.isCorrection ?? false;
+    const newAchievements = await recordScan(activeWord, isCorrection);
+    if (newAchievements.length > 0) {
+      setAchievementQueue(prev => [...prev, ...newAchievements]);
+    }
+  }, [activeWord, matchResult, isWordSaved]);
 
   const handleModelLoaded = useCallback(() => {
     setModelLoaded(true);
@@ -359,9 +385,15 @@ export const ScanScreen = () => {
           <TouchableOpacity style={styles.dismissBtn} onPress={dismissCard}>
             <Ionicons name="close" size={20} color="#5B2DC0" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveWord}>
-            <Ionicons name="star" size={18} color="#fff" />
-            <Text style={styles.saveBtnText}>Save Word</Text>
+          <TouchableOpacity
+            style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}
+            onPress={handleSaveWord}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="star" size={18} color={isWordSaved ? '#A78BFA' : '#fff'} />
+            <Text style={[styles.saveBtnText, isWordSaved && styles.saveBtnTextDisabled]}>
+              {isWordSaved ? 'Saved' : 'Save Word'}
+            </Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -464,8 +496,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center',
   },
   saveBtn: {
-    flexDirection: 'row', backgroundColor: '#5B2DC0',
-    borderRadius: 24, paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center', gap: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#5B2DC0',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
   },
-  saveBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 15, color: '#fff' },
+  saveBtnDisabled: {
+    backgroundColor: 'rgba(91, 45, 192, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.4)',
+    borderWidth: 1,
+  },
+  saveBtnText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 15,
+    color: '#fff',
+  },
+  saveBtnTextDisabled: {
+    color: '#A78BFA',
+  },
 });

@@ -52,9 +52,14 @@ export const HomeScreen = () => {
                 Hello, <Text style={styles.greetingName}>{firstName}!</Text>
               </Text>
             </View>
-            <TouchableOpacity style={styles.gearBtn}>
-              <Text style={styles.gearIcon}>⚙️</Text>
-            </TouchableOpacity>
+            <View style={styles.actionsRow}>
+              <TouchableOpacity style={styles.gearBtn} onPress={() => (navigation as any).navigate('Achievements')}>
+                <Text style={styles.gearIcon}>🏆</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.gearBtn}>
+                <Text style={styles.gearIcon}>⚙️</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* ── Scan Banner ── */}
@@ -134,6 +139,11 @@ const styles = StyleSheet.create({
   },
   greetingName: {
     color: '#5B2DC0',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   gearBtn: { padding: 4 },
   gearIcon: { fontSize: 22 },

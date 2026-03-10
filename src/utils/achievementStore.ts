@@ -38,23 +38,39 @@ async function setJSON<T>(key: string, value: T): Promise<void> {
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
+export interface EarnedAchievement {
+  id: string;
+  unlockedAt: number;
+  triggerWord: string;
+}
+
 export interface AchievementProgress {
   scannedWords: string[];
   spellCorrections: number;
   sessionCount: number;
-  earnedIds: string[];
+  earned: EarnedAchievement[];
 }
 
 /** Read current progress from storage */
 export async function getProgress(): Promise<AchievementProgress> {
-  const [scannedWords, spellCorrections, sessionCount, earnedIds] =
+  const [scannedWords, spellCorrections, sessionCount, earnedRaw] =
     await Promise.all([
       getJSON<string[]>(KEYS.scannedWords, []),
       getJSON<number>(KEYS.spellCorrections, 0),
       getJSON<number>(KEYS.sessionCount, 0),
-      getJSON<string[]>(KEYS.earnedAchievements, []),
+      // Read raw array to handle migration
+      getJSON<any[]>(KEYS.earnedAchievements, []),
     ]);
-  return { scannedWords, spellCorrections, sessionCount, earnedIds };
+
+  // Migrate any old 'string[]' IDs to metadata objects safely
+  const earned: EarnedAchievement[] = earnedRaw.map(item => {
+    if (typeof item === 'string') {
+      return { id: item, unlockedAt: Date.now(), triggerWord: 'unknown' };
+    }
+    return item as EarnedAchievement;
+  });
+
+  return { scannedWords, spellCorrections, sessionCount, earned };
 }
 
 /**
@@ -92,22 +108,40 @@ export async function recordScan(
     scannedWords: newWords,
     spellCorrections: newCorrections,
     sessionCount: newSessionCount,
-    earnedIds: progress.earnedIds,
+    earned: progress.earned,
   };
 
-  const newlyEarned = checkAchievements(updated).filter(
-    a => !progress.earnedIds.includes(a.id),
+  const newlyEarned = checkAchievements(updated, isCorrection).filter(
+    a => !progress.earned.some(e => e.id === a.id),
   );
 
   if (newlyEarned.length > 0) {
+    const now = Date.now();
+    const newEarnedObjects: EarnedAchievement[] = newlyEarned.map(a => ({
+      id: a.id,
+      unlockedAt: now,
+      triggerWord: word,
+    }));
+
     const updatedEarned = [
-      ...progress.earnedIds,
-      ...newlyEarned.map(a => a.id),
+      ...progress.earned,
+      ...newEarnedObjects,
     ];
     await setJSON(KEYS.earnedAchievements, updatedEarned);
   }
 
   return newlyEarned;
+}
+
+/**
+ * Remove a word from saved progress (unsave).
+ * We do not retract achievements or spell correction counts, 
+ * just the word itself from the scannedWords list.
+ */
+export async function removeScan(word: string): Promise<void> {
+  const progress = await getProgress();
+  const nextWords = progress.scannedWords.filter(w => w !== word);
+  await setJSON(KEYS.scannedWords, nextWords);
 }
 
 /** Reset session counter (call when app comes to foreground) */
@@ -117,7 +151,7 @@ export async function resetSessionCount(): Promise<void> {
 
 // ── Achievement Criteria ──────────────────────────────────────────────────────
 
-function checkAchievements(p: AchievementProgress): Achievement[] {
+function checkAchievements(p: AchievementProgress, isCorrection: boolean): Achievement[] {
   const earned: Achievement[] = [];
   const totalWords = p.scannedWords.length;
   const add = (id: string) => {
@@ -131,18 +165,8 @@ function checkAchievements(p: AchievementProgress): Achievement[] {
   if (totalWords >= 10) add('pack_master');
 
   if (p.spellCorrections >= 3)       add('spell_hero');
-  if (!p.scannedWords.length || true) { /* perfect_scan checked per-event */ }
+  if (!isCorrection)                 add('perfect_scan');
   if (p.sessionCount >= 3)           add('speed_scanner');
 
   return earned;
-}
-
-/** Check perfect_scan separately (exact match, no correction) */
-export function checkPerfectScan(
-  isCorrection: boolean,
-  earnedIds: string[],
-): Achievement | null {
-  if (isCorrection) return null;
-  if (earnedIds.includes('perfect_scan')) return null;
-  return ACHIEVEMENTS.find(a => a.id === 'perfect_scan') ?? null;
 }

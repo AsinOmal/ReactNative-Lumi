@@ -6,7 +6,11 @@ import { getApp } from '@react-native-firebase/app';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { LoginScreen } from '../screens/LoginScreen';
 import { MainTabNavigator } from './MainTabNavigator';
+import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { createUserIfNew } from '../services/userService';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();
@@ -43,7 +47,10 @@ export const AppRoutes = () => {
 
   return (
     <NavigationContainer>
-      <MainTabNavigator />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+        <Stack.Screen name="Achievements" component={AchievementsScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
