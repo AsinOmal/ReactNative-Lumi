@@ -20,6 +20,9 @@ import { SpellCorrectionBadge } from '../components/ar/SpellCorrectionBadge';
 import { matchWord, MatchResult } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { MODEL_REGISTRY, getModel } from '../utils/modelRegistry';
+import { recordScan, checkPerfectScan, getProgress } from '../utils/achievementStore';
+import { Achievement } from '../utils/achievementRegistry';
+import { AchievementToast } from '../components/AchievementToast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -58,6 +61,8 @@ export const ScanScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
+  // Achievement toast queue
+  const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
 
   const isScanning = useRef(false);
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -172,6 +177,18 @@ export const ScanScreen = () => {
     setModelLoaded(false);
     cardAnim.setValue(400);
   }, []);
+
+  const handleSaveWord = useCallback(async () => {
+    const isCorrection = matchResult?.isCorrection ?? false;
+    const progress = await getProgress();
+    const newAchievements = await recordScan(activeWord, isCorrection);
+    // Check perfect_scan separately (exact match)
+    const perfectScan = checkPerfectScan(isCorrection, progress.earnedIds);
+    const all = perfectScan ? [...newAchievements, perfectScan] : newAchievements;
+    if (all.length > 0) {
+      setAchievementQueue(prev => [...prev, ...all]);
+    }
+  }, [activeWord, matchResult]);
 
   const handleModelLoaded = useCallback(() => {
     setModelLoaded(true);
@@ -342,12 +359,20 @@ export const ScanScreen = () => {
           <TouchableOpacity style={styles.dismissBtn} onPress={dismissCard}>
             <Ionicons name="close" size={20} color="#5B2DC0" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.saveBtn}>
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveWord}>
             <Ionicons name="star" size={18} color="#fff" />
             <Text style={styles.saveBtnText}>Save Word</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
+
+      {/* Achievement unlock toast */}
+      <AchievementToast
+        queue={achievementQueue}
+        onDismissed={() =>
+          setAchievementQueue(prev => prev.slice(1))
+        }
+      />
     </View>
   );
 };
