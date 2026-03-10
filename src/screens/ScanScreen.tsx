@@ -15,9 +15,10 @@ import { Camera, useCameraDevice, useCameraPermission } from 'react-native-visio
 import { useNavigation } from '@react-navigation/native';
 import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
+import { SyllablePlayer } from '../components/ar/SyllablePlayer';
 import { matchWord } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
-import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { MODEL_REGISTRY, getModel } from '../utils/modelRegistry';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -282,10 +283,9 @@ export const ScanScreen = () => {
             </Text>
             <Text style={styles.resultPack}>Fruits Pack 🍎</Text>
           </View>
-          <TouchableOpacity style={styles.pronunciationBtn}>
-            <Ionicons name="volume-high" size={20} color="#fff" />
-          </TouchableOpacity>
         </View>
+        {/* Pronunciation + syllable chips */}
+        <SyllablePlayer entry={getModel(activeWord)} />
         <View style={styles.factBox}>
           <Text style={styles.factEmoji}>💡</Text>
           <Text style={styles.factText}>{fact}</Text>
