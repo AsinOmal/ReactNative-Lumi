@@ -2277,7 +2277,7 @@ PODS:
   - React-Mapbuffer (0.73.3):
     - glog
     - React-debug
-  - react-native-safe-area-context (4.14.1):
+  - react-native-safe-area-context (5.7.0):
     - React-Core
   - react-native-worklets-core (1.2.0):
     - React
@@ -2471,7 +2471,7 @@ PODS:
   - RNGoogleSignin (16.1.2):
     - GoogleSignIn (~> 9.0)
     - React-Core
-  - RNScreens (3.35.0):
+  - RNScreens (4.24.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -2788,7 +2788,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 6fad0fe14882fb6b1c32e5cc8a4bd3d33a8b6790
   React-logger: 026c4699c71b179283959f13583507a06099fbde
   React-Mapbuffer: 1733ee5eb07a2ab3b2f41dcdfcce0ed22951948e
-  react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
+  react-native-safe-area-context: e89848fc12d32ccca63d0d7d16dd96918d07c730
   react-native-worklets-core: db800bd102693c6ee2452c7483b9b4d3190cae78
   React-nativeconfig: 4662ac75a0a77789c9ed896ed77baa1a25cdf006
   React-NativeModulesApple: 060205bc6b15b38a9f0142ddd7a47d0217ed0bdb
@@ -2815,7 +2815,7 @@ SPEC CHECKSUMS:
   RNFBAuth: a5964ccae9b457415bad15ab69809e98f2ccdb67
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
   RNGoogleSignin: b11289afb825c32c250272e4d92446f71091814e
-  RNScreens: b8cead5eb79b58d78348094d62f154ffd163361d
+  RNScreens: ff29b7ddc247223be408629784ac17e36949ac02
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
   RNVectorIcons: 433d2e7249acbcd2921118a2ea5f254cba798d31
