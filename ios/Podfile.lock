@@ -2468,6 +2468,10 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - RNFBApp
+  - RNGestureHandler (2.30.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - RNGoogleSignin (16.1.2):
     - GoogleSignIn (~> 9.0)
     - React-Core
@@ -2564,6 +2568,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSound (from `../node_modules/react-native-sound`)
@@ -2714,6 +2719,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/auth"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
   RNScreens:
@@ -2814,6 +2821,7 @@ SPEC CHECKSUMS:
   RNFBApp: 25f246a77f8b3a458ac5f1cd34ade26a7fb45f20
   RNFBAuth: a5964ccae9b457415bad15ab69809e98f2ccdb67
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
+  RNGestureHandler: ed9eaaf0becdb57555c55afeb5ebc99e4477a9cf
   RNGoogleSignin: b11289afb825c32c250272e4d92446f71091814e
   RNScreens: 7846157ae38d967c9a9be3dc9c35e3428b450d7e
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
