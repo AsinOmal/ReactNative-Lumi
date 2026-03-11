@@ -41,13 +41,13 @@ class LumiVisionOCR: NSObject {
     }
 
     // ── Crop to centre scan zone ─────────────────────────────────────────────
-    // takePhoto() captures the full camera sensor, which has a wider field of
-    // view than the on-screen preview. We crop to 50% width × 20% height
-    // (tighter than the UI reticle) so only text near the centre is read.
+    // takePhoto() captures the full camera sensor. We crop tightly to match
+    // the visible on-screen scan reticle: 38% wide × 14% tall, centred.
+    // This prevents picking up text above/below/beside the scan box.
     let imgW = CGFloat(cgImage.width)
     let imgH = CGFloat(cgImage.height)
-    let cropW = imgW * 0.50
-    let cropH = imgH * 0.20
+    let cropW = imgW * 0.38
+    let cropH = imgH * 0.14
     let cropX = (imgW - cropW) / 2
     let cropY = (imgH - cropH) / 2
     let cropRect = CGRect(x: cropX, y: cropY, width: cropW, height: cropH)

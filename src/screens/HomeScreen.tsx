@@ -104,11 +104,7 @@ export const HomeScreen = () => {
 
           {/* ── Daily Word Hunt ── */}
           <Text style={styles.sectionTitle}>🎯 Daily Word Hunt</Text>
-          <TouchableOpacity
-            style={[styles.huntCard, dailyFound && styles.huntCardDone]}
-            activeOpacity={0.85}
-            onPress={() => !dailyFound && (navigation as any).navigate('Scan')}
-          >
+          <View style={[styles.huntCard, dailyFound && styles.huntCardDone]}>
             <Text style={styles.huntEmoji}>
               {dailyFound ? '✅' : dailyModel?.emoji ?? '🔍'}
             </Text>
@@ -125,7 +121,7 @@ export const HomeScreen = () => {
             {!dailyFound && (
               <Text style={styles.huntArrow}>→</Text>
             )}
-          </TouchableOpacity>
+          </View>
 
           {/* ── What I Found ── */}
           <Text style={styles.sectionTitle}>What I Found!</Text>
