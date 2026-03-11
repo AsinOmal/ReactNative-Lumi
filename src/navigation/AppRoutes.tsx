@@ -8,9 +8,9 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { createUserIfNew } from '../services/userService';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();

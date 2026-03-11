@@ -20,6 +20,17 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -34,7 +45,18 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to use your camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fredoka-Bold.ttf</string>
+		<string>Fredoka-Light.ttf</string>
+		<string>Fredoka-Medium.ttf</string>
+		<string>Fredoka-Regular.ttf</string>
+		<string>Fredoka-SemiBold.ttf</string>
+		<string>SpicyRice-Regular.ttf</string>
+		<string>Catchy-Melody.ttf</string>
+		<string>Ionicons.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -49,27 +71,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Fredoka-Bold.ttf</string>
-		<string>Fredoka-Light.ttf</string>
-		<string>Fredoka-Medium.ttf</string>
-		<string>Fredoka-Regular.ttf</string>
-		<string>Fredoka-SemiBold.ttf</string>
-		<string>SpicyRice-Regular.ttf</string>
-		<string>Catchy-Melody.ttf</string>
-		<string>Ionicons.ttf</string>
-	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
