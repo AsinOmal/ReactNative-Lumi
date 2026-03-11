@@ -128,7 +128,7 @@ export const ScanScreen = () => {
     
     isScanning.current = true;
     try {
-      const snapshot = await cameraRef.current.takePhoto();
+      const snapshot = await cameraRef.current.takePhoto({ enableShutterSound: false });
       const text = await recognizeTextInImage(snapshot.path);
       const matched = matchWord(text, ALL_SUPPORTED_WORDS);
 

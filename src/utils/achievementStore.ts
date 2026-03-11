@@ -19,6 +19,8 @@ const KEYS = {
   spellCorrections:   'lumi_spell_corrections',
   sessionCount:       'lumi_session_count',
   earnedAchievements: 'lumi_earned_achievements',
+  streakCount:        'lumi_streak_count',
+  lastScanDate:       'lumi_last_scan_date',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -101,6 +103,7 @@ export async function recordScan(
     setJSON(KEYS.scannedWords, newWords),
     setJSON(KEYS.spellCorrections, newCorrections),
     setJSON(KEYS.sessionCount, newSessionCount),
+    recordStreakDay(),
   ]);
 
   // Check which achievements are newly earned
@@ -147,6 +150,49 @@ export async function removeScan(word: string): Promise<void> {
 /** Reset session counter (call when app comes to foreground) */
 export async function resetSessionCount(): Promise<void> {
   await setJSON(KEYS.sessionCount, 0);
+}
+
+// ── Streak ────────────────────────────────────────────────────────────────────
+
+/** Returns today's date as YYYY-MM-DD in local time */
+function todayISO(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Returns yesterday's date as YYYY-MM-DD */
+function yesterdayISO(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Read current streak count */
+export async function getStreak(): Promise<number> {
+  return getJSON<number>(KEYS.streakCount, 0);
+}
+
+/**
+ * Update streak based on today's date.
+ * - If already recorded today → no change
+ * - If last scan was yesterday → increment
+ * - Otherwise → reset to 1
+ */
+async function recordStreakDay(): Promise<void> {
+  const today = todayISO();
+  const yesterday = yesterdayISO();
+  const [lastDate, currentStreak] = await Promise.all([
+    getJSON<string>(KEYS.lastScanDate, ''),
+    getJSON<number>(KEYS.streakCount, 0),
+  ]);
+
+  if (lastDate === today) return; // already counted today
+
+  const newStreak = lastDate === yesterday ? currentStreak + 1 : 1;
+  await Promise.all([
+    setJSON(KEYS.streakCount, newStreak),
+    setJSON(KEYS.lastScanDate, today),
+  ]);
 }
 
 // ── Achievement Criteria ──────────────────────────────────────────────────────
