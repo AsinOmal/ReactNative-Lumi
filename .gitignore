@@ -2,6 +2,10 @@
 #
 .DS_Store
 
+# Local dev docs (not for GitHub)
+BUILD_LOG.md
+
+
 # Xcode
 #
 build/

@@ -90,3 +90,39 @@ export function matchWord(
 
   return best?.result ?? null;
 }
+
+/**
+ * Given raw OCR text and the known pack words, find the best "clean unknown"
+ * word — a real-looking alphabetic token that is NOT in the pack.
+ *
+ * Rules:
+ * - Must be purely alphabetic, length 4–18
+ * - Must NOT already be in packWords (exact or within distance 2)
+ * - Pick the longest token (heuristic: longer = more likely intentional)
+ *
+ * Returns null if nothing clean is found — prevents showing noise.
+ */
+export function detectUnknownWord(
+  ocrText: string,
+  packWords: string[],
+): string | null {
+  if (!ocrText?.trim()) return null;
+
+  const tokens = ocrText
+    .toLowerCase()
+    .split(/[\s\n,.!?;:()\[\]{}"']+/)
+    .map(t => t.replace(/[^a-z]/g, ''))
+    .filter(t => t.length >= 4 && t.length <= 18)
+    // Must look like a real word: no more than 2 consonants in a row at start
+    .filter(t => /^[a-z]/.test(t));
+
+  // Filter out anything too close to a pack word
+  const strangers = tokens.filter(token =>
+    packWords.every(w => levenshtein(token, w) > 2),
+  );
+
+  if (strangers.length === 0) return null;
+
+  // Return longest token (most likely the intentional word)
+  return strangers.reduce((a, b) => (a.length >= b.length ? a : b));
+}

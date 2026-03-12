@@ -32,7 +32,7 @@ export interface ModelEntry {
 
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // ── Fruits Pack ───────────────────────────────────────────────────────────
-  //                                                         scale                            position   syllables                          audio             emoji
+  //                                                                                  scale                            position                 syllables                          audio                      emoji
   apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.0037, 0.0037, 0.0037],   position: [0, 0.0, -1.0],  syllables: ['Ap', 'ple'],              audio: 'apple.mp3',      emoji: '🍎' },
   banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.00065, 0.00065, 0.00065], position: [0, 0.0, -1.0], syllables: ['Ba', 'na', 'na'],         audio: 'banana.mp3',     emoji: '🍌' },
   cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050],      position: [0, 0.0, -1.0],  syllables: ['Cher', 'ry'],             audio: 'cherry.mp3',     emoji: '🍒' },

@@ -17,10 +17,11 @@ import { ARWordScene } from '../components/ar/ARWordScene';
 import { OCROverlay } from '../components/ar/OCROverlay';
 import { SyllablePlayer } from '../components/ar/SyllablePlayer';
 import { SpellCorrectionBadge } from '../components/ar/SpellCorrectionBadge';
-import { matchWord, MatchResult } from '../utils/wordMatcher';
+import { matchWord, MatchResult, detectUnknownWord } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { MODEL_REGISTRY, getModel } from '../utils/modelRegistry';
 import { recordScan, removeScan, getProgress } from '../utils/achievementStore';
+import { wishWord, isWished } from '../utils/wishlistStore';
 import { Achievement } from '../utils/achievementRegistry';
 import { AchievementToast } from '../components/AchievementToast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -46,7 +47,12 @@ export const ScanScreen = () => {
   const [mode, setMode] = useState<Mode>('scan');
   const [activeWord, setActiveWord] = useState<string>('apple');
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
+  const [unknownWord, setUnknownWord] = useState<string | null>(null);
+  const [wished, setWished] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
+
+  // Reset wished badge whenever a new unknown word appears
+  useEffect(() => { setWished(false); }, [unknownWord]);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [isWordSaved, setIsWordSaved] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
@@ -134,8 +140,12 @@ export const ScanScreen = () => {
 
       if (matched && consecutiveCountRef.current >= REQUIRED_CONSECUTIVE) {
         setMatchResult(firstCandidateResultRef.current ?? matched);
+        setUnknownWord(null); // clear unknown chip when a pack word is found
       } else if (!matched) {
         setMatchResult(null);
+        // Surface any clean unknown word from this frame
+        const unknown = detectUnknownWord(text, ALL_SUPPORTED_WORDS);
+        setUnknownWord(unknown);
       }
     } catch {
       // Silently ignore — camera unavailable when backgrounded/locked
@@ -265,6 +275,30 @@ export const ScanScreen = () => {
           detectedWord={matchResult?.word ?? null}
           onViewInAR={() => handleViewInAR()}
         />
+
+        {/* Unknown word chip — shown when OCR finds a clean word not in any pack */}
+        {!matchResult && unknownWord && mode === 'scan' && (
+          <View style={styles.unknownChip}>
+            <Text style={styles.unknownChipText}>
+              ❓ <Text style={styles.unknownWord}>
+                {unknownWord.charAt(0).toUpperCase() + unknownWord.slice(1)}
+              </Text>{' '}isn't in our collection yet
+            </Text>
+            <TouchableOpacity
+              style={[styles.wishBtn, wished && styles.wishBtnDone]}
+              activeOpacity={0.8}
+              onPress={async () => {
+                const added = await wishWord(unknownWord);
+                setWished(true);
+                if (!added) return; // already wished, just show feedback
+              }}
+            >
+              <Text style={styles.wishBtnText}>
+                {wished ? '✅ Wished!' : '⭐ Wish for it!'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Top HUD */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -504,5 +538,46 @@ const styles = StyleSheet.create({
   },
   saveBtnTextDisabled: {
     color: '#A78BFA',
+  },
+
+  // ── Unknown word chip
+  unknownChip: {
+    position: 'absolute',
+    bottom: 160,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(20,10,50,0.88)',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.4)',
+    maxWidth: '90%',
+  },
+  unknownChipText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 14,
+    color: '#C4B5FD',
+    flexShrink: 1,
+  },
+  unknownWord: {
+    fontFamily: 'Fredoka-Bold',
+    color: '#FFFFFF',
+  },
+  wishBtn: {
+    backgroundColor: '#5B2DC0',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  wishBtnDone: {
+    backgroundColor: '#059669',
+  },
+  wishBtnText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 13,
+    color: '#FFF',
   },
 });
