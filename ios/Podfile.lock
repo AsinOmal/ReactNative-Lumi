@@ -2279,6 +2279,10 @@ PODS:
     - React-debug
   - react-native-safe-area-context (4.14.1):
     - React-Core
+  - react-native-view-shot (4.0.3):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - react-native-worklets-core (1.2.0):
     - React
     - React-callinvoker
@@ -2544,6 +2548,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2671,6 +2676,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-view-shot:
+    :path: "../node_modules/react-native-view-shot"
   react-native-worklets-core:
     :path: "../node_modules/react-native-worklets-core"
   React-nativeconfig:
@@ -2796,6 +2803,7 @@ SPEC CHECKSUMS:
   React-logger: 026c4699c71b179283959f13583507a06099fbde
   React-Mapbuffer: 1733ee5eb07a2ab3b2f41dcdfcce0ed22951948e
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
+  react-native-view-shot: a6c50365dc2d86b146811b4ab510eb36cb7727b5
   react-native-worklets-core: db800bd102693c6ee2452c7483b9b4d3190cae78
   React-nativeconfig: 4662ac75a0a77789c9ed896ed77baa1a25cdf006
   React-NativeModulesApple: 060205bc6b15b38a9f0142ddd7a47d0217ed0bdb

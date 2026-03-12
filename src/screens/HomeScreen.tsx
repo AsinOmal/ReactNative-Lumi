@@ -124,7 +124,14 @@ export const HomeScreen = () => {
           </View>
 
           {/* ── What I Found ── */}
-          <Text style={styles.sectionTitle}>What I Found!</Text>
+          <TouchableOpacity
+            style={styles.sectionRow}
+            onPress={() => (navigation as any).navigate('SavedWords')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.sectionTitle}>What I Found!</Text>
+            <Text style={styles.seeAll}>See all →</Text>
+          </TouchableOpacity>
           {recentWords.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>🔎</Text>
@@ -289,6 +296,18 @@ const styles = StyleSheet.create({
     color: '#5B2DC0',
     marginBottom: 8,
     paddingHorizontal: 4,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  seeAll: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 15,
+    color: '#5B2DC0',
   },
   grid: {
     flexDirection: 'row',

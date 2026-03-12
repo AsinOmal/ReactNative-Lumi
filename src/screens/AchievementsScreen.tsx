@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ACHIEVEMENTS } from '../utils/achievementRegistry';
+import { ACHIEVEMENTS, Achievement } from '../utils/achievementRegistry';
 import { getProgress, EarnedAchievement } from '../utils/achievementStore';
+import { AchievementShareModal } from '../components/AchievementShareModal';
 
 export const AchievementsScreen = () => {
   const navigation = useNavigation();
   const [earned, setEarned] = useState<EarnedAchievement[]>([]);
+  const [selected, setSelected] = useState<{ achievement: Achievement; earnedData: EarnedAchievement } | null>(null);
 
   // Refresh progress every time screen opens
   useFocusEffect(
@@ -30,7 +32,7 @@ export const AchievementsScreen = () => {
         {ACHIEVEMENTS.map(a => {
           const earnedData = earned.find(e => e.id === a.id);
           const isUnlocked = !!earnedData;
-          return (
+          const card = (
             <View key={a.id} style={[styles.card, !isUnlocked && styles.cardLocked]}>
               <View style={[styles.emojiContainer, !isUnlocked && styles.emojiContainerLocked]}>
                 <Text style={[styles.emoji, !isUnlocked && styles.emojiLocked]}>{a.emoji}</Text>
@@ -38,7 +40,6 @@ export const AchievementsScreen = () => {
               <View style={styles.cardText}>
                 <Text style={[styles.title, !isUnlocked && styles.titleLocked]}>{a.title}</Text>
                 <Text style={styles.description}>{a.description}</Text>
-                
                 {isUnlocked && earnedData.triggerWord !== 'unknown' && (
                   <View style={styles.metaRow}>
                     <Ionicons name="camera-outline" size={14} color="#8B5CF6" />
@@ -49,14 +50,37 @@ export const AchievementsScreen = () => {
                 )}
               </View>
               {isUnlocked ? (
-                <Ionicons name="checkmark-circle" size={24} color="#10B981" />
+                <View style={styles.shareHint}>
+                  <Ionicons name="checkmark-circle" size={24} color="#10B981" />
+                  <Ionicons name="share-outline" size={18} color="#5B2DC0" />
+                </View>
               ) : (
                 <Ionicons name="lock-closed" size={22} color="#CBD5E1" />
               )}
             </View>
           );
+          return isUnlocked && earnedData ? (
+            <TouchableOpacity
+              key={a.id}
+              activeOpacity={0.8}
+              onPress={() => setSelected({ achievement: a, earnedData })}
+            >
+              {card}
+            </TouchableOpacity>
+          ) : (
+            <View key={a.id}>{card}</View>
+          );
         })}
       </ScrollView>
+
+      {/* Share Modal */}
+      {selected && (
+        <AchievementShareModal
+          achievement={selected.achievement}
+          earnedData={selected.earnedData}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -168,5 +192,10 @@ const styles = StyleSheet.create({
   triggerWord: {
     fontFamily: 'Fredoka-SemiBold',
     color: '#8B5CF6',
+  },
+  shareHint: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 4,
   },
 });

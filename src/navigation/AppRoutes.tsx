@@ -7,6 +7,7 @@ import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { LoginScreen } from '../screens/LoginScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
+import { SavedWordsScreen } from '../screens/SavedWordsScreen';
 import { createUserIfNew } from '../services/userService';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -50,6 +51,7 @@ export const AppRoutes = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={MainTabNavigator} />
         <Stack.Screen name="Achievements" component={AchievementsScreen} />
+        <Stack.Screen name="SavedWords" component={SavedWordsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

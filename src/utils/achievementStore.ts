@@ -16,6 +16,7 @@ import { ACHIEVEMENTS, Achievement } from './achievementRegistry';
 
 const KEYS = {
   scannedWords:       'lumi_scanned_words',
+  savedWords:         'lumi_saved_words',       // SavedWord[] with timestamps
   spellCorrections:   'lumi_spell_corrections',
   sessionCount:       'lumi_session_count',
   earnedAchievements: 'lumi_earned_achievements',
@@ -44,6 +45,11 @@ export interface EarnedAchievement {
   id: string;
   unlockedAt: number;
   triggerWord: string;
+}
+
+export interface SavedWord {
+  word: string;
+  savedAt: number; // Unix timestamp (ms)
 }
 
 export interface AchievementProgress {
@@ -76,6 +82,20 @@ export async function getProgress(): Promise<AchievementProgress> {
 }
 
 /**
+ * Get all saved words, newest first.
+ * Migrates plain string[] (from old installs) to SavedWord[] automatically.
+ */
+export async function getSavedWords(): Promise<SavedWord[]> {
+  const raw = await getJSON<any[]>(KEYS.savedWords, []);
+  const words: SavedWord[] = raw.map(item =>
+    typeof item === 'string'
+      ? { word: item, savedAt: 0 }
+      : (item as SavedWord)
+  );
+  return words.slice().reverse(); // newest first
+}
+
+/**
  * Record a word save event and return any newly unlocked achievements.
  *
  * @param word         Canonical word that was saved (e.g. "apple")
@@ -97,6 +117,13 @@ export async function recordScan(
     : progress.spellCorrections;
 
   const newSessionCount = progress.sessionCount + 1;
+
+  // Also write to savedWords list (with timestamps) — separate from scannedWords
+  if (!progress.scannedWords.includes(word)) {
+    const savedWordsList = await getJSON<any[]>(KEYS.savedWords, []);
+    const newSavedEntry: SavedWord = { word, savedAt: Date.now() };
+    await setJSON(KEYS.savedWords, [...savedWordsList, newSavedEntry]);
+  }
 
   // Persist updates
   await Promise.all([
@@ -144,7 +171,15 @@ export async function recordScan(
 export async function removeScan(word: string): Promise<void> {
   const progress = await getProgress();
   const nextWords = progress.scannedWords.filter(w => w !== word);
-  await setJSON(KEYS.scannedWords, nextWords);
+  // Also remove from named savedWords list
+  const savedWordsList = await getJSON<any[]>(KEYS.savedWords, []);
+  const nextSavedWords = savedWordsList.filter((s: any) =>
+    (typeof s === 'string' ? s : s.word) !== word
+  );
+  await Promise.all([
+    setJSON(KEYS.scannedWords, nextWords),
+    setJSON(KEYS.savedWords, nextSavedWords),
+  ]);
 }
 
 /** Reset session counter (call when app comes to foreground) */
