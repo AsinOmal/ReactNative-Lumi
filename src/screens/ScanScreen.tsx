@@ -66,13 +66,16 @@ export const ScanScreen = () => {
   const [isScreenFocused, setIsScreenFocused] = useState(true);
   const isFocused = useIsFocused(); // True native navigation focus state
   
-  // Debounce: word must appear in 2 consecutive frames before triggering
+  // Debounce: pack word must appear in REQUIRED_CONSECUTIVE frames before triggering
   const lastCandidateRef = useRef<string | null>(null);
   const consecutiveCountRef = useRef(0);
-  // Stores MatchResult from the FIRST frame of the current streak so that
-  // isCorrection:true (misspelling) is not overwritten by a later exact read.
   const firstCandidateResultRef = useRef<import('../utils/wordMatcher').MatchResult | null>(null);
-  const REQUIRED_CONSECUTIVE = 2;
+  const REQUIRED_CONSECUTIVE = 3;
+
+  // Debounce: unknown word chip requires the SAME word in 3 consecutive frames
+  const lastUnknownCandidateRef = useRef<string | null>(null);
+  const unknownConsecutiveRef = useRef(0);
+  const REQUIRED_UNKNOWN_CONSECUTIVE = 3;
 
   // ── Stop camera & OCR when navigating away from this screen ───────────────
   useFocusEffect(
@@ -141,12 +144,27 @@ export const ScanScreen = () => {
 
       if (matched && consecutiveCountRef.current >= REQUIRED_CONSECUTIVE) {
         setMatchResult(firstCandidateResultRef.current ?? matched);
-        setUnknownWord(null); // clear unknown chip when a pack word is found
+        setUnknownWord(null);
+        lastUnknownCandidateRef.current = null;
+        unknownConsecutiveRef.current = 0;
       } else if (!matched) {
         setMatchResult(null);
-        // Surface any clean unknown word from this frame
+
+        // Unknown word debounce — same token must appear REQUIRED_UNKNOWN_CONSECUTIVE times
         const unknown = detectUnknownWord(text, ALL_SUPPORTED_WORDS);
-        setUnknownWord(unknown);
+        if (unknown && unknown === lastUnknownCandidateRef.current) {
+          unknownConsecutiveRef.current += 1;
+        } else {
+          lastUnknownCandidateRef.current = unknown;
+          unknownConsecutiveRef.current = unknown ? 1 : 0;
+        }
+
+        if (unknown && unknownConsecutiveRef.current >= REQUIRED_UNKNOWN_CONSECUTIVE) {
+          setUnknownWord(unknown);
+        } else if (!unknown) {
+          setUnknownWord(null);
+        }
+        // else: still building up the streak — don't update chip yet
       }
     } catch {
       // Silently ignore — camera unavailable when backgrounded/locked
