@@ -24,21 +24,9 @@ import { recordScan, removeScan, getProgress } from '../utils/achievementStore';
 import { Achievement } from '../utils/achievementRegistry';
 import { AchievementToast } from '../components/AchievementToast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { getRandomFact } from '../utils/wordFacts';
 
-// ── Constants ─────────────────────────────────────────────────────────────────
 
-const WORD_FACTS: Record<string, string> = {
-  apple:      'Apples float in water because they are 25% air! 🌊',
-  banana:     'Bananas are technically berries, but strawberries are not! 🤯',
-  cherry:     'It takes about 5 years for a cherry tree to produce fruit! 🌳',
-  grape:      'Grapes can be green, red, black, yellow, or purple! 🎨',
-  lemon:      'Lemons contain more sugar than strawberries! 🍬',
-  mango:      'Mangoes belong to the same family as cashews and pistachios! 🥜',
-  orange:     'Oranges were originally green before humans bred sweeter versions! 🌿',
-  pineapple:  'A pineapple plant takes 2 years to grow just one pineapple! ⏳',
-  strawberry: 'Strawberries have about 200 tiny seeds on the outside! 🔢',
-  watermelon: "Watermelons are 92% water — that's how they got their name! 💧",
-};
 
 const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
 
@@ -245,7 +233,7 @@ export const ScanScreen = () => {
     }).start(() => setModelLoaded(false));
   }, []);
 
-  const fact = WORD_FACTS[activeWord] ?? 'This is a fun word to discover! ✨';
+  const fact = getRandomFact(activeWord);
 
   // ── SCAN MODE ─────────────────────────────────────────────────────────────
 
