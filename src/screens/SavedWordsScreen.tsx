@@ -11,7 +11,10 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getSavedWords, SavedWord } from '../utils/achievementStore';
+import { getWishlist, WishlistEntry } from '../utils/wishlistStore';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
+
+type Tab = 'saved' | 'wishlist';
 
 function formatDate(ts: number): string {
   if (!ts) return 'Saved earlier';
@@ -21,11 +24,14 @@ function formatDate(ts: number): string {
 
 export const SavedWordsScreen = () => {
   const navigation = useNavigation();
+  const [tab, setTab] = useState<Tab>('saved');
   const [savedWords, setSavedWords] = useState<SavedWord[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistEntry[]>([]);
 
   useFocusEffect(
     React.useCallback(() => {
       getSavedWords().then(setSavedWords);
+      getWishlist().then(setWishlist);
     }, [])
   );
 
@@ -38,48 +44,114 @@ export const SavedWordsScreen = () => {
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={28} color="#1A1050" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Saved Words</Text>
+        <Text style={styles.headerTitle}>
+          {tab === 'saved' ? 'Saved Words' : 'My Wishlist'}
+        </Text>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{savedWords.length}</Text>
+          <Text style={styles.badgeText}>
+            {tab === 'saved' ? savedWords.length : wishlist.length}
+          </Text>
         </View>
       </View>
 
-      {savedWords.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>🔎</Text>
-          <Text style={styles.emptyTitle}>Nothing saved yet!</Text>
-          <Text style={styles.emptySubtitle}>Scan a word and tap Save to see it here.</Text>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          {savedWords.map((item) => {
-            const model = MODEL_REGISTRY[item.word];
-            const displayWord = item.word.charAt(0).toUpperCase() + item.word.slice(1);
-            return (
-              <View key={item.word} style={styles.card}>
-                <View style={styles.emojiCircle}>
-                  <Text style={styles.emoji}>{model?.emoji ?? '📦'}</Text>
+      {/* Tab Switcher */}
+      <View style={styles.tabs}>
+        <TouchableOpacity
+          style={[styles.tab, tab === 'saved' && styles.tabActive]}
+          onPress={() => setTab('saved')}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.tabText, tab === 'saved' && styles.tabTextActive]}>
+            ✅ Saved
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, tab === 'wishlist' && styles.tabActive]}
+          onPress={() => setTab('wishlist')}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.tabText, tab === 'wishlist' && styles.tabTextActive]}>
+            ⭐ Wishlist
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ── Saved Words ── */}
+      {tab === 'saved' && (
+        savedWords.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>🔎</Text>
+            <Text style={styles.emptyTitle}>Nothing saved yet!</Text>
+            <Text style={styles.emptySubtitle}>Scan a word and tap Save to see it here.</Text>
+          </View>
+        ) : (
+          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+            {savedWords.map((item) => {
+              const model = MODEL_REGISTRY[item.word];
+              const displayWord = item.word.charAt(0).toUpperCase() + item.word.slice(1);
+              return (
+                <View key={item.word} style={styles.card}>
+                  <View style={styles.emojiCircle}>
+                    <Text style={styles.emoji}>{model?.emoji ?? '📦'}</Text>
+                  </View>
+                  <View style={styles.cardBody}>
+                    <Text style={styles.wordText}>{displayWord}</Text>
+                    <Text style={styles.dateText}>
+                      <Ionicons name="calendar-outline" size={12} color="#94A3B8" />{' '}
+                      {formatDate(item.savedAt)}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.arBtn}
+                    activeOpacity={0.8}
+                    onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Scan', params: { preloadWord: item.word } })}
+                  >
+                    <Text style={styles.arBtnText}>View in AR</Text>
+                    <Ionicons name="arrow-forward" size={14} color="#FFF" />
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.cardBody}>
-                  <Text style={styles.wordText}>{displayWord}</Text>
-                  <Text style={styles.dateText}>
-                    <Ionicons name="calendar-outline" size={12} color="#94A3B8" />{' '}
-                    {formatDate(item.savedAt)}
-                  </Text>
+              );
+            })}
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        )
+      )}
+
+      {/* ── Wishlist ── */}
+      {tab === 'wishlist' && (
+        wishlist.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>⭐</Text>
+            <Text style={styles.emptyTitle}>No wishes yet!</Text>
+            <Text style={styles.emptySubtitle}>
+              When you scan a word we don't have, tap{'\n'}"Wish for it!" to add it here.
+            </Text>
+          </View>
+        ) : (
+          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+            {wishlist.map((item) => {
+              const displayWord = item.word.charAt(0).toUpperCase() + item.word.slice(1);
+              return (
+                <View key={item.word} style={[styles.card, styles.wishCard]}>
+                  <View style={[styles.emojiCircle, styles.wishEmojiCircle]}>
+                    <Text style={styles.emoji}>⭐</Text>
+                  </View>
+                  <View style={styles.cardBody}>
+                    <Text style={styles.wordText}>{displayWord}</Text>
+                    <Text style={styles.dateText}>
+                      <Ionicons name="time-outline" size={12} color="#94A3B8" />{' '}
+                      Wished {formatDate(item.wishedAt)}
+                    </Text>
+                  </View>
+                  <View style={styles.comingSoon}>
+                    <Text style={styles.comingSoonText}>Coming{'\n'}soon</Text>
+                  </View>
                 </View>
-                <TouchableOpacity
-                  style={styles.arBtn}
-                  activeOpacity={0.8}
-                  onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Scan', params: { preloadWord: item.word } })}
-                >
-                  <Text style={styles.arBtnText}>View in AR</Text>
-                  <Ionicons name="arrow-forward" size={14} color="#FFF" />
-                </TouchableOpacity>
-              </View>
-            );
-          })}
-          <View style={{ height: 40 }} />
-        </ScrollView>
+              );
+            })}
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        )
       )}
     </SafeAreaView>
   );
@@ -118,9 +190,36 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
 
+  // Tabs
+  tabs: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#E4DAFF',
+    borderRadius: 16,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  tabActive: {
+    backgroundColor: '#5B2DC0',
+  },
+  tabText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 15,
+    color: '#7C5CBF',
+  },
+  tabTextActive: {
+    color: '#FFF',
+  },
+
   scroll: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 4,
     gap: 12,
   },
 
@@ -137,6 +236,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 3,
   },
+  wishCard: {
+    borderStyle: 'dashed',
+    borderWidth: 1.5,
+    borderColor: '#C4B5FD',
+    backgroundColor: '#FDFBFF',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   emojiCircle: {
     width: 56,
     height: 56,
@@ -144,6 +251,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0EBFF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  wishEmojiCircle: {
+    backgroundColor: '#FEF3C7',
   },
   emoji: { fontSize: 32 },
   cardBody: { flex: 1, gap: 4 },
@@ -171,6 +281,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Fredoka-SemiBold',
     fontSize: 13,
     color: '#FFF',
+  },
+
+  comingSoon: {
+    backgroundColor: '#F5F3FF',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    alignItems: 'center',
+  },
+  comingSoonText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 12,
+    color: '#8B5CF6',
+    textAlign: 'center',
+    lineHeight: 16,
   },
 
   emptyState: {
