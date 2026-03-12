@@ -24,6 +24,7 @@ import { recordScan, removeScan, getProgress } from '../utils/achievementStore';
 import { wishWord, isWished } from '../utils/wishlistStore';
 import { Achievement } from '../utils/achievementRegistry';
 import { AchievementToast } from '../components/AchievementToast';
+import { WishConfirmModal } from '../components/WishConfirmModal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getRandomFact } from '../utils/wordFacts';
 
@@ -48,11 +49,11 @@ export const ScanScreen = () => {
   const [activeWord, setActiveWord] = useState<string>('apple');
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [unknownWord, setUnknownWord] = useState<string | null>(null);
-  const [wished, setWished] = useState(false);
+  const [showWishModal, setShowWishModal] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
 
-  // Reset wished badge whenever a new unknown word appears
-  useEffect(() => { setWished(false); }, [unknownWord]);
+  // Reset wish modal whenever a new unknown word appears
+  useEffect(() => { setShowWishModal(false); }, [unknownWord]);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [isWordSaved, setIsWordSaved] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
@@ -276,7 +277,7 @@ export const ScanScreen = () => {
           onViewInAR={() => handleViewInAR()}
         />
 
-        {/* Unknown word chip — shown when OCR finds a clean word not in any pack */}
+        {/* Unknown word chip */}
         {!matchResult && unknownWord && mode === 'scan' && (
           <View style={styles.unknownChip}>
             <Text style={styles.unknownChipText}>
@@ -285,20 +286,24 @@ export const ScanScreen = () => {
               </Text>{' '}isn't in our collection yet
             </Text>
             <TouchableOpacity
-              style={[styles.wishBtn, wished && styles.wishBtnDone]}
+              style={styles.wishBtn}
               activeOpacity={0.8}
               onPress={async () => {
-                const added = await wishWord(unknownWord);
-                setWished(true);
-                if (!added) return; // already wished, just show feedback
+                await wishWord(unknownWord);
+                setShowWishModal(true);
               }}
             >
-              <Text style={styles.wishBtnText}>
-                {wished ? '✅ Wished!' : '⭐ Wish for it!'}
-              </Text>
+              <Text style={styles.wishBtnText}>⭐ Wish for it!</Text>
             </TouchableOpacity>
           </View>
         )}
+
+        {/* Wish confirmation modal */}
+        <WishConfirmModal
+          word={unknownWord ?? ''}
+          visible={showWishModal}
+          onClose={() => setShowWishModal(false)}
+        />
 
         {/* Top HUD */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
