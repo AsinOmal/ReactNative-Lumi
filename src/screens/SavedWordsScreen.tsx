@@ -11,7 +11,7 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getSavedWords, SavedWord } from '../utils/achievementStore';
-import { getWishlist, WishlistEntry } from '../utils/wishlistStore';
+import { getWishlist, WishlistEntry, removeWish } from '../utils/wishlistStore';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 
 type Tab = 'saved' | 'wishlist';
@@ -143,9 +143,16 @@ export const SavedWordsScreen = () => {
                       Wished {formatDate(item.wishedAt)}
                     </Text>
                   </View>
-                  <View style={styles.comingSoon}>
-                    <Text style={styles.comingSoonText}>Coming{'\n'}soon</Text>
-                  </View>
+                  <TouchableOpacity
+                    style={styles.trashBtn}
+                    activeOpacity={0.7}
+                    onPress={async () => {
+                      await removeWish(item.word);
+                      setWishlist(prev => prev.filter(w => w.word !== item.word));
+                    }}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                  </TouchableOpacity>
                 </View>
               );
             })}
@@ -283,19 +290,13 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
 
-  comingSoon: {
-    backgroundColor: '#F5F3FF',
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+  trashBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FEE2E2',
     alignItems: 'center',
-  },
-  comingSoonText: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 12,
-    color: '#8B5CF6',
-    textAlign: 'center',
-    lineHeight: 16,
+    justifyContent: 'center',
   },
 
   emptyState: {

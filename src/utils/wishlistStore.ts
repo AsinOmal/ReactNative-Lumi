@@ -47,3 +47,10 @@ export async function isWished(word: string): Promise<boolean> {
   const list = await load();
   return list.some(e => e.word === word.toLowerCase());
 }
+
+/** Remove a word from the wishlist */
+export async function removeWish(word: string): Promise<void> {
+  const list = await load();
+  const next = list.filter(e => e.word !== word.toLowerCase());
+  await AsyncStorage.setItem(KEY, JSON.stringify(next));
+}
