@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   StatusBar,
   Animated,
+  Modal,
 } from 'react-native';
 import {
   ViroARScene,
@@ -128,6 +129,13 @@ export const ARWordFindScreen = () => {
   const [wrongCount, setWrongCount] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [gameOver, setGameOver] = useState(false);
+  // Mount gate — wait one frame before showing ViroARSceneNavigator so the
+  // native view hierarchy is fully established (prevents parentNode crash)
+  const [arReady, setArReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setArReady(true), 200);
+    return () => clearTimeout(t);
+  }, []);
 
   // Tap lock — prevents double-fire during feedback animation
   const isTapping = useRef(false);
@@ -185,62 +193,33 @@ export const ARWordFindScreen = () => {
   const stableOnCorrect = useRef((w: string) => onCorrectRef.current(w)).current;
   const stableOnWrong   = useRef((w: string) => onWrongRef.current(w)).current;
 
-  // ── Game Over screen ─────────────────────────────────────────────────────
-  if (gameOver) {
-    const perfect = wrongCount === 0;
-    return (
-      <View style={styles.gameOverBg}>
-        <StatusBar barStyle="light-content" />
-        <View style={styles.gameOverCard}>
-          <Text style={styles.gameOverEmoji}>{perfect ? '🏆' : '🎉'}</Text>
-          <Text style={styles.gameOverTitle}>
-            {perfect ? 'Perfect Score!' : 'All Found!'}
-          </Text>
-          <View style={styles.gameOverScoreRow}>
-            <Text style={styles.gameOverScoreLabel}>Score</Text>
-            <Text style={styles.gameOverScoreNum}>{score}</Text>
-          </View>
-          {wrongCount > 0 && (
-            <Text style={styles.gameOverMistakes}>
-              {wrongCount} wrong tap{wrongCount > 1 ? 's' : ''}
-            </Text>
-          )}
-          <TouchableOpacity
-            style={styles.playAgainBtn}
-            activeOpacity={0.85}
-            onPress={() => (navigation as any).replace('ARWordFind')}
-          >
-            <Text style={styles.playAgainText}>🔄 Play Again</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.doneBtn}
-            activeOpacity={0.85}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.doneBtnText}>Done</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-
-  // ── Game screen ──────────────────────────────────────────────────────────
+  // ── Game screen (always rendered — game over shown as Modal overlay) ─────
   return (
     <View style={styles.container}>
       <StatusBar hidden />
 
-      {/* Full-screen AR scene */}
-      <ViroARSceneNavigator
-        autofocus
-        initialScene={{ scene: WordFindScene as any }}
-        viroAppProps={{
-          targetWord,
-          foundWords,
-          onCorrect: stableOnCorrect,
-          onWrong:   stableOnWrong,
-        }}
-        style={StyleSheet.absoluteFill}
-      />
+      {/* Full-screen AR scene — kept mounted throughout to avoid ViroReact
+          native view teardown issues when game over state changes */}
+      {arReady && (
+        <ViroARSceneNavigator
+          autofocus
+          initialScene={{ scene: WordFindScene as any }}
+          viroAppProps={{
+            targetWord: gameOver ? '' : targetWord,
+            foundWords,
+            onCorrect: stableOnCorrect,
+            onWrong:   stableOnWrong,
+          }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+
+      {/* Loading indicator while AR initialises */}
+      {!arReady && (
+        <View style={styles.loadingOverlay}>
+          <Text style={styles.loadingText}>Loading AR… ✨</Text>
+        </View>
+      )}
 
       {/* UI overlay — box-none so touches pass through to AR */}
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
@@ -263,11 +242,13 @@ export const ARWordFindScreen = () => {
         </View>
 
         {/* ── Target word card ── */}
-        <View style={styles.targetCard} pointerEvents="none">
-          <Text style={styles.tapThe}>TAP THE</Text>
-          <Text style={styles.targetEmoji}>{targetModel?.emoji ?? '❓'}</Text>
-          <Text style={styles.targetWord}>{targetWord.toUpperCase()}</Text>
-        </View>
+        {!gameOver && (
+          <View style={styles.targetCard} pointerEvents="none">
+            <Text style={styles.tapThe}>TAP THE</Text>
+            <Text style={styles.targetEmoji}>{targetModel?.emoji ?? '❓'}</Text>
+            <Text style={styles.targetWord}>{targetWord.toUpperCase()}</Text>
+          </View>
+        )}
 
         {/* ── Feedback banner ── */}
         {feedback !== null && (
@@ -286,13 +267,50 @@ export const ARWordFindScreen = () => {
         )}
 
         {/* ── Hint ── */}
-        <View style={styles.hintRow} pointerEvents="none">
-          <Text style={styles.hintText}>
-            Look around — all words are in front of you
-          </Text>
-        </View>
+        {!gameOver && (
+          <View style={styles.hintRow} pointerEvents="none">
+            <Text style={styles.hintText}>
+              Look around — all words are in front of you
+            </Text>
+          </View>
+        )}
 
       </SafeAreaView>
+
+      {/* ── Game Over Modal ── */}
+      <Modal transparent visible={gameOver} animationType="fade" onRequestClose={() => {}}>
+        <View style={styles.gameOverBg}>
+          <View style={styles.gameOverCard}>
+            <Text style={styles.gameOverEmoji}>{wrongCount === 0 ? '🏆' : '🎉'}</Text>
+            <Text style={styles.gameOverTitle}>
+              {wrongCount === 0 ? 'Perfect Score!' : 'All Found!'}
+            </Text>
+            <View style={styles.gameOverScoreRow}>
+              <Text style={styles.gameOverScoreLabel}>Score</Text>
+              <Text style={styles.gameOverScoreNum}>{score}</Text>
+            </View>
+            {wrongCount > 0 && (
+              <Text style={styles.gameOverMistakes}>
+                {wrongCount} wrong tap{wrongCount > 1 ? 's' : ''}
+              </Text>
+            )}
+            <TouchableOpacity
+              style={styles.playAgainBtn}
+              activeOpacity={0.85}
+              onPress={() => (navigation as any).replace('ARWordFind')}
+            >
+              <Text style={styles.playAgainText}>🔄 Play Again</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.doneBtn}
+              activeOpacity={0.85}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.doneBtnText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -425,5 +443,17 @@ const styles = StyleSheet.create({
   },
   doneBtnText: {
     fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: '#A78BFA',
+  },
+
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0F0728',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 20,
+    color: '#C4B5FD',
   },
 });
