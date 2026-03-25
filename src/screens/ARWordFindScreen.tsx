@@ -72,19 +72,19 @@ const WordFindScene = (props: any) => {
           <ViroNode
             key={word}
             position={pos}
-            onClick={() => {
-              if (isFound) return;
-              if (word === targetWord) onCorrect(word);
-              else onWrong(word);
-            }}
           >
-            {/* 3D Model */}
+            {/* 3D Model — onClick must be on Viro3DObject, not ViroNode */}
             <Viro3DObject
               source={model.source}
               scale={model.scale}
               type="GLB"
               opacity={isFound ? 0.25 : 1}
               animation={{ name: 'rotate', run: !isFound, loop: true }}
+              onClick={() => {
+                if (isFound) return;
+                if (word === targetWord) onCorrect(word);
+                else onWrong(word);
+              }}
             />
 
             {/* Word label below model */}
