@@ -61,6 +61,13 @@ class LumiVisionOCR: NSObject {
 
     // ── Run Vision OCR ────────────────────────────────────────────────────────
     let request = VNRecognizeTextRequest { request, error in
+      // ── Cleanup: delete the temp snapshot immediately after reading ──────
+      // takePhoto() writes ~50–200 KB per shot at 1 shot/sec — without cleanup
+      // that's several MB per minute of scanning accumulating in NSTemporaryDirectory.
+      defer {
+        try? FileManager.default.removeItem(atPath: imagePath)
+      }
+
       if let error = error {
         reject("E_OCR", error.localizedDescription, error)
         return

@@ -102,6 +102,20 @@ export const HomeScreen = () => {
             <Text style={styles.scanBannerText}>Scan a New Word! 🍭</Text>
           </TouchableOpacity>
 
+          {/* ── Play Game Banner ── */}
+          <TouchableOpacity
+            style={styles.gameBanner}
+            activeOpacity={0.85}
+            onPress={() => (navigation as any).navigate('ARWordFind')}
+          >
+            <Text style={styles.gameBannerEmoji}>🎮</Text>
+            <View style={styles.gameBannerText}>
+              <Text style={styles.gameBannerTitle}>AR Word Find</Text>
+              <Text style={styles.gameBannerSub}>Find the 3D models • Tap the right one!</Text>
+            </View>
+            <Text style={styles.gameBannerArrow}>▶</Text>
+          </TouchableOpacity>
+
           {/* ── Daily Word Hunt ── */}
           <Text style={styles.sectionTitle}>🎯 Daily Word Hunt</Text>
           <View style={[styles.huntCard, dailyFound && styles.huntCardDone]}>
@@ -328,4 +342,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#94A3B8',
   },
+
+  // Game banner
+  gameBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2D1B69',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.25)',
+  },
+  gameBannerEmoji: { fontSize: 36 },
+  gameBannerText: { flex: 1, gap: 2 },
+  gameBannerTitle: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 18,
+    color: '#FFFFFF',
+  },
+  gameBannerSub: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 13,
+    color: '#A78BFA',
+  },
+  gameBannerArrow: {
+    fontSize: 16,
+    color: '#C4B5FD',
+  },
 });
+

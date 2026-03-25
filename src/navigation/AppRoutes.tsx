@@ -8,6 +8,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { SavedWordsScreen } from '../screens/SavedWordsScreen';
+import { ARWordFindScreen } from '../screens/ARWordFindScreen';
 import { createUserIfNew } from '../services/userService';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -52,6 +53,7 @@ export const AppRoutes = () => {
         <Stack.Screen name="MainTabs" component={MainTabNavigator} />
         <Stack.Screen name="Achievements" component={AchievementsScreen} />
         <Stack.Screen name="SavedWords" component={SavedWordsScreen} />
+        <Stack.Screen name="ARWordFind" component={ARWordFindScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
