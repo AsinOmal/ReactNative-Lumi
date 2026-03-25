@@ -48,19 +48,24 @@ const VRTClickNode = requireNativeComponent('VRTViewContainer') as any;
 // ── Viro ClickState enum (from ViroReact EventDelegate) ───────────────────────
 const CLICK_STATE_CLICKED = 1; // "up" / confirmed tap
 
-// ── AR positions: 2 rows of 5, spread in arc in front of player ──────────────
+// ── AR positions: 2 rows of 5, spread in wide arc in front of player ─────────
+// Wide enough that the child needs to pan the phone left/right to see all models.
+// Row 1 (front, eye level), Row 2 (further back, slightly lower)
 const POSITIONS: [number, number, number][] = [
-  [-0.80,  0.05, -1.20],
-  [-0.40,  0.05, -1.15],
-  [ 0.00,  0.05, -1.20],
-  [ 0.40,  0.05, -1.15],
-  [ 0.80,  0.05, -1.20],
-  [-0.60, -0.35, -1.45],
-  [-0.20, -0.35, -1.40],
-  [ 0.20, -0.35, -1.40],
-  [ 0.60, -0.35, -1.45],
-  [ 1.00, -0.35, -1.50],
+  // Row 1 — front, eye level
+  [-2.00,  0.10, -1.50],
+  [-1.00,  0.20, -1.30],
+  [ 0.00,  0.10, -1.50],
+  [ 1.00,  0.20, -1.30],
+  [ 2.00,  0.10, -1.50],
+  // Row 2 — further back, slightly lower
+  [-1.50, -0.40, -2.00],
+  [-0.50, -0.30, -1.80],
+  [ 0.50, -0.30, -1.80],
+  [ 1.50, -0.40, -2.00],
+  [ 2.50, -0.40, -2.10],
 ];
+
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
