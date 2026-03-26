@@ -18,6 +18,7 @@ import {
   Animated,
   Modal,
   requireNativeComponent,
+  Alert,
 } from 'react-native';
 import {
   ViroARScene,
@@ -30,6 +31,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { loadGameSounds, playSound, releaseGameSounds } from '../utils/gameSound';
 
 // Direct native binding — bypasses {…this.props} in ViroNode.js
 // VRTViewContainer extends VRTNode which has canClick + onClickViro registered.
@@ -158,7 +160,13 @@ export const ARWordFindScreen = () => {
   const feedbackAnim = useRef(new Animated.Value(0)).current;
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
 
-  // AR mount gate
+  // Preload SFX on mount, release on unmount
+  useEffect(() => {
+    loadGameSounds();
+    return () => releaseGameSounds();
+  }, []);
+
+  // AR mount gate — lets native parent view establish before ViroARSceneNavigator
   const [arReady, setArReady] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setArReady(true), 200);
@@ -178,13 +186,16 @@ export const ARWordFindScreen = () => {
     if (!gameStarted) return;
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) {
+        const next = t - 1;
+        if (next <= 10 && next > 0) playSound('tick');
+        if (next <= 0) {
           clearInterval(timerRef.current!);
+          playSound('gameover');
           setTimedOut(true);
           setGameOver(true);
           return 0;
         }
-        return t - 1;
+        return next;
       });
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
@@ -221,10 +232,12 @@ export const ARWordFindScreen = () => {
     isTapping.current = true;
     setScore(s => s + 10);
     setFoundWords(prev => [...prev, word]);
+    playSound('correct');
     flashFeedback('correct', () => {
       isTapping.current = false;
       if (currentIdx + 1 >= wordQueue.length) {
         if (timerRef.current) clearInterval(timerRef.current);
+        playSound('victory');
         setGameOver(true);
       } else {
         setCurrentIdx(i => i + 1);
@@ -238,6 +251,7 @@ export const ARWordFindScreen = () => {
     isTapping.current = true;
     setScore(s => Math.max(0, s - 5));
     setWrongCount(c => c + 1);
+    playSound('wrong');
     flashFeedback('wrong', () => { isTapping.current = false; });
   }, [gameOver, flashFeedback]);
 
@@ -279,8 +293,20 @@ export const ARWordFindScreen = () => {
         {/* Header */}
         <View style={styles.header} pointerEvents="box-none">
           <TouchableOpacity style={styles.closeBtn} onPress={() => {
-            if (timerRef.current) clearInterval(timerRef.current);
-            navigation.goBack();
+            Alert.alert(
+              'Quit Game?',
+              'Your progress will be lost.',
+              [
+                { text: 'Keep Playing', style: 'cancel' },
+                {
+                  text: 'Quit', style: 'destructive',
+                  onPress: () => {
+                    if (timerRef.current) clearInterval(timerRef.current);
+                    navigation.goBack();
+                  },
+                },
+              ]
+            );
           }}>
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
