@@ -48,24 +48,21 @@ const VRTClickNode = requireNativeComponent('VRTViewContainer') as any;
 // ── Viro ClickState enum (from ViroReact EventDelegate) ───────────────────────
 const CLICK_STATE_CLICKED = 1; // "up" / confirmed tap
 
-// ── AR positions: 2 rows of 5, spread in wide arc in front of player ─────────
-// Wide enough that the child needs to pan the phone left/right to see all models.
-// Row 1 (front, eye level), Row 2 (further back, slightly lower)
+// ── AR positions: 10 models genuinely scattered around the player ─────────────
+// Varied x (left↔right), y (height), and z (depth) so no two models
+// sit at the same level — the child has to look around in all directions.
 const POSITIONS: [number, number, number][] = [
-  // Row 1 — front, eye level
-  [-2.00,  0.10, -1.50],
-  [-1.00,  0.20, -1.30],
-  [ 0.00,  0.10, -1.50],
-  [ 1.00,  0.20, -1.30],
-  [ 2.00,  0.10, -1.50],
-  // Row 2 — further back, slightly lower
-  [-1.50, -0.40, -2.00],
-  [-0.50, -0.30, -1.80],
-  [ 0.50, -0.30, -1.80],
-  [ 1.50, -0.40, -2.00],
-  [ 2.50, -0.40, -2.10],
+  [-2.2,  0.6, -1.6],  // far left, high
+  [-1.8, -0.5, -2.2],  // left, low, far
+  [-0.8,  0.4, -1.2],  // near-left, mid-high, close
+  [ 0.0,  0.8, -2.0],  // center, high up, far
+  [-0.4, -0.5, -1.7],  // near-center, low
+  [ 0.7,  0.5, -1.3],  // center-right, mid, close
+  [ 1.3, -0.4, -2.3],  // right, low, far
+  [ 1.9,  0.3, -1.5],  // far right, mid-height
+  [ 2.4, -0.5, -1.9],  // very far right, low
+  [ 0.4,  0.1, -2.6],  // center-right, mid, very far back
 ];
-
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
