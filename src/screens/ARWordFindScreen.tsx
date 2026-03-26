@@ -137,6 +137,15 @@ export const ARWordFindScreen = () => {
   const navigation = useNavigation();
   const allWords = Object.keys(MODEL_REGISTRY);
 
+  // Safe back navigation: hide Viro first so its native teardown
+  // completes before React Navigation's transition starts.
+  const safeGoBack = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    releaseGameSounds();
+    setIsLeaving(true);                       // unmounts ViroARSceneNavigator
+    setTimeout(() => navigation.goBack(), 350); // wait for native cleanup
+  }, [navigation]);
+
   // Game state
   const [wordQueue]   = useState<string[]>(() => shuffle(allWords));
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -145,6 +154,8 @@ export const ARWordFindScreen = () => {
   const [wrongCount, setWrongCount] = useState(0);
   const [gameOver, setGameOver]     = useState(false);
   const [timedOut, setTimedOut]     = useState(false);
+  // Prevents native ViroARSceneNavigator teardown conflicting with RN navigation
+  const [isLeaving, setIsLeaving]   = useState(false);
 
   // Loading state — tracks which models have fired onLoadEnd
   const [loadedWords, setLoadedWords] = useState<string[]>([]);
@@ -271,8 +282,8 @@ export const ARWordFindScreen = () => {
     <View style={styles.container}>
       <StatusBar hidden />
 
-      {/* AR Scene — mounts in background so models load during loading screen */}
-      {arReady && (
+      {/* AR Scene — hidden while leaving to avoid native teardown freeze */}
+      {arReady && !isLeaving && (
         <ViroARSceneNavigator
           autofocus
           initialScene={{ scene: WordFindScene as any }}
@@ -298,13 +309,7 @@ export const ARWordFindScreen = () => {
               'Your progress will be lost.',
               [
                 { text: 'Keep Playing', style: 'cancel' },
-                {
-                  text: 'Quit', style: 'destructive',
-                  onPress: () => {
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    navigation.goBack();
-                  },
-                },
+                { text: 'Quit', style: 'destructive', onPress: safeGoBack },
               ]
             );
           }}>
@@ -437,7 +442,7 @@ export const ARWordFindScreen = () => {
             <TouchableOpacity
               style={styles.doneBtn}
               activeOpacity={0.85}
-              onPress={() => navigation.goBack()}
+              onPress={safeGoBack}
             >
               <Text style={styles.doneBtnText}>Done</Text>
             </TouchableOpacity>
