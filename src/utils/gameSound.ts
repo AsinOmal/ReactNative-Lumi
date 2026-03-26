@@ -15,7 +15,7 @@ const pool: Partial<Record<SFX, Sound>> = {};
 
 const SOURCES: Record<SFX, any> = {
   correct:  require('../assets/audio/sfx/correct-answer.mp3'),
-  wrong:    require('../assets/audio/sfx/wrong buszz.mp3'),
+  wrong:    require('../assets/audio/sfx/wrong-buzz.m4a'),
   tick:     require('../assets/audio/sfx/countdown-tick.mp3'),
   victory:  require('../assets/audio/sfx/victory.mp3'),
   gameover: require('../assets/audio/sfx/game-over.mp3'),
