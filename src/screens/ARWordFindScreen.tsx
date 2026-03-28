@@ -4,7 +4,9 @@
  * AR Word Find Game with:
  *  - Loading screen that tracks each model's onLoadEnd
  *  - 60-second countdown timer (starts only after all assets are ready)
- *  - Direct VRTClickNode binding to bypass ViroReact's onClick prop-spread crash
+ *  - Click detection via ViroNode onClick (safe: ViroNode.js patched in node_modules
+ *    to strip event handler props from {…this.props} before reaching native,
+ *    preventing the 'setOnClick: unrecognized selector' ObjC crash)
  */
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
@@ -17,7 +19,6 @@ import {
   StatusBar,
   Animated,
   Modal,
-  requireNativeComponent,
   Alert,
 } from 'react-native';
 import {
@@ -26,6 +27,7 @@ import {
   ViroAmbientLight,
   ViroDirectionalLight,
   Viro3DObject,
+  ViroNode,
   ViroText,
 } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
@@ -33,11 +35,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { loadGameSounds, playSound, releaseGameSounds } from '../utils/gameSound';
 
-// Direct native binding — bypasses {…this.props} in ViroNode.js
-// VRTViewContainer extends VRTNode which has canClick + onClickViro registered.
-const VRTClickNode = requireNativeComponent('VRTViewContainer') as any;
 
-const CLICK_STATE_CLICKED = 1;
 const TOTAL_MODELS = Object.keys(MODEL_REGISTRY).length;
 const GAME_SECONDS = 60;
 
@@ -73,13 +71,14 @@ function fmt(s: number) {
 // ── AR Scene ──────────────────────────────────────────────────────────────────
 const WordFindScene = (props: any) => {
   const {
-    targetWord, foundWords, onCorrect, onWrong, onModelLoaded,
+    targetWord, foundWords, onCorrect, onWrong, onModelLoaded, randomizedPositions
   }: {
     targetWord: string;
     foundWords: string[];
     onCorrect: (w: string) => void;
     onWrong:   (w: string) => void;
     onModelLoaded: (w: string) => void;
+    randomizedPositions: [number, number, number][];
   } = props.sceneNavigator.viroAppProps;
 
   const entries = Object.entries(MODEL_REGISTRY);
@@ -93,16 +92,15 @@ const WordFindScene = (props: any) => {
       {entries.map(([word, model], idx) => {
         const isFound = foundWords.includes(word);
         const isTarget = word === targetWord;
-        const pos = POSITIONS[idx] ?? [0, 0, -1.5];
+        const pos = randomizedPositions[idx] ?? [0, 0, -1.5];
 
         return (
-          <VRTClickNode
+          <ViroNode
             key={word}
             position={pos}
             animation={{ name: 'rotate', run: !isFound, loop: true }}
-            canClick={!isFound && !!targetWord}
-            onClickViro={(event: any) => {
-              if (event.nativeEvent.clickState !== CLICK_STATE_CLICKED) return;
+            onClickState={(state: number) => {
+              if (state !== 1) return; // 1 = CLICKED
               if (isFound || !targetWord) return;
               if (word === targetWord) onCorrect(word);
               else onWrong(word);
@@ -125,7 +123,7 @@ const WordFindScene = (props: any) => {
                 textAlign: 'center',
               } as any}
             />
-          </VRTClickNode>
+          </ViroNode>
         );
       })}
     </ViroARScene>
@@ -136,6 +134,9 @@ const WordFindScene = (props: any) => {
 export const ARWordFindScreen = () => {
   const navigation = useNavigation();
   const allWords = Object.keys(MODEL_REGISTRY);
+
+  // Initialize random positions for this session
+  const [randomizedPositions] = useState(() => shuffle(POSITIONS));
 
   // Safe back navigation: hide Viro first so its native teardown
   // completes before React Navigation's transition starts.
@@ -159,6 +160,7 @@ export const ARWordFindScreen = () => {
 
   // Loading state — tracks which models have fired onLoadEnd
   const [loadedWords, setLoadedWords] = useState<string[]>([]);
+  const [allLoaded, setAllLoaded] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const loadFadeAnim = useRef(new Animated.Value(1)).current; // 1=visible, 0=hidden
 
@@ -175,13 +177,6 @@ export const ARWordFindScreen = () => {
   useEffect(() => {
     loadGameSounds();
     return () => releaseGameSounds();
-  }, []);
-
-  // AR mount gate — lets native parent view establish before ViroARSceneNavigator
-  const [arReady, setArReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setArReady(true), 200);
-    return () => clearTimeout(t);
   }, []);
 
   // Stable callback refs
@@ -218,13 +213,17 @@ export const ARWordFindScreen = () => {
       if (prev.includes(word)) return prev;
       const next = [...prev, word];
       if (next.length >= TOTAL_MODELS) {
-        // All models ready — fade out loading overlay then start game
-        Animated.timing(loadFadeAnim, {
-          toValue: 0, duration: 600, useNativeDriver: true,
-        }).start(() => setGameStarted(true));
+        setAllLoaded(true);
       }
       return next;
     });
+  }, []);
+
+  // ── Manual Play Start ────────────────────────────────────────────────────
+  const handleStartPlay = useCallback(() => {
+    Animated.timing(loadFadeAnim, {
+      toValue: 0, duration: 600, useNativeDriver: true,
+    }).start(() => setGameStarted(true));
   }, [loadFadeAnim]);
 
   // ── Feedback flash ───────────────────────────────────────────────────────
@@ -282,8 +281,9 @@ export const ARWordFindScreen = () => {
     <View style={styles.container}>
       <StatusBar hidden />
 
-      {/* AR Scene — hidden while leaving to avoid native teardown freeze */}
-      {arReady && !isLeaving && (
+      {/* AR Scene — always mounted to keep AR session stable.
+          Hidden with 0 opacity only when leaving to let native teardown cleanly. */}
+      <View style={[StyleSheet.absoluteFill, isLeaving && { opacity: 0 }]}>
         <ViroARSceneNavigator
           autofocus
           initialScene={{ scene: WordFindScene as any }}
@@ -293,10 +293,11 @@ export const ARWordFindScreen = () => {
             onCorrect: stableOnCorrect,
             onWrong:   stableOnWrong,
             onModelLoaded: stableOnModelLoaded,
+            randomizedPositions,
           }}
           style={StyleSheet.absoluteFill}
         />
-      )}
+      </View>
 
       {/* ── UI Overlay ── */}
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
@@ -369,24 +370,46 @@ export const ARWordFindScreen = () => {
         )}
       </SafeAreaView>
 
-      {/* ── Loading Overlay ── */}
+      {/* ── Loading / Instructions Overlay ── */}
       {!gameStarted && (
         <Animated.View style={[styles.loadingOverlay, { opacity: loadFadeAnim }]} pointerEvents="auto">
-          <Text style={styles.loadingTitle}>Getting Ready…</Text>
-          <Text style={styles.loadingSubtitle}>Loading your AR world</Text>
-
-          {/* Progress bar */}
-          <View style={styles.progressBarTrack}>
-            <Animated.View
-              style={[
-                styles.progressBarFill,
-                { width: `${(loadedWords.length / TOTAL_MODELS) * 100}%` },
-              ]}
-            />
+          <Text style={styles.loadingTitle}>How to Play!</Text>
+          
+          <View style={styles.instructionsBox}>
+            <Text style={styles.instructionLine}>📱 Move your phone around to look</Text>
+            <Text style={styles.instructionLine}>🔍 Find the 3D model that matches the word</Text>
+            <Text style={styles.instructionLine}>👆 Tap the correct model to earn +10 pts</Text>
+            <Text style={styles.instructionLine}>❌ Wrong taps cost you -5 pts</Text>
+            <Text style={styles.instructionLine}>⏱ You have 60 seconds. Good luck!</Text>
           </View>
-          <Text style={styles.progressCount}>
-            {loadedWords.length}/{TOTAL_MODELS} models loaded
-          </Text>
+
+          {/* Progress / Play Button Area */}
+          <View style={styles.loadingActionArea}>
+            {!allLoaded ? (
+              <View style={styles.progressContainer}>
+                <Text style={styles.loadingSubtitle}>Placing objects in your room...</Text>
+                <View style={styles.progressBarTrack}>
+                  <Animated.View
+                    style={[
+                      styles.progressBarFill,
+                      { width: `${(loadedWords.length / TOTAL_MODELS) * 100}%` },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.progressCount}>
+                  {loadedWords.length}/{TOTAL_MODELS} ready
+                </Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.startGameBtn}
+                activeOpacity={0.8}
+                onPress={handleStartPlay}
+              >
+                <Text style={styles.startGameBtnText}>🚀 Start Playing!</Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
           {/* Emoji grid — lights up as each model loads */}
           <View style={styles.emojiGrid}>
@@ -523,33 +546,54 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0D0728',
     alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: 32, gap: 16,
+    paddingHorizontal: 24, gap: 20,
   },
   loadingTitle: {
-    fontFamily: 'Fredoka-Bold', fontSize: 32, color: '#FFF', textAlign: 'center',
+    fontFamily: 'Fredoka-Bold', fontSize: 36, color: '#FFF', textAlign: 'center',
+    marginTop: -20, textShadowColor: 'rgba(124,58,237,0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 10,
   },
+  instructionsBox: {
+    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 24,
+    padding: 24, width: '100%', gap: 14,
+    borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.2)',
+  },
+  instructionLine: {
+    fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: '#E2E8F0',
+  },
+  loadingActionArea: {
+    width: '100%', height: 80, justifyContent: 'center', alignItems: 'center', marginTop: 10,
+  },
+  progressContainer: { width: '100%', alignItems: 'center', gap: 8 },
   loadingSubtitle: {
-    fontFamily: 'Fredoka-Regular', fontSize: 16, color: '#A78BFA', marginTop: -8,
+    fontFamily: 'Fredoka-SemiBold', fontSize: 16, color: '#A78BFA',
   },
   progressBarTrack: {
-    width: '100%', height: 10, backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 10, overflow: 'hidden',
+    width: '100%', height: 12, backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 6, overflow: 'hidden',
   },
   progressBarFill: {
-    height: '100%', backgroundColor: '#7C3AED', borderRadius: 10,
+    height: '100%', backgroundColor: '#7C3AED', borderRadius: 6,
   },
   progressCount: {
-    fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#7C5CBF', marginTop: -8,
+    fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#7C5CBF',
+  },
+  startGameBtn: {
+    backgroundColor: '#10B981', paddingVertical: 18, paddingHorizontal: 40,
+    borderRadius: 30, width: '100%', alignItems: 'center',
+    shadowColor: '#10B981', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, elevation: 5,
+  },
+  startGameBtnText: {
+    fontFamily: 'Fredoka-Bold', fontSize: 22, color: '#FFF',
   },
   emojiGrid: {
     flexDirection: 'row', flexWrap: 'wrap',
-    justifyContent: 'center', gap: 10, marginTop: 8,
+    justifyContent: 'center', gap: 12, marginTop: 10,
   },
   emojiCell: {
-    width: 52, height: 52, borderRadius: 16,
+    width: 54, height: 54, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.05)',
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.08)',
   },
   emojiCellLoaded: {
     backgroundColor: 'rgba(124,58,237,0.3)',
