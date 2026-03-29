@@ -1,0 +1,138 @@
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+import { useCameraDevice, useCameraPermission, Camera } from 'react-native-vision-camera';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { MatchResult, matchWord, detectUnknownWord } from '../utils/wordMatcher';
+import { recognizeTextInImage } from '../utils/visionOCR';
+import { config } from '../constants/config';
+import { ScanMode } from '../types';
+
+interface UseScanOCRProps {
+  mode: ScanMode;
+  allSupportedWords: string[];
+}
+
+// 📖 What this does:
+// This hook encapsulates all the heavy camera logic and OCR scanning loops.
+// It manages permissions, camera references, App state (backgrounding), 
+// and the debounce logic to ensure words have to be matched across multiple consecutive frames.
+export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
+  const device = useCameraDevice('back');
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const cameraRef = useRef<Camera>(null);
+
+  const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
+  const [unknownWord, setUnknownWord] = useState<string | null>(null);
+
+  const isScanning = useRef(false);
+  const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
+  const isFocused = useIsFocused(); // True native navigation focus state
+  
+  // Debouncing refs
+  const lastCandidateRef = useRef<string | null>(null);
+  const consecutiveCountRef = useRef(0);
+  const firstCandidateResultRef = useRef<MatchResult | null>(null);
+
+  const lastUnknownCandidateRef = useRef<string | null>(null);
+  const unknownConsecutiveRef = useRef(0);
+
+  // Stop camera & OCR when navigating away
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenFocused(true);
+      return () => {
+        setIsScreenFocused(false);
+        if (scanTimerRef.current) {
+          clearInterval(scanTimerRef.current);
+          scanTimerRef.current = null;
+        }
+        isScanning.current = false;
+      };
+    }, [])
+  );
+
+  // Stop camera when locked / backgrounded
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {
+      const active = nextState === 'active';
+      setIsAppActive(active);
+      if (!active && scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+        isScanning.current = false;
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
+    if (!hasPermission) requestPermission();
+  }, [hasPermission, requestPermission]);
+
+  const runOCR = useCallback(async () => {
+    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive || !isScreenFocused || !isFocused) return;
+    
+    isScanning.current = true;
+    try {
+      const snapshot = await cameraRef.current.takePhoto({ enableShutterSound: false });
+      const text = await recognizeTextInImage(snapshot.path);
+      const matched = matchWord(text, allSupportedWords);
+
+      if (matched?.word === lastCandidateRef.current) {
+        consecutiveCountRef.current += 1;
+      } else {
+        lastCandidateRef.current = matched?.word ?? null;
+        consecutiveCountRef.current = matched ? 1 : 0;
+        firstCandidateResultRef.current = matched;
+      }
+
+      if (matched && consecutiveCountRef.current >= config.REQUIRED_CONSECUTIVE_FRAMES) {
+        setMatchResult(firstCandidateResultRef.current ?? matched);
+        setUnknownWord(null);
+        lastUnknownCandidateRef.current = null;
+        unknownConsecutiveRef.current = 0;
+      } else if (!matched) {
+        setMatchResult(null);
+
+        const unknown = detectUnknownWord(text, allSupportedWords);
+        if (unknown && unknown === lastUnknownCandidateRef.current) {
+          unknownConsecutiveRef.current += 1;
+        } else {
+          lastUnknownCandidateRef.current = unknown;
+          unknownConsecutiveRef.current = unknown ? 1 : 0;
+        }
+
+        if (unknown && unknownConsecutiveRef.current >= config.REQUIRED_UNKNOWN_CONSECUTIVE) {
+          setUnknownWord(unknown);
+        } else if (!unknown) {
+          setUnknownWord(null);
+        }
+      }
+    } catch {
+      // Silently ignore — camera unavailable when backgrounded/locked
+    } finally {
+      isScanning.current = false;
+    }
+  }, [mode, isAppActive, isScreenFocused, isFocused, allSupportedWords]);
+
+  useEffect(() => {
+    if (mode === 'scan' && isAppActive && isScreenFocused && isFocused) {
+      scanTimerRef.current = setInterval(runOCR, config.SCAN_INTERVAL_MS);
+    } else {
+      if (scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+      }
+    }
+    return () => {
+      if (scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+      }
+    };
+  }, [mode, isAppActive, isScreenFocused, isFocused, runOCR]);
+
+  return { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord };
+};

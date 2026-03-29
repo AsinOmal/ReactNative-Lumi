@@ -5,6 +5,9 @@
 # Local dev docs (not for GitHub)
 BUILD_LOG.md
 
+# AI Coding Rules
+.rules
+.rules/
 
 # Xcode
 #
@@ -71,7 +74,9 @@ yarn-error.log
 
 # Project Documentation
 Lumi_Blueprint.md
+currently_implemented.md
 
 # Temp scripts and logs
 ios/add_firebase_plist.rb
 ios/pod_install_err.log
+
