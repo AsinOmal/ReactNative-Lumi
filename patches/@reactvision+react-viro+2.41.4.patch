@@ -1,0 +1,60 @@
+diff --git a/node_modules/@reactvision/react-viro/components/AR/ViroARScene.tsx b/node_modules/@reactvision/react-viro/components/AR/ViroARScene.tsx
+index cc2c780..b1d8ebd 100644
+--- a/node_modules/@reactvision/react-viro/components/AR/ViroARScene.tsx
++++ b/node_modules/@reactvision/react-viro/components/AR/ViroARScene.tsx
+@@ -391,6 +391,20 @@ export class ViroARScene extends ViroBase<Props> {
+       );
+     }
+ 
++    // Strip JS-only event handler props before spreading to native.
++    // Modern RN no longer filters unknown props — forwarding these callbacks
++    // to VRTARScene causes `unrecognized selector` crashes on the native bridge.
++    // The native equivalents (onClickViro, onHoverViro, …) are passed explicitly below.
++    const {
++      onClick, onClickState, onHover, onFuse, onDrag,
++      onPinch, onRotate, onTouch, onScroll, onSwipe,
++      onCollision, onTransformUpdate,
++      onCameraARHitTest, onARPointCloudUpdate, onCameraTransformUpdate,
++      onPlatformUpdate, onTrackingUpdated, onTrackingInitialized,
++      onAmbientLightUpdate, onAnchorFound, onAnchorUpdated, onAnchorRemoved,
++      ...nativeProps
++    } = this.props;
++
+     return (
+       <ViroSceneContext.Provider
+         value={{
+@@ -426,7 +440,7 @@ export class ViroARScene extends ViroBase<Props> {
+         }}
+       >
+         <VRTARScene
+-          {...this.props}
++          {...nativeProps}
+           canHover={this.props.onHover != undefined}
+           canClick={
+             this.props.onClick != undefined ||
+diff --git a/node_modules/@reactvision/react-viro/components/ViroNode.tsx b/node_modules/@reactvision/react-viro/components/ViroNode.tsx
+index ea725e3..4436a1e 100644
+--- a/node_modules/@reactvision/react-viro/components/ViroNode.tsx
++++ b/node_modules/@reactvision/react-viro/components/ViroNode.tsx
+@@ -42,9 +42,20 @@ export class ViroNode extends ViroBase<{}> {
+         ? this._onNativeTransformUpdate
+         : undefined;
+ 
++    // Strip JS-only event handler props before spreading to native.
++    // Modern RN no longer filters unknown props — forwarding onClick/onClickState
++    // etc. to VRTViewContainer causes `setOnClick: unrecognized selector` crashes.
++    // The native equivalents (onClickViro, onHoverViro, …) are passed explicitly below.
++    const {
++      onClick, onClickState, onHover, onFuse, onDrag,
++      onPinch, onRotate, onTouch, onScroll, onSwipe,
++      onCollision, onTransformUpdate,
++      ...nativeProps
++    } = this.props;
++
+     return (
+       <VRTViewContainer
+-        {...this.props}
++        {...nativeProps}
+         ref={(component) => {
+           this._component = component;
+         }}
