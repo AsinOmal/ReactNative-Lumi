@@ -44,6 +44,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to use your camera</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Lumi uses Face ID to verify parent identity before accessing parental controls.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>

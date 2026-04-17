@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -9,6 +10,7 @@ import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { SavedWordsScreen } from '../screens/SavedWordsScreen';
 import { ARWordFindScreen } from '../screens/ARWordFindScreen';
+import { ParentDashboardScreen } from '../screens/ParentDashboardScreen';
 import { createUserIfNew } from '../services/userService';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -16,6 +18,7 @@ const Stack = createStackNavigator();
 
 export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();
+  const { loadSettings } = useParentalControlsStore();
 
   useEffect(() => {
     const authInstance = getAuth(getApp());
@@ -23,12 +26,17 @@ export const AppRoutes = () => {
       setUser(userState);
       if (initializing) setInitializing(false);
 
-      // Auto-create Firestore user doc on first sign-in
       if (userState) {
         try {
           await createUserIfNew(userState);
         } catch (e) {
           console.warn('Firestore user create failed:', e);
+        }
+        // Load parental settings so mergedBlocklist is ready before first OCR frame
+        try {
+          await loadSettings(userState.uid);
+        } catch (e) {
+          console.warn('Parental settings load failed:', e);
         }
       }
     });
@@ -54,6 +62,7 @@ export const AppRoutes = () => {
         <Stack.Screen name="Achievements" component={AchievementsScreen} />
         <Stack.Screen name="SavedWords" component={SavedWordsScreen} />
         <Stack.Screen name="ARWordFind" component={ARWordFindScreen} />
+        <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

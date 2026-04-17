@@ -34,4 +34,8 @@ export const colors = {
   // Borders/Dividers
   borderPrimary: 'rgba(139,92,246,0.4)',
   handleBar: '#E0D7F5',
+
+  // Parental Controls
+  backgroundLight: '#F0EBFF',
+  backgroundPurple: '#F0EBFF',
 };

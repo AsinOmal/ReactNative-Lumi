@@ -77,7 +77,7 @@ export const HomeScreen = () => {
               <Text style={styles.greeting}>
                 Hello, <Text style={styles.greetingName}>{firstName}!</Text>
               </Text>
-              {streak > 0 && (
+              {streak >= 3 && (
                 <View style={styles.streakChip}>
                   <Text style={styles.streakText}>🔥 {streak} day{streak !== 1 ? 's' : ''}</Text>
                 </View>
@@ -87,7 +87,7 @@ export const HomeScreen = () => {
               <TouchableOpacity style={styles.gearBtn} onPress={() => (navigation as any).navigate('Achievements')}>
                 <Text style={styles.gearIcon}>🏆</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.gearBtn}>
+              <TouchableOpacity style={styles.gearBtn} onPress={() => (navigation as any).navigate('ParentDashboard')}>
                 <Text style={styles.gearIcon}>⚙️</Text>
               </TouchableOpacity>
             </View>

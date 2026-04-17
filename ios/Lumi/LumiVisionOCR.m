@@ -13,4 +13,7 @@
 RCT_EXTERN_METHOD(recognizeText : (NSString *)imagePath resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(classifyFrameForHazards : (NSString *)imagePath resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+
 @end

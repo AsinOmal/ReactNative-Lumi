@@ -91,6 +91,51 @@ class LumiVisionOCR: NSObject {
     }
   }
 
+  // ── Hazard Classification ─────────────────────────────────────────────────
+  // Runs VNClassifyImageRequest on the full frame (no crop — hazard detection
+  // works better on the full scene than just the scan reticle area).
+  // Returns a JSON array of label strings with confidence > 0.5.
+  @objc
+  func classifyFrameForHazards(
+    _ imagePath: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let image = UIImage(contentsOfFile: imagePath),
+          let cgImage = image.cgImage else {
+      reject("E_IMAGE", "Cannot load image at path: \(imagePath)", nil)
+      return
+    }
+
+    let request = VNClassifyImageRequest { request, error in
+      defer {
+        try? FileManager.default.removeItem(atPath: imagePath)
+      }
+
+      if let error = error {
+        reject("E_CLASSIFY", error.localizedDescription, error)
+        return
+      }
+
+      let observations = request.results as? [VNClassificationObservation] ?? []
+      // Return only high-confidence labels to avoid noise triggering alerts
+      let labels = observations
+        .filter { $0.confidence > 0.5 }
+        .map { $0.identifier }
+
+      resolve(labels)
+    }
+
+    let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+    DispatchQueue.global(qos: .utility).async {
+      do {
+        try handler.perform([request])
+      } catch {
+        reject("E_CLASSIFY", error.localizedDescription, error)
+      }
+    }
+  }
+
   @objc
   static func requiresMainQueueSetup() -> Bool {
     return false

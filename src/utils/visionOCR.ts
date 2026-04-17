@@ -39,3 +39,30 @@ export async function recognizeTextInImage(imagePath: string): Promise<string> {
     return '';
   }
 }
+
+/**
+ * Runs Apple's Vision image classification on a local snapshot.
+ * Returns an array of classification label strings that exceeded the 0.5
+ * confidence threshold inside the Swift module.
+ * Returns empty array if unavailable or on Android.
+ */
+export async function classifyFrameForHazards(imagePath: string): Promise<string[]> {
+  if (Platform.OS !== 'ios') return [];
+
+  if (!LumiVisionOCR) {
+    console.warn('[VisionOCR] ❌ Native module not found — rebuild required');
+    return [];
+  }
+
+  const posixPath = imagePath.startsWith('file://')
+    ? decodeURIComponent(imagePath.replace('file://', ''))
+    : imagePath;
+
+  try {
+    const labels: string[] = await LumiVisionOCR.classifyFrameForHazards(posixPath);
+    return labels ?? [];
+  } catch (e) {
+    console.warn('[VisionOCR] ❌ Classification error:', e);
+    return [];
+  }
+}

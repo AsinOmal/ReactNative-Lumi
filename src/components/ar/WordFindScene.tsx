@@ -38,7 +38,7 @@ export const WordFindScene = (props: any) => {
           <ViroNode
             key={word}
             position={pos}
-            animation={{ name: 'rotate', run: !isFound, loop: true }}
+            animation={{ name: 'rotate', run: isTarget && !isFound, loop: true }}
             onClickState={(state: number) => {
               if (state !== 1) return; // 1 = CLICKED
               if (isFound || !targetWord) return;

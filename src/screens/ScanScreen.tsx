@@ -11,9 +11,11 @@ import { ScanOverlayLayer } from '../components/scan/ScanOverlayLayer';
 
 import { useScanOCR } from '../hooks/useScanOCR';
 import { useWordSaving } from '../hooks/useWordSaving';
+import { useHazardDetection } from '../hooks/useHazardDetection';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { wishWord } from '../utils/wishlistStore';
 import { ScanMode } from '../types';
+import { HazardAlertOverlay } from '../components/HazardAlertOverlay';
 import { styles } from './ScanScreenStyles';
 
 const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
@@ -35,6 +37,12 @@ export const ScanScreen = () => {
 
   const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords: ALL_SUPPORTED_WORDS });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
+
+  // Safety layer — only active in scan mode with camera live
+  const { currentHazard, dismissHazard } = useHazardDetection({
+    cameraRef,
+    isActive: mode === 'scan' && isAppActive && isFocused,
+  });
 
   // Reset wish modal whenever a new unknown word appears
   useEffect(() => { setShowWishModal(false); }, [unknownWord]);
@@ -78,6 +86,8 @@ export const ScanScreen = () => {
   if (mode === 'scan') {
     return (
       <View style={styles.container}>
+        <HazardAlertOverlay visible={!!currentHazard} onDismiss={dismissHazard} />
+
         <ScanCameraLayer
           device={device}
           hasPermission={hasPermission}

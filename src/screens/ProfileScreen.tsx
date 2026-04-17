@@ -1,21 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth, signOut } from '@react-native-firebase/auth';
+import { useParentAuth } from '../hooks/useParentAuth';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
+import { PINEntryModal } from '../components/PINEntryModal';
+import { styles } from './ProfileScreenStyles';
 
 export const ProfileScreen = () => {
   const { user } = useAuthStore();
+  const navigation = useNavigation();
+  const { authStep, authenticate, verifyPin } = useParentAuth();
+  const { settings } = useParentalControlsStore();
+  const [showPin, setShowPin] = useState(false);
+  const [pinError, setPinError] = useState(false);
 
-  const firstName = user?.displayName?.split(' ')[0] ?? 'Seeker';
   const initials = user?.displayName
     ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : '?';
@@ -26,6 +34,32 @@ export const ProfileScreen = () => {
       await signOut(auth);
     } catch (e) {
       console.error('Sign out error:', e);
+    }
+  };
+
+  const handleParentDashboard = async () => {
+    await authenticate();
+    // If biometrics succeed, authStep becomes 'success' — navigate immediately.
+    // If it falls back to PIN, the modal will appear via authStep === 'pin'.
+  };
+
+  // Watch for biometric success (no PIN needed path)
+  React.useEffect(() => {
+    if (authStep === 'success') {
+      (navigation as any).navigate('ParentDashboard');
+    } else if (authStep === 'pin') {
+      setShowPin(true);
+    }
+  }, [authStep, navigation]);
+
+  const handlePinSubmit = (pin: string) => {
+    const ok = verifyPin(pin);
+    if (ok) {
+      setShowPin(false);
+      (navigation as any).navigate('ParentDashboard');
+    } else {
+      setPinError(true);
+      setTimeout(() => setPinError(false), 1500);
     }
   };
 
@@ -69,6 +103,11 @@ export const ProfileScreen = () => {
             </View>
           </View>
 
+          {/* Parent Dashboard */}
+          <TouchableOpacity style={styles.parentDashBtn} onPress={handleParentDashboard} activeOpacity={0.8}>
+            <Text style={styles.parentDashText}>🔒  Parent Dashboard</Text>
+          </TouchableOpacity>
+
           {/* Sign out */}
           <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8}>
             <Text style={styles.signOutText}>Sign Out</Text>
@@ -76,73 +115,17 @@ export const ProfileScreen = () => {
 
         </ScrollView>
       </SafeAreaView>
+
+      <PINEntryModal
+        visible={showPin}
+        mode={settings.pinHash ? 'verify' : 'set'}
+        onSubmit={handlePinSubmit}
+        onCancel={() => setShowPin(false)}
+        hasError={pinError}
+      />
       {/* Space for floating tab bar */}
       <View style={{ height: 90 }} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F0EBFF' },
-  safeArea: { flex: 1 },
-  scroll: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 },
-  headerTitle: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 28,
-    color: '#1A1050',
-    marginBottom: 20,
-  },
-  avatarCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#5B2DC0',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  avatarCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#5B2DC0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  avatarText: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: '#FFF' },
-  displayName: { fontFamily: 'Fredoka-Bold', fontSize: 22, color: '#1A1050', marginBottom: 4 },
-  email: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#888', marginBottom: 12 },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF3E0',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    gap: 4,
-  },
-  streakEmoji: { fontSize: 16 },
-  streakText: { fontFamily: 'Fredoka-SemiBold', fontSize: 14, color: '#E65100' },
-  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#E8E0FF',
-    borderRadius: 20,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  statNumber: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: '#5B2DC0' },
-  statLabel: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: '#7B6EA6', marginTop: 2, textAlign: 'center' },
-  signOutBtn: {
-    backgroundColor: '#1A1050',
-    borderRadius: 40,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  signOutText: { fontFamily: 'Fredoka-Bold', fontSize: 18, color: '#FFF', letterSpacing: 0.5 },
-});

@@ -75,6 +75,11 @@ yarn-error.log
 # Project Documentation
 Lumi_Blueprint.md
 currently_implemented.md
+project_breakdown.md
+LUMI_BLUEPRINT_V2.md
+CLAUDE.md
+DEVELOPMENT_PLAN.md
+PROJECT_SUMMARY.md
 
 # Temp scripts and logs
 ios/add_firebase_plist.rb

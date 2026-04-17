@@ -6,6 +6,9 @@ import { MatchResult, matchWord, detectUnknownWord } from '../utils/wordMatcher'
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { config } from '../constants/config';
 import { ScanMode } from '../types';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { logActivityEvent } from '../services/parentalControlsService';
 
 interface UseScanOCRProps {
   mode: ScanMode;
@@ -37,6 +40,10 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
 
   const lastUnknownCandidateRef = useRef<string | null>(null);
   const unknownConsecutiveRef = useRef(0);
+
+  // Parental controls — read from store (never recalculated in the scan hot-path)
+  const { mergedBlocklist } = useParentalControlsStore();
+  const { user } = useAuthStore();
 
   // Stop camera & OCR when navigating away
   useFocusEffect(
@@ -89,7 +96,25 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
       }
 
       if (matched && consecutiveCountRef.current >= config.REQUIRED_CONSECUTIVE_FRAMES) {
-        setMatchResult(firstCandidateResultRef.current ?? matched);
+        // ── Blocklist check — before surfacing to child UI ────────────────────
+        // Log every confirmed match for parent activity log (flagged or not).
+        // Blocked words: log silently, show nothing to the child.
+        const isBlocked = mergedBlocklist.has(matched.word);
+        if (user) {
+          logActivityEvent(user.uid, {
+            word: matched.word,
+            flagged: isBlocked,
+            source: 'ocr_scan',
+          }).catch(() => {
+            // Fire-and-forget — don't stall the scan loop on a Firestore write error
+          });
+        }
+
+        if (!isBlocked) {
+          setMatchResult(firstCandidateResultRef.current ?? matched);
+        } else {
+          setMatchResult(null); // silently discard — no child-facing feedback
+        }
         setUnknownWord(null);
         lastUnknownCandidateRef.current = null;
         unknownConsecutiveRef.current = 0;
@@ -115,7 +140,7 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
     } finally {
       isScanning.current = false;
     }
-  }, [mode, isAppActive, isScreenFocused, isFocused, allSupportedWords]);
+  }, [mode, isAppActive, isScreenFocused, isFocused, allSupportedWords, mergedBlocklist, user]);
 
   useEffect(() => {
     if (mode === 'scan' && isAppActive && isScreenFocused && isFocused) {

@@ -21,4 +21,44 @@ export const strings = {
   // General
   loading: 'Loading...',
   error: 'An error occurred',
+  cancel: 'Cancel',
+
+  // Parental Controls — PIN
+  pinSetTitle: 'Set Your Parental PIN',
+  pinSetSubtitle: 'Choose a 4-digit PIN to protect parent settings',
+  pinVerifyTitle: 'Parent Access',
+  pinVerifySubtitle: 'Enter your 4-digit PIN to continue',
+  pinIncorrect: 'Incorrect PIN. Try again.',
+
+  // Parent Dashboard
+  dashboardTitle: 'Parent Dashboard',
+  dashboardTabTime: 'Time',
+  dashboardTabActivity: 'Activity',
+  dashboardTabFlagged: 'Flagged',
+  dashboardTabBlocklist: 'Blocklist',
+  dashboardAuthTitle: 'Parent Area',
+  dashboardAuthSubtitle: 'Verify your identity to access parental controls.',
+  dashboardAuthBtn: 'Verify Identity',
+  screenTimeNoLimit: 'No daily limit',
+  screenTimeLimitFmt: (min: number) => `${min} min / day`,
+  screenTimeUsedFmt: (min: number) => `${Math.round(min)} min used today`,
+  screenTimeTimedModeLabel: 'Timed Mode',
+  screenTimeTimedModeSub: 'Adds a countdown timer to Scan & Count rounds',
+  activityLogEmpty: 'No activity recorded yet.',
+  flaggedWordsEmpty: 'No flagged words — all clear!',
+  blocklistPlaceholder: 'Type a word to block...',
+  blocklistAddBtn: 'Add',
+  blocklistEmpty: 'No custom blocked words.',
+
+  // Safety Layer
+  hazardAlertTitle: 'Whoa! Stop right there!',
+  hazardAlertBody: "It looks like there's something unsafe nearby. Please move away and find a grown-up.",
+  hazardAlertButton: "I'm Safe Now",
+
+  // Parental Controls — Screen Time
+  screenTimeLimitTitle: "Time's Up for Today!",
+  screenTimeLimitBody: (used: number, limit: number) =>
+    `You've used ${used} of ${limit} minutes today. Great job learning!`,
+  screenTimeLimitParentNote: 'Ask a parent to unlock more time.',
+  screenTimeLimitUnlock: 'Parent Unlock',
 };

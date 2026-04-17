@@ -2,6 +2,8 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Animated } from 'react-native';
 import { playSound } from '../utils/gameSound';
 import { config } from '../constants/config';
+import { useAuthStore } from '../store/useAuthStore';
+import { logActivityEvent } from '../services/parentalControlsService';
 
 interface UseARGameLoopProps {
   wordQueue: string[];
@@ -12,6 +14,7 @@ interface UseARGameLoopProps {
 // and the 'correct/wrong' UI feedback animations. 
 // It also tracks whether the game is currently running or over.
 export const useARGameLoop = ({ wordQueue }: UseARGameLoopProps) => {
+  const { user } = useAuthStore();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [foundWords, setFoundWords] = useState<string[]>([]);
   const [score, setScore] = useState(0);
@@ -61,6 +64,10 @@ export const useARGameLoop = ({ wordQueue }: UseARGameLoopProps) => {
     setScore(s => s + 10);
     setFoundWords(prev => [...prev, word]);
     playSound('correct');
+    // Log to parent activity log — fire-and-forget, never stalls game loop
+    if (user) {
+      logActivityEvent(user.uid, { word, flagged: false, source: 'ar_word_find' }).catch(() => {});
+    }
     flashFeedback('correct', () => {
       isTapping.current = false;
       if (currentIdx + 1 >= wordQueue.length) {
