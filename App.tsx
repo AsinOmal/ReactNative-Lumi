@@ -1,6 +1,7 @@
 /// <reference types="nativewind/types" />
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppRoutes } from './src/navigation/AppRoutes';
 import { useScreenTime } from './src/hooks/useScreenTime';
 
@@ -13,7 +14,9 @@ const AppInner = () => {
 
 const App = () => (
   <GestureHandlerRootView style={{ flex: 1 }}>
-    <AppInner />
+    <SafeAreaProvider>
+      <AppInner />
+    </SafeAreaProvider>
   </GestureHandlerRootView>
 );
 
