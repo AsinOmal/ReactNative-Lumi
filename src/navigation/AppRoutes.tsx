@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
@@ -18,7 +18,10 @@ import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { ScanScreen } from '../screens/ScanScreen';
+import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { createUserIfNew } from '../services/userService';
+import { hasSeenOnboarding } from '../utils/onboardingStore';
+import { scheduleStreakReminder } from '../services/notificationService';
 import { createStackNavigator, CardStyleInterpolators, TransitionSpecs } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
@@ -27,6 +30,17 @@ export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();
   const { loadSettings, isParentUnlocked } = useParentalControlsStore();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
+  const [onboardingReady, setOnboardingReady] = useState(false);
+  const [showOnboarding, setShowOnboarding]   = useState(false);
+
+  // Check onboarding flag and schedule streak reminder on cold launch
+  useEffect(() => {
+    hasSeenOnboarding().then(seen => {
+      setShowOnboarding(!seen);
+      setOnboardingReady(true);
+    });
+    scheduleStreakReminder();
+  }, []);
 
   useEffect(() => {
     const authInstance = getAuth(getApp());
@@ -51,12 +65,16 @@ export const AppRoutes = () => {
     return subscriber;
   }, []);
 
-  if (initializing) {
+  if (initializing || !onboardingReady) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color="#5B2DC0" />
       </View>
     );
+  }
+
+  if (showOnboarding) {
+    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
   }
 
   if (!user) {

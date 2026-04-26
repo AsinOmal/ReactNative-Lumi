@@ -14,6 +14,7 @@ import { MatchResult } from '../utils/wordMatcher';
 import { useAuthStore } from '../store/useAuthStore';
 import { syncAchievementToFirestore } from '../services/achievementService';
 import { saveWordToFirestore, removeWordFromFirestore } from '../services/savedWordsService';
+import { recordScanToday } from '../services/notificationService';
 
 interface UseWordSavingProps {
   activeWord: string;
@@ -39,6 +40,7 @@ export const useWordSaving = ({ activeWord, matchResult }: UseWordSavingProps) =
     }
 
     setIsWordSaved(true);
+    recordScanToday().catch(() => {}); // cancel tonight's reminder — user has scanned today
     const isCorrection = matchResult?.isCorrection ?? false;
     const newAchievements = await recordScan(activeWord, isCorrection);
 
