@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Achievement } from '../utils/achievementRegistry';
 import { EarnedAchievement } from '../utils/achievementStore';
 
@@ -32,7 +33,7 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
       const uri = await viewShotRef.current!.capture!();
       await Share.share({
         url: uri,
-        message: `I just unlocked the "${achievement.title}" achievement on Lumi! 🎉`,
+        message: `I just unlocked the "${achievement.title}" achievement on Lumi!`,
         title: 'Lumi Achievement',
       });
     } catch {
@@ -55,8 +56,8 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
               </View>
 
               {/* Badge */}
-              <View style={styles.badgeCircle}>
-                <Text style={styles.badgeEmoji}>{achievement.emoji}</Text>
+              <View style={[styles.badgeCircle, { borderColor: achievement.iconColor, backgroundColor: achievement.iconColor + '22' }]}>
+                <MaterialCommunityIcons name={achievement.iconName} size={52} color={achievement.iconColor} />
               </View>
 
               {/* Text */}
@@ -154,8 +155,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 4,
   },
-  badgeEmoji: { fontSize: 52 },
-
   achievementTitle: {
     fontFamily: 'Fredoka-Bold',
     fontSize: 26,
