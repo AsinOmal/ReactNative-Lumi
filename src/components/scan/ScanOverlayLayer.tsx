@@ -8,6 +8,14 @@ import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
 import { strings } from '../../constants/strings';
+import { PACK_WORDS } from '../../constants/packWords';
+
+function getPackLabel(word: string): string {
+  for (const [pack, words] of Object.entries(PACK_WORDS)) {
+    if (words.includes(word)) return pack.charAt(0).toUpperCase() + pack.slice(1) + ' Pack';
+  }
+  return '';
+}
 
 interface ScanOverlayLayerProps {
   activeWord: string;
@@ -31,6 +39,7 @@ export const ScanOverlayLayer = ({
   onSave,
 }: ScanOverlayLayerProps) => {
   const fact = getRandomFact(activeWord);
+  const packLabel = getPackLabel(activeWord);
 
   return (
     <Animated.View style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}>
@@ -40,7 +49,7 @@ export const ScanOverlayLayer = ({
           <Text style={styles.resultWord}>
             {activeWord.charAt(0).toUpperCase() + activeWord.slice(1)}
           </Text>
-          <Text style={styles.resultPack}>{strings.fruitsPackName}</Text>
+          {packLabel ? <Text style={styles.resultPack}>{packLabel}</Text> : null}
         </View>
       </View>
       

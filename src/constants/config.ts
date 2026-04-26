@@ -10,6 +10,17 @@ export const config = {
   // Game Settings (AR Word Find)
   AR_GAME_DURATION_SEC: 60,
   AR_MODELS_TOTAL: 10,
+
+  // Game Settings (Make a Meal)
+  MAKE_A_MEAL_DISTRACTOR_COUNT: 3, // wrong models spawned alongside recipe ingredients
+
+  // Game Settings (Scan & Count)
+  SCAN_AND_COUNT_ROUNDS: 5,
+  SCAN_AND_COUNT_TIMER_MS: 30000,
+  SCAN_AND_COUNT_DISTRACTOR_COUNT: 3,
+  SCAN_AND_COUNT_PROGRESSION_STEP: 2,
+  SCAN_AND_COUNT_RESET_DAYS: 7,
+  SCAN_AND_COUNT_MAX_TARGETS: 10,
   
   // Animations
   CARD_SLIDE_DURATION_MS: 250,

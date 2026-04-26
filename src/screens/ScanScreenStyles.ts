@@ -29,28 +29,26 @@ export const styles = StyleSheet.create({
   packBadgeText: { fontFamily: 'Fredoka-SemiBold', fontSize: 14, color: '#fff' },
 
   statusBar: {
-    position: 'absolute', top: 104,
+    position: 'absolute', top: 136,
     alignSelf: 'center',
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(91,45,192,0.82)',
+    borderRadius: 28, paddingHorizontal: 24, paddingVertical: 13,
+    borderWidth: 1.5, borderColor: 'rgba(167,139,250,0.55)',
+    shadowColor: '#8B5CF6', shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75, shadowRadius: 18, elevation: 10,
   },
-  statusDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#4ADE80' },
-  statusText: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: 'rgba(255,255,255,0.8)' },
-
-  wordSelectorWrapper: { position: 'absolute', top: 126, left: 0, right: 0 },
-  wordSelectorContent: { paddingHorizontal: 16, gap: 8 },
-  wordChip: {
-    backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 7,
-    borderWidth: 1.5, borderColor: 'transparent',
+  statusDotWrapper: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
+  statusDotRing: {
+    position: 'absolute',
+    width: 16, height: 16, borderRadius: 8,
+    backgroundColor: 'rgba(74,222,128,0.25)',
   },
-  wordChipActive: { backgroundColor: '#5B2DC0', borderColor: '#A78BFA' },
-  wordChipText: {
-    fontFamily: 'Fredoka-SemiBold', fontSize: 14,
-    color: 'rgba(255,255,255,0.7)', textTransform: 'capitalize',
+  statusDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: '#4ADE80' },
+  statusText: {
+    fontFamily: 'Fredoka-Bold', fontSize: 26, color: '#FFFFFF', letterSpacing: 0.5,
+    textShadowColor: '#A78BFA', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10,
   },
-  wordChipTextActive: { color: '#fff' },
 
   resultCard: {
     position: 'absolute', bottom: 24, left: 16, right: 16,

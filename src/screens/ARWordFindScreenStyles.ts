@@ -136,7 +136,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center', gap: 10, width: '100%',
     borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.3)',
   },
-  gameOverEmoji:  { fontSize: 72, marginBottom: 4 },
+  gameOverEmoji:  { marginBottom: 4, alignItems: 'center', justifyContent: 'center' },
   gameOverTitle:  { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFF' },
   timedOutSub:    { fontFamily: 'Fredoka-Regular', fontSize: 16, color: '#A78BFA' },
   scoreRow:       { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 4 },

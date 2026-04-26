@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import { Camera, CameraDevice } from 'react-native-vision-camera';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { OCROverlay } from '../../components/ar/OCROverlay';
@@ -23,28 +23,33 @@ interface ScanCameraLayerProps {
 }
 
 // 📖 What this does:
-// Renders the underlying camera feed view, the target scanning reticle (OCROverlay), 
-// and the prompt to wish for an unknown word if one is detected. 
-// It also checks permissions and shows a fallback UI if none are granted.
+// Renders the camera feed, OCR reticle, unknown-word chip, and back button.
+// The status dot has a looping pulse ring to show active scanning.
 export const ScanCameraLayer = ({
-  device,
-  hasPermission,
-  isAppActive,
-  isFocused,
-  cameraRef,
-  matchResultWord,
-  unknownWord,
-  showWishModal,
-  setShowWishModal,
-  onViewInAR,
-  onWishPress,
-  onBackPress,
+  device, hasPermission, isAppActive, isFocused, cameraRef,
+  matchResultWord, unknownWord, showWishModal, setShowWishModal,
+  onViewInAR, onWishPress, onBackPress,
 }: ScanCameraLayerProps) => {
+  const ringAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(ringAnim, { toValue: 1, duration: 900,  useNativeDriver: true }),
+        Animated.timing(ringAnim, { toValue: 0, duration: 400,  useNativeDriver: true }),
+      ]),
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, []);
+
+  const ringScale   = ringAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 2.2] });
+  const ringOpacity = ringAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 0] });
+
   return (
     <>
       <StatusBar barStyle="light-content" />
 
-      {/* Camera feed */}
       {device && hasPermission ? (
         <Camera
           ref={cameraRef}
@@ -62,13 +67,8 @@ export const ScanCameraLayer = ({
         </View>
       )}
 
-      {/* OCR scanning reticle + detected word chip */}
-      <OCROverlay
-        detectedWord={matchResultWord}
-        onViewInAR={onViewInAR}
-      />
+      <OCROverlay detectedWord={matchResultWord} onViewInAR={onViewInAR} />
 
-      {/* Unknown word chip */}
       {!matchResultWord && unknownWord && (
         <View style={styles.unknownChip}>
           <Text style={styles.unknownChipText}>
@@ -76,33 +76,26 @@ export const ScanCameraLayer = ({
               {unknownWord.charAt(0).toUpperCase() + unknownWord.slice(1)}
             </Text>{' '}{strings.unknownSuffix}
           </Text>
-          <TouchableOpacity
-            style={styles.wishBtn}
-            activeOpacity={0.8}
-            onPress={onWishPress}
-          >
+          <TouchableOpacity style={styles.wishBtn} activeOpacity={0.8} onPress={onWishPress}>
             <Text style={styles.wishBtnText}>{strings.wishForIt}</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Wish confirmation modal */}
-      <WishConfirmModal
-        word={unknownWord ?? ''}
-        visible={showWishModal}
-        onClose={() => setShowWishModal(false)}
-      />
+      <WishConfirmModal word={unknownWord ?? ''} visible={showWishModal} onClose={() => setShowWishModal(false)} />
 
-      {/* Top HUD Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
         <Ionicons name="chevron-back" size={22} color="#fff" />
       </TouchableOpacity>
 
-      {/* Scanning status indicator */}
-      <View style={styles.statusBar}>
-        <View style={styles.statusDot} />
+      {/* Scanning status pill with pulsing dot + breathing opacity */}
+      <Animated.View style={[styles.statusBar, { opacity: ringAnim.interpolate({ inputRange: [0, 1], outputRange: [0.82, 1] }) }]}>
+        <View style={styles.statusDotWrapper}>
+          <Animated.View style={[styles.statusDotRing, { transform: [{ scale: ringScale }], opacity: ringOpacity }]} />
+          <View style={styles.statusDot} />
+        </View>
         <Text style={styles.statusText}>{strings.scanStatus}</Text>
-      </View>
+      </Animated.View>
     </>
   );
 };

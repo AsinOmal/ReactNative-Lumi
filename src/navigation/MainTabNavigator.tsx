@@ -1,69 +1,83 @@
 /**
  * MainTabNavigator.tsx
  *
- * 4-tab navigation: Home | Scan | Playground | Settings
+ * 4 tabs + floating center Scan button:
+ *   Home | Library | [● SCAN] | Playground | Settings
  *
- * Scan sits at index 1 — the custom tab bar hides itself on that screen
- * so the camera view is fully immersive (no overlapping UI).
- *
- * The Scan button is kept visually elevated (floating circle) since it's
- * the primary interaction. Phase 9 will give all tabs the full bubbly treatment.
+ * The Scan button floats ABOVE the pill in a flex column — a negative
+ * marginBottom equal to half its height makes it overlap the pill top edge.
+ * A transparent scanSpacer inside the pill reserves the visual gap.
  */
 
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { HomeScreen } from '../screens/HomeScreen';
-import { ScanScreen } from '../screens/ScanScreen';
+import { LibraryScreen } from '../screens/LibraryScreen';
 import { PlaygroundScreen } from '../screens/PlaygroundScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { colors } from '../constants/colors';
 import { styles } from './MainTabNavigatorStyles';
 
-const TABS = [
-  { name: 'Home',       iconActive: 'home',          iconInactive: 'home-outline',    label: 'Home' },
-  { name: 'Scan',       iconActive: 'camera',         iconInactive: 'camera',          label: '' },
-  { name: 'Playground', iconActive: 'game-controller', iconInactive: 'game-controller-outline', label: 'Play' },
-  { name: 'Settings',   iconActive: 'settings',       iconInactive: 'settings-outline', label: 'Settings' },
+const LEFT_TABS = [
+  { name: 'Home',    iconActive: 'home',       iconInactive: 'home-outline',    label: 'Home' },
+  { name: 'Library', iconActive: 'library',    iconInactive: 'library-outline', label: 'Library' },
 ];
+
+const RIGHT_TABS = [
+  { name: 'Playground', iconActive: 'game-controller',  iconInactive: 'game-controller-outline', label: 'Play' },
+  { name: 'Settings',   iconActive: 'settings',         iconInactive: 'settings-outline',        label: 'Settings' },
+];
+
+const ScanButton = () => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity style={styles.scanBtn} onPress={() => (navigation as any).navigate('Scan')} activeOpacity={0.85}>
+      <Ionicons name="camera" size={28} color="#FFF" />
+    </TouchableOpacity>
+  );
+};
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
-  if (state.index === 1) return null; // hide during camera scan
+
+  const renderTab = (tabDef: (typeof LEFT_TABS)[0]) => {
+    const route = state.routes.find(r => r.name === tabDef.name);
+    if (!route) return null;
+    const index = state.routes.indexOf(route);
+    const isFocused = state.index === index;
+    const iconColor = isFocused ? colors.primary : colors.tabInactive;
+
+    const onPress = () => {
+      const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+      if (!isFocused && !event.defaultPrevented) navigation.navigate(tabDef.name);
+    };
+
+    return (
+      <TouchableOpacity key={route.key} onPress={onPress} activeOpacity={0.7} style={styles.tabButton}>
+        <View style={styles.tabInner}>
+          <Ionicons name={isFocused ? tabDef.iconActive : tabDef.iconInactive} size={24} color={iconColor} />
+          <Text style={[styles.tabLabel, { color: iconColor }]}>{tabDef.label}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={[styles.tabBarWrapper, { paddingBottom: insets.bottom + 6 }]}>
+      {/* Scan button sits above the pill — negative marginBottom overlaps the pill top */}
+      <View style={styles.scanBtnOuter}>
+        <ScanButton />
+      </View>
+
       <View style={styles.tabBarPill}>
-        {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
-          const tab = TABS.find(t => t.name === route.name)!;
-          const onPress = () => {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
-          };
-
-          if (route.name === 'Scan') {
-            return (
-              <TouchableOpacity key={route.key} onPress={onPress} activeOpacity={0.85} style={styles.scanWrapper}>
-                <View style={styles.scanGlow} />
-                <View style={styles.scanCircle}>
-                  <Ionicons name="camera" size={24} color="#FFFFFF" />
-                </View>
-              </TouchableOpacity>
-            );
-          }
-
-          const color = isFocused ? '#5B2DC0' : '#B0A8D0';
-          return (
-            <TouchableOpacity key={route.key} onPress={onPress} activeOpacity={0.7} style={styles.tabButton}>
-              <Ionicons name={isFocused ? tab.iconActive : tab.iconInactive} size={22} color={color} />
-              <Text style={[styles.tabLabel, { color }]}>{tab.label}</Text>
-              {isFocused && <View style={styles.activeDot} />}
-            </TouchableOpacity>
-          );
-        })}
+        {LEFT_TABS.map(renderTab)}
+        {/* Transparent spacer keeps the visual gap under the scan button */}
+        <View style={styles.scanSpacer} />
+        {RIGHT_TABS.map(renderTab)}
       </View>
     </View>
   );
@@ -74,7 +88,7 @@ const Tab = createBottomTabNavigator();
 export const MainTabNavigator = () => (
   <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
     <Tab.Screen name="Home"       component={HomeScreen} />
-    <Tab.Screen name="Scan"       component={ScanScreen} />
+    <Tab.Screen name="Library"    component={LibraryScreen} />
     <Tab.Screen name="Playground" component={PlaygroundScreen} />
     <Tab.Screen name="Settings"   component={SettingsScreen} />
   </Tab.Navigator>

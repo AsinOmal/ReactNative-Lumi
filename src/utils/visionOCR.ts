@@ -28,11 +28,8 @@ export async function recognizeTextInImage(imagePath: string): Promise<string> {
     ? decodeURIComponent(imagePath.replace('file://', ''))
     : imagePath;
 
-  console.log('[VisionOCR] 📸 recognizing:', posixPath.split('/').pop());
-
   try {
     const text: string = await LumiVisionOCR.recognizeText(posixPath);
-    console.log('[VisionOCR] ✅ raw text:', JSON.stringify(text?.slice(0, 120)));
     return text ?? '';
   } catch (e) {
     console.warn('[VisionOCR] ❌ Recognition error:', e);
@@ -49,8 +46,8 @@ export async function recognizeTextInImage(imagePath: string): Promise<string> {
 export async function classifyFrameForHazards(imagePath: string): Promise<string[]> {
   if (Platform.OS !== 'ios') return [];
 
-  if (!LumiVisionOCR) {
-    console.warn('[VisionOCR] ❌ Native module not found — rebuild required');
+  if (!LumiVisionOCR || typeof LumiVisionOCR.classifyFrameForHazards !== 'function') {
+    console.warn('[VisionOCR] ❌ classifyFrameForHazards unavailable — rebuild required');
     return [];
   }
 

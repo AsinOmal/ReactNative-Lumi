@@ -73,6 +73,7 @@ yarn-error.log
 /coverage
 
 # Project Documentation
+docs/
 Lumi_Blueprint.md
 currently_implemented.md
 project_breakdown.md

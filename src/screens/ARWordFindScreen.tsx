@@ -140,7 +140,10 @@ export const ARWordFindScreen = () => {
 
         {feedback !== null && (
           <Animated.View pointerEvents="none" style={[styles.feedbackBanner, feedback === 'correct' ? styles.feedbackGreen : styles.feedbackRed, { opacity: feedbackAnim }]}>
-            <Text style={styles.feedbackText}>{feedback === 'correct' ? '✅  Correct!  +10' : '❌  Wrong!  -5'}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name={feedback === 'correct' ? 'checkmark-circle' : 'close-circle'} size={18} color="#FFF" />
+              <Text style={styles.feedbackText}>{feedback === 'correct' ? 'Correct!  +10' : 'Wrong!  -5'}</Text>
+            </View>
           </Animated.View>
         )}
       </SafeAreaView>

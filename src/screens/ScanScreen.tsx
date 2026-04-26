@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, ScrollView, StatusBar } from 'react-native';
+import { View, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -12,6 +12,7 @@ import { ScanOverlayLayer } from '../components/scan/ScanOverlayLayer';
 import { useScanOCR } from '../hooks/useScanOCR';
 import { useWordSaving } from '../hooks/useWordSaving';
 import { useHazardDetection } from '../hooks/useHazardDetection';
+import { useModelCache } from '../hooks/useModelCache';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { wishWord } from '../utils/wishlistStore';
 import { ScanMode } from '../types';
@@ -37,6 +38,7 @@ export const ScanScreen = () => {
 
   const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords: ALL_SUPPORTED_WORDS });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
+  const { recordView } = useModelCache();
 
   // Safety layer — only active in scan mode with camera live
   const { currentHazard, dismissHazard } = useHazardDetection({
@@ -55,8 +57,9 @@ export const ScanScreen = () => {
     cardAnim.setValue(400);
 
     await checkWordSavedStatus(target);
+    recordView(target); // fire-and-forget — updates hot model rankings in background
     setMode('ar');
-  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim]);
+  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView]);
 
   const handleBackToScan = useCallback(() => {
     setMode('scan');
@@ -108,16 +111,6 @@ export const ScanScreen = () => {
           onBackPress={() => navigation.goBack()}
         />
 
-        {/* Word chip row — manual override */}
-        <View style={styles.wordSelectorWrapper}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.wordSelectorContent}>
-            {ALL_SUPPORTED_WORDS.map((word) => (
-              <TouchableOpacity key={word} style={[styles.wordChip, activeWord === word && styles.wordChipActive]} onPress={() => handleViewInAR(word)} activeOpacity={0.8}>
-                <Text style={[styles.wordChipText, activeWord === word && styles.wordChipTextActive]}>{word}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
       </View>
     );
   }

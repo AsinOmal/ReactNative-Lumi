@@ -21,7 +21,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { strings } from '../../constants/strings';
 import { colors } from '../../constants/colors';
 
-const LIMIT_STEPS = [0, 15, 30, 45, 60, 90, 120, 180];
+const LIMIT_STEPS = [0, 1, 15, 30, 45, 60, 90, 120, 180];
 
 export const ScreenTimeSummary: React.FC = () => {
   const { settings, updateSettings, todayMinutes } = useParentalControlsStore();

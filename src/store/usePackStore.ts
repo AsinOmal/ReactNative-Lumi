@@ -17,7 +17,7 @@ export const usePackStore = create<PackState>((set, get) => ({
   userProgress: {},
 
   loadPacks: async () => {
-    if (get().loading) return;
+    if (get().loading || get().packs.length > 0) return;
     set({ loading: true, error: null });
     try {
       await seedPacksIfNeeded();
