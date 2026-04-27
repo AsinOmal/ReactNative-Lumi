@@ -15,16 +15,30 @@
  *   Audio files (.mp3) for vegetables and vehicles also need to be added to the iOS bundle.
  */
 
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import type { RemoteModelEntry } from '../types/remoteContent';
+
 export type ModelKey = string;
 
 export interface ModelEntry {
-  source: number;
+  source: number | { uri: string };
   scale: [number, number, number];
   position: [number, number, number];
   syllables: string[];
   audio: string;
+  audioUrl?: string;
   emoji: string;
 }
+
+const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
+  source: { uri: r.modelUrl },
+  scale: [r.scale, r.scale, r.scale],
+  position: [0, r.positionY, -1.0],
+  syllables: r.syllables,
+  audio: '',
+  audioUrl: r.audioUrl,
+  emoji: '',
+});
 
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // ── Fruits Pack ───────────────────────────────────────────────────────────
@@ -66,6 +80,16 @@ export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // truck:      { source: require('../assets/models/vehicles/truck.glb'),      scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Truck'],                   audio: 'truck.mp3',      emoji: '🚚' },
 };
 
-/** Returns the model entry for a given word, or null if not found. */
-export const getModel = (word: string): ModelEntry | null =>
-  MODEL_REGISTRY[word.toLowerCase()] ?? null;
+/**
+ * Returns the model entry for a word.
+ * Remote entries (uploaded via admin panel) take precedence over local ones —
+ * this lets us push scale corrections and new models without a binary update.
+ * Falls back to local registry if the word isn't in the remote store yet.
+ */
+export const getModel = (word: string): ModelEntry | null => {
+  const key = word.toLowerCase();
+  const remote = useRemoteContentStore.getState().remoteModels[key];
+  // Only use remote entry if the GLB has actually been uploaded
+  if (remote?.modelUrl) return remoteToEntry(remote);
+  return MODEL_REGISTRY[key] ?? null;
+};

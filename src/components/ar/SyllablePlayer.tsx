@@ -37,14 +37,17 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
     }
     setIsPlaying(false);
 
-    if (!entry?.audio) return;
+    const src = entry?.audioUrl || entry?.audio;
+    if (!src) return;
 
-    const sound = new Sound(entry.audio, Sound.MAIN_BUNDLE, (error) => {
+    // Remote audio uses a URL (null basePath); local audio is in the app bundle
+    const basePath = entry?.audioUrl ? null : Sound.MAIN_BUNDLE;
+    const sound = new Sound(src, basePath as string, (error) => {
       if (!error) soundRef.current = sound;
     });
 
     return () => { sound.release(); soundRef.current = null; };
-  }, [entry?.audio]);
+  }, [entry?.audio, entry?.audioUrl]);
 
   useEffect(() => () => { soundRef.current?.release(); }, []);
 
