@@ -85,6 +85,9 @@ PROJECT_SUMMARY.md
 # Claude Code memory (local only)
 .claude/
 
+# Admin panel secrets
+admin/.env
+
 # Temp scripts and logs
 ios/add_firebase_plist.rb
 ios/pod_install_err.log
