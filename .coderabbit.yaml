@@ -1,0 +1,82 @@
+language: "en"
+
+reviews:
+  profile: "assertive"
+  request_changes: false
+  auto_review: true
+  auto_incremental_review: true
+  collapse_walkthrough: false
+  poem: false
+
+  path_filters:
+    - "!ios/**"
+    - "!android/**"
+    - "!node_modules/**"
+    - "!patches/**"
+    - "!docs/**"
+    - "!**/*.json"
+    - "!**/*.lock"
+
+  path_instructions:
+    - path: "src/screens/**"
+      instructions: |
+        - Max 150 lines per screen file. Flag any file that exceeds this.
+        - Screen files must be orchestrators only — no inline business logic longer than 3 lines. Logic belongs in a hook under src/hooks/.
+        - StyleSheet objects must not be defined inline in the screen file. They belong in a sibling [ScreenName]Styles.ts file.
+        - No hardcoded hex colour strings — use src/constants/colors.ts.
+        - No hardcoded numeric timeouts, limits, or durations — use src/constants/config.ts.
+        - No hardcoded user-facing strings in JSX — use src/constants/strings.ts.
+        - No emoji characters in JSX. Use Ionicons or MaterialCommunityIcons instead.
+        - Every async function must have a try/catch block.
+        - No console.log statements. Use console.error('[ModuleName] reason:', error) for errors only.
+
+    - path: "src/hooks/**"
+      instructions: |
+        - Hook filenames must start with 'use'.
+        - No TypeScript 'any'. Define a named interface for every data shape.
+        - Every async function must have a try/catch.
+        - No console.log. Errors use console.error('[HookName] reason:', error).
+        - No hardcoded hex colours, timeouts, or string literals — use constants files.
+        - Add a '// 📖 What this does:' block comment at the top describing what the hook does, why it's structured the way it is, and what to watch out for.
+
+    - path: "src/components/**"
+      instructions: |
+        - Max 150 lines per component file.
+        - No emoji characters — use Ionicons or MaterialCommunityIcons.
+        - No hardcoded hex colour strings — use src/constants/colors.ts.
+        - Props must be typed with a named interface, not inline.
+        - No TypeScript 'any'.
+
+    - path: "src/services/**"
+      instructions: |
+        - Every async function must have a try/catch.
+        - No console.log user data, tokens, or Firebase responses.
+        - Firestore writes that are fire-and-forget must use .catch(() => {}) not be left unhandled.
+        - No TypeScript 'any'.
+
+    - path: "src/store/**"
+      instructions: |
+        - Zustand stores only — no business logic beyond state shape and simple setters.
+        - No TypeScript 'any'.
+        - No async operations directly in the store — those belong in services or hooks.
+
+    - path: "src/utils/**"
+      instructions: |
+        - No TypeScript 'any'.
+        - Every async function must have a try/catch.
+        - No console.log.
+
+    - path: "src/constants/**"
+      instructions: |
+        - colors.ts must be the only file defining hex colour strings used in UI.
+        - config.ts must be the only file defining numeric constants (timeouts, limits, counts).
+        - strings.ts must be the only file defining user-facing text strings.
+        - No TypeScript 'any'.
+
+    - path: "ios/**"
+      instructions: |
+        - Flag any new native module that does not follow the RCT_EXTERN_METHOD bridge pattern.
+        - New Architecture (JSI/Fabric/TurboModules) must NOT be used — ViroReact requires Old Architecture.
+
+chat:
+  auto_reply: true

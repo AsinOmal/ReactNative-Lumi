@@ -82,6 +82,9 @@ CLAUDE.md
 DEVELOPMENT_PLAN.md
 PROJECT_SUMMARY.md
 
+# Claude Code memory (local only)
+.claude/
+
 # Temp scripts and logs
 ios/add_firebase_plist.rb
 ios/pod_install_err.log
