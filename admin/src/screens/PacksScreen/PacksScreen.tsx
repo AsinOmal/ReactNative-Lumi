@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Plus, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { EmptyState } from '../../components/common/EmptyState';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { usePacks } from '../../hooks/usePacks';
 import { ROUTES } from '../../constants/routes';
 import type { Pack } from '../../types';
 import './PacksScreen.css';
 
-// Placeholder — replaced by usePacks() hook in Phase 9b
-const MOCK_PACKS: Pack[] = [
-  { id: 'fruits',     name: 'Fruits',     description: 'Common fruits with 3D models', isPremium: false, accentColor: '#FF6B6B', accentColorTo: '#FF8E53', wordCount: 10, words: [], isPublished: true },
-  { id: 'vegetables', name: 'Vegetables', description: 'Garden vegetables',             isPremium: false, accentColor: '#4ECDC4', accentColorTo: '#22C55E', wordCount: 10, words: [], isPublished: false },
-  { id: 'vehicles',   name: 'Vehicles',   description: 'Everyday vehicles',             isPremium: false, accentColor: '#4A90D9', accentColorTo: '#06B6D4', wordCount: 10, words: [], isPublished: false },
-  { id: 'dinosaurs',  name: 'Dinosaurs',  description: 'Prehistoric dinosaurs',         isPremium: true,  accentColor: '#F59E0B', accentColorTo: '#D97706', wordCount: 10, words: [], isPublished: false },
-  { id: 'space',      name: 'Space',      description: 'Objects in outer space',        isPremium: true,  accentColor: '#7C3AED', accentColorTo: '#4B4AEF', wordCount: 10, words: [], isPublished: false },
-];
-
 export const PacksScreen: React.FC = () => {
-  const [packs] = useState<Pack[]>(MOCK_PACKS);
+  const { packs, loading } = usePacks();
 
   return (
     <div className="packs">
@@ -33,7 +26,9 @@ export const PacksScreen: React.FC = () => {
         }
       />
 
-      {packs.length === 0 ? (
+      {loading ? (
+        <LoadingSpinner />
+      ) : packs.length === 0 ? (
         <EmptyState
           icon={<Package size={40} />}
           title="No packs yet"

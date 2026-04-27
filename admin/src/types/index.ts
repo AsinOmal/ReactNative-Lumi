@@ -16,6 +16,8 @@ export interface Pack {
   words: string[];
   isPublished: boolean;
   publishedAt?: Date;
+  coverImageUrl?: string;
+  coverImageRef?: string;
 }
 
 export interface ModelEntry {
