@@ -26,11 +26,11 @@ export const MealCelebrationOverlay = ({ recipe, onPlayAgain, onDone }: Props) =
         Amazing job collecting all the ingredients! You're a kitchen superstar!
       </Text>
 
-      <TouchableOpacity style={styles.playAgainBtn} onPress={onPlayAgain} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.playAgainBtn} onPress={onPlayAgain} activeOpacity={0.85} accessibilityLabel="Play again" accessibilityRole="button">
         <Text style={styles.playAgainText}>🍳 Play Again</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.doneBtn} onPress={onDone} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.doneBtn} onPress={onDone} activeOpacity={0.7} accessibilityLabel="Back to recipes" accessibilityRole="button">
         <Text style={styles.doneBtnText}>Back to Recipes</Text>
       </TouchableOpacity>
     </View>

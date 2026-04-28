@@ -58,6 +58,8 @@ export const GameLoadingOverlay = ({
             style={styles.startGameBtn}
             activeOpacity={0.8}
             onPress={onStartPlay}
+            accessibilityLabel="Start game"
+            accessibilityRole="button"
           >
             <Text style={styles.startGameBtnText}>🚀 Start Playing!</Text>
           </TouchableOpacity>

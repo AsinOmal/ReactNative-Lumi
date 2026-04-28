@@ -15,7 +15,7 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const accent = getPackAccent(pack.id);
 
   return (
-    <TouchableOpacity style={[styles.card, { shadowColor: accent }]} onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity style={[styles.card, { shadowColor: accent }]} onPress={onPress} activeOpacity={0.85} accessibilityLabel={`${pack.name} pack`} accessibilityHint="Double tap to open pack details" accessibilityRole="button">
       <View style={[styles.body, { backgroundColor: accent }]}>
         <MaterialCommunityIcons name="cube-outline" size={40} color="rgba(255,255,255,0.9)" />
       </View>

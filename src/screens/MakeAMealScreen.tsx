@@ -134,7 +134,7 @@ export const MakeAMealScreen = () => {
               { text: 'Keep Cooking', style: 'cancel' },
               { text: 'Quit', style: 'destructive', onPress: safeGoBack },
             ])
-          }>
+          } accessibilityLabel="Quit recipe" accessibilityRole="button">
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
           {activeRecipe && !viroHidden && (

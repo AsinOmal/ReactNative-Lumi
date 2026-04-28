@@ -40,6 +40,8 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
           style={styles.scanBtn}
           onPress={() => (navigation as any).navigate('Scan')}
           activeOpacity={0.85}
+          accessibilityLabel={`Find today's word: ${display}`}
+          accessibilityRole="button"
         >
           <Ionicons name="camera" size={26} color="#FFF" />
           <Text style={styles.scanBtnText}>Find it</Text>

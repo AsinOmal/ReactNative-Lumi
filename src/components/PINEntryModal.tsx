@@ -78,13 +78,15 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
                 style={[styles.key, key === '' && styles.keyEmpty]}
                 onPress={() => handleKey(key)}
                 disabled={key === ''}
+                accessibilityLabel={key === '⌫' ? 'Backspace' : key === '' ? undefined : key}
+                accessibilityRole="button"
               >
                 <Text style={styles.keyText}>{key}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <TouchableOpacity onPress={onCancel} style={styles.cancelBtn}>
+          <TouchableOpacity onPress={onCancel} style={styles.cancelBtn} accessibilityLabel="Cancel PIN entry" accessibilityRole="button">
             <Text style={styles.cancelText}>{strings.cancel}</Text>
           </TouchableOpacity>
         </View>

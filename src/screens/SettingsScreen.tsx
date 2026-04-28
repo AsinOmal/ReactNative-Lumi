@@ -18,7 +18,7 @@ interface RowProps {
 }
 
 const SettingsRow: React.FC<RowProps> = ({ iconName, label, onPress, danger = false }) => (
-  <TouchableOpacity style={rowStyles.row} onPress={onPress} activeOpacity={0.7}>
+  <TouchableOpacity style={rowStyles.row} onPress={onPress} activeOpacity={0.7} accessibilityLabel={label} accessibilityRole="button">
     <View style={rowStyles.iconWrap}>
       <Ionicons name={iconName} size={22} color={danger ? colors.error : colors.primary} />
     </View>

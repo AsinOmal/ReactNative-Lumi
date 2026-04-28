@@ -9,7 +9,7 @@ interface DiscoveredWordCardProps {
 }
 
 export const DiscoveredWordCard = ({ word, emoji, onPress }: DiscoveredWordCardProps) => (
-  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8} accessibilityLabel={word} accessibilityRole="button">
     <Text style={styles.emoji}>{emoji}</Text>
     <Text style={styles.word}>{word}</Text>
   </TouchableOpacity>

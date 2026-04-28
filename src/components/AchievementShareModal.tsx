@@ -84,10 +84,10 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
 
           {/* ── Buttons ── */}
           <View style={styles.btnRow}>
-            <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
+            <TouchableOpacity style={styles.closeBtn} onPress={onClose} accessibilityLabel="Close achievement card" accessibilityRole="button">
               <Text style={styles.closeBtnText}>Close</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShare}>
+            <TouchableOpacity style={styles.shareBtn} onPress={handleShare} accessibilityLabel="Share achievement" accessibilityRole="button">
               <Ionicons name="share-outline" size={18} color="#FFF" />
               <Text style={styles.shareBtnText}>Share</Text>
             </TouchableOpacity>

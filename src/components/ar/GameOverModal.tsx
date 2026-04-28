@@ -61,6 +61,8 @@ export const GameOverModal = ({
             style={styles.playAgainBtn}
             activeOpacity={0.85}
             onPress={onPlayAgain}
+            accessibilityLabel="Play again"
+            accessibilityRole="button"
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Ionicons name="refresh" size={18} color="#FFF" />
@@ -71,6 +73,8 @@ export const GameOverModal = ({
             style={styles.doneBtn}
             activeOpacity={0.85}
             onPress={onDone}
+            accessibilityLabel="Done, exit game"
+            accessibilityRole="button"
           >
             <Text style={styles.doneBtnText}>Done</Text>
           </TouchableOpacity>

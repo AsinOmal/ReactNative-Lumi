@@ -80,3 +80,26 @@ export interface NavItem {
   icon: React.ComponentType<{ size?: number | string; className?: string }>;
   badge?: number;
 }
+
+export interface NotificationBroadcast {
+  id: string;
+  title: string;
+  body: string;
+  sentAt: Date;
+  sentBy: string;
+  recipientCount?: number;
+  status?: string;
+}
+
+export interface AppConfig {
+  maintenanceMode: boolean;
+  newUserOnboarding: boolean;
+  premiumPacksEnabled: boolean;
+  arGamesEnabled: boolean;
+}
+
+export interface Purchase {
+  uid: string;
+  productId: string;
+  purchasedAt: Date;
+}

@@ -41,7 +41,7 @@ export const AchievementsScreen = () => {
           style={styles.watermark}
         />
         <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
             <Ionicons name="chevron-back" size={28} color="#FFF" />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
@@ -92,7 +92,7 @@ export const AchievementsScreen = () => {
             );
 
             return isUnlocked && earnedData ? (
-              <TouchableOpacity key={a.id} style={styles.cell} activeOpacity={0.85} onPress={() => setSelected({ achievement: a, earnedData })}>
+              <TouchableOpacity key={a.id} style={styles.cell} activeOpacity={0.85} onPress={() => setSelected({ achievement: a, earnedData })} accessibilityLabel={`${a.title} achievement`} accessibilityHint="Double tap to view and share">
                 {card}
               </TouchableOpacity>
             ) : (

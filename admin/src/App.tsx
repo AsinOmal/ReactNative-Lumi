@@ -8,7 +8,14 @@ import { PacksScreen } from './screens/PacksScreen/PacksScreen';
 import { PackEditorScreen } from './screens/PackEditorScreen/PackEditorScreen';
 import { ModelsScreen } from './screens/ModelsScreen/ModelsScreen';
 import { ModelEditorScreen } from './screens/ModelEditorScreen/ModelEditorScreen';
-import { PlaceholderScreen } from './screens/PlaceholderScreen';
+import { UsersScreen } from './screens/UsersScreen/UsersScreen';
+import { UserDetailScreen } from './screens/UserDetailScreen/UserDetailScreen';
+import { AnalyticsScreen } from './screens/AnalyticsScreen/AnalyticsScreen';
+import { ModerationScreen } from './screens/ModerationScreen/ModerationScreen';
+import { NotificationsScreen } from './screens/NotificationsScreen/NotificationsScreen';
+import { AppConfigScreen } from './screens/AppConfigScreen/AppConfigScreen';
+import { RevenueScreen } from './screens/RevenueScreen/RevenueScreen';
+import { FeedbackScreen } from './screens/FeedbackScreen/FeedbackScreen';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { ROUTES } from './constants/routes';
 
@@ -36,14 +43,14 @@ export const App: React.FC = () => {
           <Route path={ROUTES.MODELS}        element={<ModelsScreen />} />
           <Route path={ROUTES.MODEL_NEW}     element={<ModelEditorScreen />} />
           <Route path={ROUTES.MODEL_EDIT}    element={<ModelEditorScreen />} />
-          <Route path={ROUTES.USERS}         element={<PlaceholderScreen title="Users" />} />
-          <Route path={ROUTES.USER_DETAIL}   element={<PlaceholderScreen title="User Detail" />} />
-          <Route path={ROUTES.ANALYTICS}     element={<PlaceholderScreen title="Analytics" />} />
-          <Route path={ROUTES.MODERATION}    element={<PlaceholderScreen title="Moderation" />} />
-          <Route path={ROUTES.NOTIFICATIONS} element={<PlaceholderScreen title="Notifications" />} />
-          <Route path={ROUTES.APP_CONFIG}    element={<PlaceholderScreen title="App Config" />} />
-          <Route path={ROUTES.REVENUE}       element={<PlaceholderScreen title="Revenue" />} />
-          <Route path={ROUTES.FEEDBACK}      element={<PlaceholderScreen title="Feedback" />} />
+          <Route path={ROUTES.USERS}         element={<UsersScreen />} />
+          <Route path={ROUTES.USER_DETAIL}   element={<UserDetailScreen />} />
+          <Route path={ROUTES.ANALYTICS}     element={<AnalyticsScreen />} />
+          <Route path={ROUTES.MODERATION}    element={<ModerationScreen />} />
+          <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsScreen />} />
+          <Route path={ROUTES.APP_CONFIG}    element={<AppConfigScreen />} />
+          <Route path={ROUTES.REVENUE}       element={<RevenueScreen />} />
+          <Route path={ROUTES.FEEDBACK}      element={<FeedbackScreen />} />
           <Route path="*"                    element={<Navigate to={ROUTES.DASHBOARD} replace />} />
         </Routes>
       </Layout>

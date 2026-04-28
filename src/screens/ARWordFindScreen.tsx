@@ -117,7 +117,7 @@ export const ARWordFindScreen = () => {
               { text: 'Keep Playing', style: 'cancel' },
               { text: 'Quit', style: 'destructive', onPress: safeGoBack },
             ]);
-          }}>
+          }} accessibilityLabel="Quit game" accessibilityRole="button">
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
 

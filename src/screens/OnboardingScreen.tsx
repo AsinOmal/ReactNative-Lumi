@@ -108,6 +108,8 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
           style={[styles.nextBtn, { backgroundColor: slide.gradient[0] }]}
           onPress={goNext}
           activeOpacity={0.85}
+          accessibilityLabel={isLast ? 'Get started' : 'Next slide'}
+          accessibilityRole="button"
         >
           <Text style={styles.nextBtnText}>{isLast ? 'Get Started' : 'Next'}</Text>
           <Ionicons name={isLast ? 'rocket-outline' : 'arrow-forward'} size={22} color="#FFF" />

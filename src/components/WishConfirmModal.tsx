@@ -33,7 +33,7 @@ export const WishConfirmModal = ({ word, visible, onClose }: Props) => {
 
   return (
     <Modal transparent visible={visible} animationType="none" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose} accessibilityLabel="Dismiss" accessibilityRole="button">
         <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
 
           {/* Decorative corner stars */}
@@ -63,7 +63,7 @@ export const WishConfirmModal = ({ word, visible, onClose }: Props) => {
             {' '}lands in Lumi!
           </Text>
 
-          <TouchableOpacity style={styles.doneBtn} onPress={onClose} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.doneBtn} onPress={onClose} activeOpacity={0.85} accessibilityLabel="Got it, close" accessibilityRole="button">
             <Ionicons name="checkmark" size={20} color="#FFF" />
             <Text style={styles.doneBtnText}>Got it!</Text>
           </TouchableOpacity>

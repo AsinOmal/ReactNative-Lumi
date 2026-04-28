@@ -35,7 +35,7 @@ const RIGHT_TABS = [
 const ScanButton = () => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.scanBtn} onPress={() => (navigation as any).navigate('Scan')} activeOpacity={0.85}>
+    <TouchableOpacity style={styles.scanBtn} onPress={() => (navigation as any).navigate('Scan')} activeOpacity={0.85} accessibilityLabel="Open scanner" accessibilityRole="button">
       <Ionicons name="camera" size={28} color="#FFF" />
     </TouchableOpacity>
   );
@@ -57,7 +57,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
     };
 
     return (
-      <TouchableOpacity key={route.key} onPress={onPress} activeOpacity={0.7} style={styles.tabButton}>
+      <TouchableOpacity key={route.key} onPress={onPress} activeOpacity={0.7} style={styles.tabButton} accessibilityLabel={tabDef.label} accessibilityRole="tab">
         <View style={styles.tabInner}>
           <Ionicons name={isFocused ? tabDef.iconActive : tabDef.iconInactive} size={24} color={iconColor} />
           <Text style={[styles.tabLabel, { color: iconColor }]}>{tabDef.label}</Text>

@@ -70,10 +70,10 @@ export const PackARPreviewScreen = () => {
       <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
         {/* Header */}
         <View style={styles.header} pointerEvents="box-none">
-          <TouchableOpacity style={styles.closeBtn} onPress={safeGoBack}>
+          <TouchableOpacity style={styles.closeBtn} onPress={safeGoBack} accessibilityLabel="Close AR preview" accessibilityRole="button">
             <Ionicons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{pack.emoji} {pack.name}</Text>
+          <Text style={styles.headerTitle}>{pack.name}</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -98,6 +98,8 @@ export const PackARPreviewScreen = () => {
               style={[styles.navBtn, !canPrev && styles.navBtnDisabled]}
               onPress={() => canPrev && goTo(currentIndex - 1)}
               disabled={!canPrev}
+              accessibilityLabel="Previous word"
+              accessibilityRole="button"
             >
               <Ionicons name="chevron-back" size={22} color="#5B2DC0" />
             </TouchableOpacity>
@@ -106,6 +108,8 @@ export const PackARPreviewScreen = () => {
               style={[styles.navBtn, !canNext && styles.navBtnDisabled]}
               onPress={() => canNext && goTo(currentIndex + 1)}
               disabled={!canNext}
+              accessibilityLabel="Next word"
+              accessibilityRole="button"
             >
               <Ionicons name="chevron-forward" size={22} color="#5B2DC0" />
             </TouchableOpacity>

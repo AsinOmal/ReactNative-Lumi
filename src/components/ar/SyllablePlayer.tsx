@@ -75,6 +75,8 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         style={[styles.playBtn, isPlaying && styles.playBtnActive]}
         onPress={play}
         activeOpacity={0.7}
+        accessibilityLabel={isPlaying ? 'Stop pronunciation' : 'Play pronunciation'}
+        accessibilityRole="button"
       >
         <Ionicons
           name={isPlaying ? 'volume-high' : 'volume-medium-outline'}
@@ -100,6 +102,8 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         style={[styles.slowBtn, slowMode && styles.slowBtnActive]}
         onPress={() => setSlowMode(prev => !prev)}
         activeOpacity={0.75}
+        accessibilityLabel={slowMode ? 'Slow mode on, tap to turn off' : 'Slow mode off, tap to turn on'}
+        accessibilityRole="switch"
       >
         <Text style={[styles.slowBtnText, slowMode && styles.slowBtnTextActive]}>
           🐢 Slow

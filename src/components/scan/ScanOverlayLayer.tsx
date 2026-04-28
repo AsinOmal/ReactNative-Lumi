@@ -69,13 +69,15 @@ export const ScanOverlayLayer = ({
       </View>
       
       <View style={styles.cardActions}>
-        <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss}>
+        <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
           <Ionicons name="close" size={20} color="#5B2DC0" />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}
           onPress={onSave}
           activeOpacity={0.8}
+          accessibilityLabel={isWordSaved ? 'Word already saved' : `Save ${activeWord}`}
+          accessibilityRole="button"
         >
           <Ionicons name="star" size={18} color={isWordSaved ? '#A78BFA' : '#fff'} />
           <Text style={[styles.saveBtnText, isWordSaved && styles.saveBtnTextDisabled]}>

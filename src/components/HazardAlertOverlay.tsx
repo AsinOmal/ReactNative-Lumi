@@ -43,7 +43,7 @@ export const HazardAlertOverlay: React.FC<HazardAlertOverlayProps> = ({
         <Text style={styles.title}>{strings.hazardAlertTitle}</Text>
         <Text style={styles.body}>{strings.hazardAlertBody}</Text>
 
-        <TouchableOpacity style={styles.safeBtn} onPress={onDismiss} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.safeBtn} onPress={onDismiss} activeOpacity={0.85} accessibilityLabel="I am safe, dismiss alert" accessibilityRole="button">
           <Text style={styles.safeBtnText}>{strings.hazardAlertButton}</Text>
         </TouchableOpacity>
       </View>

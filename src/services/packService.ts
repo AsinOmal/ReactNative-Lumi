@@ -4,7 +4,6 @@ import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from '@react-n
 export interface Pack {
   id: string;
   name: string;
-  emoji: string;
   description?: string;
   wordCount: number;
   isPremium: boolean;
@@ -19,7 +18,6 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'fruits',
     name: 'Fruits',
-    emoji: '🍎',
     description: 'Common fruits with 3D models',
     wordCount: 10,
     isPremium: false,
@@ -31,7 +29,6 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'vegetables',
     name: 'Vegetables',
-    emoji: '🥦',
     description: 'Garden vegetables',
     wordCount: 10,
     isPremium: false,
@@ -43,7 +40,6 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'vehicles',
     name: 'Vehicles',
-    emoji: '🚗',
     description: 'Everyday vehicles',
     wordCount: 10,
     isPremium: false,
@@ -55,7 +51,6 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'dinosaurs',
     name: 'Dinosaurs',
-    emoji: '🦕',
     description: 'Prehistoric dinosaurs',
     wordCount: 10,
     isPremium: true,
@@ -67,7 +62,6 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'space',
     name: 'Space',
-    emoji: '🌌',
     description: 'Objects in outer space',
     wordCount: 10,
     isPremium: true,
