@@ -76,7 +76,7 @@ export const ScanCameraLayer = ({
               {unknownWord.charAt(0).toUpperCase() + unknownWord.slice(1)}
             </Text>{' '}{strings.unknownSuffix}
           </Text>
-          <TouchableOpacity style={styles.wishBtn} activeOpacity={0.8} onPress={onWishPress}>
+          <TouchableOpacity style={styles.wishBtn} activeOpacity={0.8} onPress={onWishPress} accessibilityLabel={`Add ${unknownWord} to wishlist`} accessibilityRole="button">
             <Text style={styles.wishBtnText}>{strings.wishForIt}</Text>
           </TouchableOpacity>
         </View>
@@ -84,7 +84,7 @@ export const ScanCameraLayer = ({
 
       <WishConfirmModal word={unknownWord ?? ''} visible={showWishModal} onClose={() => setShowWishModal(false)} />
 
-      <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
+      <TouchableOpacity style={styles.backButton} onPress={onBackPress} accessibilityLabel="Go back from scanner" accessibilityRole="button">
         <Ionicons name="chevron-back" size={22} color="#fff" />
       </TouchableOpacity>
 

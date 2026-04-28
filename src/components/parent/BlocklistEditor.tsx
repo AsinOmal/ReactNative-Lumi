@@ -63,7 +63,7 @@ export const BlocklistEditor: React.FC = () => {
           returnKeyType="done"
           onSubmitEditing={handleAdd}
         />
-        <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
+        <TouchableOpacity style={styles.addBtn} onPress={handleAdd} accessibilityLabel="Add word to blocklist" accessibilityRole="button">
           <Text style={styles.addBtnText}>{strings.blocklistAddBtn}</Text>
         </TouchableOpacity>
       </View>
@@ -79,7 +79,7 @@ export const BlocklistEditor: React.FC = () => {
           renderItem={({ item }) => (
             <View style={styles.chip}>
               <Text style={styles.chipWord}>{item}</Text>
-              <TouchableOpacity onPress={() => handleRemove(item)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <TouchableOpacity onPress={() => handleRemove(item)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel={`Remove ${item} from blocklist`} accessibilityRole="button">
                 <Text style={styles.removeBtn}>✕</Text>
               </TouchableOpacity>
             </View>

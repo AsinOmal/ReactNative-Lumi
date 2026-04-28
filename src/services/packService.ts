@@ -4,21 +4,24 @@ import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from '@react-n
 export interface Pack {
   id: string;
   name: string;
-  emoji: string;
+  description?: string;
   wordCount: number;
   isPremium: boolean;
+  isPublished?: boolean;
   words: string[];
   colorFrom: string;
   colorTo: string;
+  coverImageUrl?: string;
 }
 
 const INITIAL_PACKS: Pack[] = [
   {
     id: 'fruits',
     name: 'Fruits',
-    emoji: '🍎',
+    description: 'Common fruits with 3D models',
     wordCount: 10,
     isPremium: false,
+    isPublished: true,
     colorFrom: '#FF6B6B',
     colorTo: '#FF8E53',
     words: ['apple', 'banana', 'cherry', 'grape', 'lemon', 'mango', 'orange', 'pineapple', 'strawberry', 'watermelon'],
@@ -26,9 +29,10 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'vegetables',
     name: 'Vegetables',
-    emoji: '🥦',
+    description: 'Garden vegetables',
     wordCount: 10,
     isPremium: false,
+    isPublished: false,
     colorFrom: '#22C55E',
     colorTo: '#16A34A',
     words: ['broccoli', 'carrot', 'chili', 'corn', 'cucumber', 'eggplant', 'onion', 'potato', 'pumpkin', 'tomato'],
@@ -36,9 +40,10 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'vehicles',
     name: 'Vehicles',
-    emoji: '🚗',
+    description: 'Everyday vehicles',
     wordCount: 10,
     isPremium: false,
+    isPublished: false,
     colorFrom: '#3B82F6',
     colorTo: '#06B6D4',
     words: ['bicycle', 'boat', 'bus', 'car', 'helicopter', 'plane', 'rocket', 'tractor', 'train', 'truck'],
@@ -46,9 +51,10 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'dinosaurs',
     name: 'Dinosaurs',
-    emoji: '🦕',
+    description: 'Prehistoric dinosaurs',
     wordCount: 10,
     isPremium: true,
+    isPublished: false,
     colorFrom: '#78350F',
     colorTo: '#92400E',
     words: ['trex', 'stegosaurus', 'brachiosaurus', 'pterodactyl', 'velociraptor', 'triceratops', 'diplodocus', 'ankylosaurus', 'spinosaurus', 'allosaurus'],
@@ -56,9 +62,10 @@ const INITIAL_PACKS: Pack[] = [
   {
     id: 'space',
     name: 'Space',
-    emoji: '🌌',
+    description: 'Objects in outer space',
     wordCount: 10,
     isPremium: true,
+    isPublished: false,
     colorFrom: '#4B4AEF',
     colorTo: '#8B5CF6',
     words: ['planet', 'star', 'moon', 'comet', 'satellite', 'galaxy', 'asteroid', 'nebula', 'orbit', 'meteor'],

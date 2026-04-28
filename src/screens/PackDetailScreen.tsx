@@ -21,7 +21,7 @@ export const PackDetailScreen = () => {
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
         <LinearGradient colors={[accent, `${accent}CC`]} style={[styles.header, { paddingTop: insets.top + 12 }]}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
             <Ionicons name="chevron-back" size={28} color="#FFF" />
           </TouchableOpacity>
           <Text style={styles.packName}>{pack.name}</Text>
@@ -42,7 +42,7 @@ export const PackDetailScreen = () => {
                 <View style={styles.chip}><Text style={styles.chipText}>+{pack.words.length - 6} more</Text></View>
               )}
             </View>
-            <TouchableOpacity style={[styles.unlockBtn, { backgroundColor: accent }]} activeOpacity={0.85}>
+            <TouchableOpacity style={[styles.unlockBtn, { backgroundColor: accent }]} activeOpacity={0.85} accessibilityLabel={`Unlock ${pack.name} pack`} accessibilityRole="button">
               <Ionicons name="star" size={20} color={colors.accentYellow} />
               <Text style={styles.unlockBtnText}>Unlock {pack.name}</Text>
             </TouchableOpacity>
@@ -57,7 +57,7 @@ export const PackDetailScreen = () => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <LinearGradient colors={[accent, `${accent}BB`]} style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="chevron-back" size={28} color="#FFF" />
         </TouchableOpacity>
         <Text style={styles.packName}>{pack.name}</Text>
@@ -77,7 +77,7 @@ export const PackDetailScreen = () => {
         })}
       </ScrollView>
 
-      <TouchableOpacity style={[styles.arBtn, { backgroundColor: accent }]} activeOpacity={0.85} onPress={() => (navigation as any).navigate('PackARPreview', { pack })}>
+      <TouchableOpacity style={[styles.arBtn, { backgroundColor: accent }]} activeOpacity={0.85} onPress={() => (navigation as any).navigate('PackARPreview', { pack })} accessibilityLabel="View pack in AR" accessibilityRole="button">
         <MaterialCommunityIcons name="target" size={22} color="#FFF" />
         <Text style={styles.arBtnText}>View in AR</Text>
       </TouchableOpacity>

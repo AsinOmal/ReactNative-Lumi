@@ -156,7 +156,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({ detectedWord, onViewInAR
               {detectedWord.charAt(0).toUpperCase() + detectedWord.slice(1)}
             </Text>
           </View>
-          <TouchableOpacity style={styles.arButton} onPress={onViewInAR} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.arButton} onPress={onViewInAR} activeOpacity={0.85} accessibilityLabel={`View ${detectedWord} in AR`} accessibilityRole="button">
             <Ionicons name="cube-outline" size={20} color="#fff" />
             <Text style={styles.arButtonText}>View in AR</Text>
             <Ionicons name="arrow-forward" size={17} color="#fff" />

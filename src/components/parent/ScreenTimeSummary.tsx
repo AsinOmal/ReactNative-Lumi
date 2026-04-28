@@ -61,6 +61,8 @@ export const ScreenTimeSummary: React.FC = () => {
           style={[styles.stepBtn, localIdx === 0 && styles.stepBtnDisabled]}
           onPress={() => setLocalIdx(i => Math.max(0, i - 1))}
           disabled={localIdx === 0}
+          accessibilityLabel="Decrease daily limit"
+          accessibilityRole="button"
         >
           <Text style={styles.stepBtnText}>−</Text>
         </TouchableOpacity>
@@ -73,6 +75,8 @@ export const ScreenTimeSummary: React.FC = () => {
           style={[styles.stepBtn, localIdx === LIMIT_STEPS.length - 1 && styles.stepBtnDisabled]}
           onPress={() => setLocalIdx(i => Math.min(LIMIT_STEPS.length - 1, i + 1))}
           disabled={localIdx === LIMIT_STEPS.length - 1}
+          accessibilityLabel="Increase daily limit"
+          accessibilityRole="button"
         >
           <Text style={styles.stepBtnText}>+</Text>
         </TouchableOpacity>
@@ -82,6 +86,8 @@ export const ScreenTimeSummary: React.FC = () => {
         style={[styles.setBtn, !hasUnsavedChanges && styles.setBtnDim]}
         onPress={handleSetLimit}
         disabled={!hasUnsavedChanges}
+        accessibilityLabel={hasUnsavedChanges ? 'Set new daily limit' : 'Daily limit already saved'}
+        accessibilityRole="button"
       >
         <Text style={styles.setBtnText}>{hasUnsavedChanges ? 'Set Limit ✓' : 'Limit Saved'}</Text>
       </TouchableOpacity>

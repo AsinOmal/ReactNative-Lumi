@@ -97,7 +97,7 @@ export const ScanAndCountScreen = () => {
 
       <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
         <View style={styles.header} pointerEvents="box-none">
-          <TouchableOpacity style={styles.closeBtn} onPress={safeGoBack} pointerEvents="auto">
+          <TouchableOpacity style={styles.closeBtn} onPress={safeGoBack} pointerEvents="auto" accessibilityLabel="Exit game" accessibilityRole="button">
             <Ionicons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
           <View style={styles.headerSpacer} />
@@ -137,7 +137,7 @@ export const ScanAndCountScreen = () => {
           <Text style={styles.sessionEmoji}>🏆</Text>
           <Text style={styles.sessionTitle}>Session Complete!</Text>
           <Text style={styles.sessionSub}>Amazing counting skills!</Text>
-          <TouchableOpacity style={styles.doneBtn} onPress={safeGoBack} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.doneBtn} onPress={safeGoBack} activeOpacity={0.85} accessibilityLabel="Done, exit session" accessibilityRole="button">
             <Text style={styles.doneBtnText}>Done!</Text>
           </TouchableOpacity>
         </View>

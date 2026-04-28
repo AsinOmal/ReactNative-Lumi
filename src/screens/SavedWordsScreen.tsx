@@ -31,7 +31,7 @@ export const SavedWordsScreen = () => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <LinearGradient colors={[colors.headerGradientStart, colors.headerGradientEnd]} style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="chevron-back" size={28} color="#FFF" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -44,7 +44,7 @@ export const SavedWordsScreen = () => {
       <View style={[styles.tabsWrapper, { paddingTop: 16 }]}>
         <View style={styles.tabs}>
           {(['saved', 'wishlist'] as Tab[]).map(t => (
-            <TouchableOpacity key={t} style={[styles.tab, tab === t && styles.tabActive]} onPress={() => setTab(t)} activeOpacity={0.8}>
+            <TouchableOpacity key={t} style={[styles.tab, tab === t && styles.tabActive]} onPress={() => setTab(t)} activeOpacity={0.8} accessibilityLabel={t === 'saved' ? 'Saved words tab' : 'Wishlist tab'} accessibilityRole="tab">
               <Ionicons name={t === 'saved' ? 'bookmark' : 'star'} size={16} color={tab === t ? '#FFF' : colors.textMid} />
               <Text style={[styles.tabText, tab === t && styles.tabTextActive]}>
                 {t === 'saved' ? 'Saved' : 'Wishlist'}
@@ -73,7 +73,8 @@ export const SavedWordsScreen = () => {
                     <Text style={styles.dateText}>{formatDate(item.savedAt)}</Text>
                   </View>
                   <TouchableOpacity style={styles.arBtn} activeOpacity={0.8}
-                    onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Scan', params: { preloadWord: item.word } })}>
+                    onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Scan', params: { preloadWord: item.word } })}
+                    accessibilityLabel={`View ${display} in AR`} accessibilityRole="button">
                     <Text style={styles.arBtnText}>AR</Text>
                     <Ionicons name="arrow-forward" size={13} color="#FFF" />
                   </TouchableOpacity>
@@ -104,7 +105,7 @@ export const SavedWordsScreen = () => {
                     <Text style={styles.wordText}>{display}</Text>
                     <Text style={styles.dateText}>{formatDate(item.wishedAt)}</Text>
                   </View>
-                  <TouchableOpacity style={styles.trashBtn} onPress={() => handleRemoveWish(item.word)}>
+                  <TouchableOpacity style={styles.trashBtn} onPress={() => handleRemoveWish(item.word)} accessibilityLabel={`Remove ${display} from wishlist`} accessibilityRole="button">
                     <Ionicons name="trash-outline" size={20} color={colors.error} />
                   </TouchableOpacity>
                 </View>

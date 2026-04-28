@@ -60,6 +60,9 @@ export const PlaygroundScreen = () => {
               style={[styles.card, { shadowColor: game.accent }, !game.available && styles.cardLocked]}
               onPress={() => game.available && (navigation as any).navigate(game.key)}
               activeOpacity={game.available ? 0.85 : 1}
+              accessibilityLabel={game.title}
+              accessibilityHint={game.available ? game.desc : 'Coming soon'}
+              accessibilityRole="button"
             >
               <View style={[styles.iconArea, { backgroundColor: game.available ? game.accent : '#CBD5E1' }]}>
                 <MaterialCommunityIcons name={game.iconName} size={52} color="rgba(255,255,255,0.95)" />

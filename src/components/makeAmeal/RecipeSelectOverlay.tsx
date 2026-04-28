@@ -24,7 +24,7 @@ interface Props {
 export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => (
   <View style={styles.overlay}>
     <View style={styles.header}>
-      <TouchableOpacity style={styles.backBtn} onPress={onBack}>
+      <TouchableOpacity style={styles.backBtn} onPress={onBack} accessibilityLabel="Go back" accessibilityRole="button">
         <Ionicons name="chevron-back" size={22} color="#FFF" />
       </TouchableOpacity>
       <Text style={styles.title}>Make a Meal</Text>
@@ -38,6 +38,9 @@ export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => (
           style={styles.card}
           onPress={() => onSelect(recipe)}
           activeOpacity={0.8}
+          accessibilityLabel={recipe.name}
+          accessibilityHint="Double tap to select this recipe"
+          accessibilityRole="button"
         >
           <View style={[styles.recipeIconCircle, { backgroundColor: RECIPE_ICON_COLORS[idx % RECIPE_ICON_COLORS.length] }]}>
             <MaterialCommunityIcons name="silverware-fork-knife" size={28} color="#FFF" />

@@ -120,11 +120,11 @@ export const ScanScreen = () => {
       <StatusBar barStyle="light-content" />
       <ViroARSceneNavigator key={sceneKey} initialScene={{ scene: ARWordScene as any }} viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }} style={styles.arView} />
 
-      <TouchableOpacity style={styles.backButton} onPress={handleBackToScan}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackToScan} accessibilityLabel="Back to scan mode" accessibilityRole="button">
         <Ionicons name="chevron-back" size={22} color="#fff" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.resetButton} onPress={() => { setSceneKey(k => k + 1); setModelLoaded(false); cardAnim.setValue(400); }}>
+      <TouchableOpacity style={styles.resetButton} onPress={() => { setSceneKey(k => k + 1); setModelLoaded(false); cardAnim.setValue(400); }} accessibilityLabel="Reload AR model" accessibilityRole="button">
         <Ionicons name="refresh" size={20} color="#fff" />
       </TouchableOpacity>
 

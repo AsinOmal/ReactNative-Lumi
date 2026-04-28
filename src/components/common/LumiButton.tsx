@@ -13,6 +13,8 @@ export const LumiButton = ({ onPress, title, icon }: LumiButtonProps) => {
       onPress={onPress}
       activeOpacity={0.8}
       className={"w-full mb-6 shadow-xl"}
+      accessibilityLabel={title}
+      accessibilityRole="button"
     >
       <LinearGradient
         colors={["#320757", "#770CB4"]}

@@ -92,7 +92,7 @@ export const ParentDashboardScreen: React.FC = () => {
           <Text style={styles.authIcon}>🔒</Text>
           <Text style={styles.authTitle}>{strings.dashboardAuthTitle}</Text>
           <Text style={styles.authSubtitle}>{strings.dashboardAuthSubtitle}</Text>
-          <TouchableOpacity style={styles.authBtn} onPress={authenticate}>
+          <TouchableOpacity style={styles.authBtn} onPress={authenticate} accessibilityLabel="Authenticate to open parent dashboard" accessibilityRole="button">
             <Text style={styles.authBtnText}>{strings.dashboardAuthBtn}</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -111,7 +111,7 @@ export const ParentDashboardScreen: React.FC = () => {
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
             <Text style={styles.backBtnText}>‹</Text>
           </TouchableOpacity>
           <Text style={styles.title}>{strings.dashboardTitle}</Text>
@@ -123,6 +123,8 @@ export const ParentDashboardScreen: React.FC = () => {
               key={tab.key}
               style={[styles.tab, activeTab === tab.key && styles.tabActive]}
               onPress={() => setActiveTab(tab.key)}
+              accessibilityLabel={`${tab.label} tab`}
+              accessibilityRole="tab"
             >
               <Text style={[styles.tabText, activeTab === tab.key && styles.tabTextActive]}>
                 {tab.label}

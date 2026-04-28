@@ -17,7 +17,6 @@ const PACK_ACCENTS: Record<string, { color: string; icon: string }> = {
 interface PackCardProps {
   id: string;
   name: string;
-  emoji: string;
   progress: number;
   total: number;
   isPremium?: boolean;

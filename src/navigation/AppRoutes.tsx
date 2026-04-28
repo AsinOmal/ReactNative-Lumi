@@ -22,6 +22,7 @@ import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { createUserIfNew } from '../services/userService';
 import { hasSeenOnboarding } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { createStackNavigator, CardStyleInterpolators, TransitionSpecs } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
@@ -29,6 +30,7 @@ const Stack = createStackNavigator();
 export const AppRoutes = () => {
   const { user, initializing, setUser, setInitializing } = useAuthStore();
   const { loadSettings, isParentUnlocked } = useParentalControlsStore();
+  const { loadRemoteModels } = useRemoteContentStore();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [showOnboarding, setShowOnboarding]   = useState(false);
@@ -60,6 +62,9 @@ export const AppRoutes = () => {
         } catch (e) {
           console.warn('Parental settings load failed:', e);
         }
+        // Fetch remote models — silent fail, local registry serves as fallback
+        loadRemoteModels().catch(() => {});
+
       }
     });
     return subscriber;

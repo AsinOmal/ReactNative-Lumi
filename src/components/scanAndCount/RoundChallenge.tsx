@@ -19,7 +19,7 @@ export const RoundChallenge = ({ targetWord, targetCount, currentRound, totalRou
   }, [onDismiss]);
 
   return (
-    <TouchableOpacity style={styles.overlay} onPress={onDismiss} activeOpacity={1}>
+    <TouchableOpacity style={styles.overlay} onPress={onDismiss} activeOpacity={1} accessibilityLabel="Start round early" accessibilityRole="button">
       <View style={styles.card}>
         <Text style={styles.round}>Round {currentRound + 1} of {totalRounds}</Text>
         <MaterialCommunityIcons name="cube-outline" size={64} color="#A78BFA" style={styles.icon} />

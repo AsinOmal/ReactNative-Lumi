@@ -1,0 +1,117 @@
+.user-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.user-detail__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+@media (max-width: 700px) {
+  .user-detail__grid { grid-template-columns: 1fr; }
+}
+
+.user-detail__card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+}
+
+.user-detail__card-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-5) 0;
+}
+
+.user-detail__dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+.user-detail__dl dt {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.user-detail__dl dd {
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.user-detail__mono {
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+  word-break: break-all;
+}
+
+.user-detail__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.user-detail__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--color-body-bg);
+  border-radius: var(--radius-md);
+}
+
+.user-detail__stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.user-detail__stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.user-detail__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.user-detail__table th {
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.user-detail__table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.user-detail__table tr:last-child td { border-bottom: none; }
+
+.user-detail__row--flagged td {
+  background: #FFF5F5;
+}
+
+.user-detail__word {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.user-detail__empty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

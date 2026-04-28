@@ -104,12 +104,12 @@ export const ProfileScreen = () => {
           </View>
 
           {/* Parent Dashboard */}
-          <TouchableOpacity style={styles.parentDashBtn} onPress={handleParentDashboard} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.parentDashBtn} onPress={handleParentDashboard} activeOpacity={0.8} accessibilityLabel="Open parent dashboard" accessibilityRole="button">
             <Text style={styles.parentDashText}>🔒  Parent Dashboard</Text>
           </TouchableOpacity>
 
           {/* Sign out */}
-          <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8} accessibilityLabel="Sign out" accessibilityRole="button">
             <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
 

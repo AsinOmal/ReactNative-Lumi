@@ -1,0 +1,18 @@
+export const ROUTES = {
+  LOGIN: '/login',
+  DASHBOARD: '/',
+  PACKS: '/packs',
+  PACK_NEW: '/packs/new',
+  PACK_EDIT: '/packs/:packId',
+  MODELS: '/models',
+  MODEL_NEW: '/models/new',
+  MODEL_EDIT: '/models/:wordKey',
+  USERS: '/users',
+  USER_DETAIL: '/users/:uid',
+  ANALYTICS: '/analytics',
+  MODERATION: '/moderation',
+  NOTIFICATIONS: '/notifications',
+  APP_CONFIG: '/config',
+  REVENUE: '/revenue',
+  FEEDBACK: '/feedback',
+} as const;
