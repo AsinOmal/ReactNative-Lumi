@@ -35,6 +35,7 @@ interface ParentalControlsState {
   setParentUnlocked: (unlocked: boolean) => void;
   loadSettings: (uid: string) => Promise<void>;
   updateSettings: (uid: string, patch: Partial<ParentSettings>) => Promise<void>;
+  mergeGlobalBlocklist: (globalWords: string[]) => void;
 }
 
 export const useParentalControlsStore = create<ParentalControlsState>((set, get) => ({
@@ -68,5 +69,11 @@ export const useParentalControlsStore = create<ParentalControlsState>((set, get)
     } catch (e) {
       console.error('[useParentalControlsStore] updateSettings:', e);
     }
+  },
+
+  mergeGlobalBlocklist: (globalWords) => {
+    const { settings, mergedBlocklist } = get();
+    const merged = new Set([...mergedBlocklist, ...STATIC_BLOCKLIST, ...settings.customBlocklist, ...globalWords]);
+    set({ mergedBlocklist: merged });
   },
 }));

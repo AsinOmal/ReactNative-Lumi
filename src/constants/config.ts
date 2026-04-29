@@ -2,6 +2,8 @@
  * Global configuration numbers: Timeouts, intervals, limits, distances.
  */
 export const config = {
+  APP_VERSION: '1.0.0',
+
   // OCR & Debouncing
   SCAN_INTERVAL_MS: 1000,
   REQUIRED_CONSECUTIVE_FRAMES: 3,

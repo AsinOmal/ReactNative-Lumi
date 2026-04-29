@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
 import { usePackStore } from '../store/usePackStore';
 import { HomeHeaderSection } from '../components/home/HomeHeaderSection';
+import { BannerAnnouncement } from '../components/home/BannerAnnouncement';
 import { ColorPackCard } from '../components/library/ColorPackCard';
 import { getProgress, getStreak } from '../utils/achievementStore';
 import { getDailyWord, isDailyWordFound } from '../utils/dailyWordHunt';
@@ -58,7 +59,9 @@ export const HomeScreen = () => {
   );
 
   const header = (
-    <HomeHeaderSection
+    <>
+      <BannerAnnouncement />
+      <HomeHeaderSection
       firstName={firstName}
       streak={streak}
       wordCount={wordCount}
@@ -67,6 +70,7 @@ export const HomeScreen = () => {
       onTrophyPress={() => (navigation as any).navigate('Achievements')}
       onProgressPress={() => (navigation as any).navigate('SavedWords')}
     />
+    </>
   );
 
   return (

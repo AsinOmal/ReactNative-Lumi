@@ -21,8 +21,11 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Camera } from 'react-native-vision-camera';
+import { getApp } from '@react-native-firebase/app';
+import { getFirestore, collection, addDoc, serverTimestamp } from '@react-native-firebase/firestore';
 import { classifyFrameForHazards } from '../utils/visionOCR';
 import { config } from '../constants/config';
+import { useAuthStore } from '../store/useAuthStore';
 
 interface UseHazardDetectionProps {
   cameraRef: React.RefObject<Camera>;
@@ -62,6 +65,15 @@ export const useHazardDetection = ({
         setCurrentHazard(matched);
         // Start cooldown so re-classify doesn't immediately re-trigger after dismiss
         cooldownUntilRef.current = Date.now() + config.HAZARD_COOLDOWN_MS;
+        const uid = useAuthStore.getState().user?.uid;
+        if (uid) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          addDoc(collection(getFirestore(getApp()), 'users', uid, 'hazardEvents') as any, {
+            label: matched,
+            detectedAt: serverTimestamp(),
+            dismissed: false,
+          }).catch(() => {});
+        }
       }
     } catch {
       // Silently ignore — camera may not be ready
