@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Pack } from '../services/packService';
 import { getPackAccent } from '../constants/packAccents';
 import { colors } from '../constants/colors';
+import { MODEL_REGISTRY } from '../utils/modelRegistry';
 
 export const PackDetailScreen = () => {
   const navigation = useNavigation();
@@ -66,7 +67,8 @@ export const PackDetailScreen = () => {
 
       <ScrollView style={styles.body} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]} showsVerticalScrollIndicator={false}>
         {pack.words.map(word => {
-            const display = word.charAt(0).toUpperCase() + word.slice(1);
+          const display = word.charAt(0).toUpperCase() + word.slice(1);
+          const model = MODEL_REGISTRY[word];
           return (
             <View key={word} style={styles.wordRow}>
               <MaterialCommunityIcons name="cube-outline" size={26} color={accent} />

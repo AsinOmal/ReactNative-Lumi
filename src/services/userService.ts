@@ -1,5 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, setDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from '@react-native-firebase/firestore';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 export const createOrUpdateUser = async (user: FirebaseAuthTypes.User) => {
@@ -39,4 +39,15 @@ export const createUserIfNew = async (user: FirebaseAuthTypes.User) => {
     },
     { merge: true }
   );
+};
+
+// Fails open — a network failure must not block a legitimate user.
+export const isUserSuspended = async (uid: string): Promise<boolean> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
+    return (snap.data() as any)?.suspended === true;
+  } catch {
+    return false;
+  }
 };

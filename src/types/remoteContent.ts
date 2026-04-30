@@ -10,3 +10,29 @@ export interface RemoteModelEntry {
   packId: string;
   isCalibrated: boolean;
 }
+
+export interface RemotePack {
+  id: string;
+  name: string;
+  description: string;
+  isPremium: boolean;
+  accentColor: string;
+  accentColorTo: string;
+  wordCount: number;
+  words: string[];
+  isPublished: boolean;
+}
+
+export interface BannerConfig {
+  message: string;
+  accentColor: string;
+  expiresAt: Date;
+  isActive: boolean;
+}
+
+export interface RemoteAppConfig {
+  maintenanceMode: boolean;
+  newUserOnboarding: boolean;
+  premiumPacksEnabled: boolean;
+  arGamesEnabled: boolean;
+}

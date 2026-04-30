@@ -67,7 +67,7 @@ export const useUserDetail = (uid: string): UseUserDetailResult => {
           recentActivity: activitySnap.docs.map(d => ({
             id: d.id,
             word: d.data().word ?? '',
-            timestamp: d.data().timestamp?.toDate() ?? new Date(),
+            timestamp: (ts => ts?.toDate?.() ?? new Date(ts ?? 0))(d.data().timestamp),
             flagged: d.data().flagged ?? false,
             source: d.data().source ?? '',
           })),

@@ -2,9 +2,11 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Box, Users, BarChart2,
-  Shield, Bell, Settings, DollarSign, MessageSquare, LogOut,
+  Shield, Bell, Settings, DollarSign, MessageSquare,
+  LogOut, Moon, Sun,
 } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
+import { useDarkMode } from '../../hooks/useDarkMode';
 import type { NavItem } from '../../types';
 import './Sidebar.css';
 
@@ -26,39 +28,49 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Feedback',      path: ROUTES.FEEDBACK,      icon: MessageSquare },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 }) => (
-  <aside className="sidebar">
-    <div className="sidebar__logo">
-      <div className="sidebar__logo-icon">L</div>
-      <span className="sidebar__logo-text">Lumi Admin</span>
-    </div>
+export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 }) => {
+  const { isDark, toggle } = useDarkMode();
 
-    <nav className="sidebar__nav">
-      {NAV_ITEMS.map((item) => {
-        const Icon = item.icon;
-        const hasBadge = item.path === ROUTES.FEEDBACK && unreadFeedback > 0;
-        return (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === ROUTES.DASHBOARD}
-            className={({ isActive }) =>
-              `sidebar__nav-item ${isActive ? 'sidebar__nav-item--active' : ''}`
-            }
-          >
-            <Icon size={18} />
-            <span>{item.label}</span>
-            {hasBadge && (
-              <span className="sidebar__badge">{unreadFeedback > 99 ? '99+' : unreadFeedback}</span>
-            )}
-          </NavLink>
-        );
-      })}
-    </nav>
+  return (
+    <aside className="sidebar">
+      <div className="sidebar__logo">
+        <div className="sidebar__logo-icon">L</div>
+        <span className="sidebar__logo-text">Lumi Admin</span>
+      </div>
 
-    <button className="sidebar__signout" onClick={onSignOut}>
-      <LogOut size={18} />
-      <span>Sign Out</span>
-    </button>
-  </aside>
-);
+      <nav className="sidebar__nav">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const hasBadge = item.path === ROUTES.FEEDBACK && unreadFeedback > 0;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === ROUTES.DASHBOARD}
+              className={({ isActive }) =>
+                `sidebar__nav-item ${isActive ? 'sidebar__nav-item--active' : ''}`
+              }
+            >
+              <Icon size={17} />
+              <span>{item.label}</span>
+              {hasBadge && (
+                <span className="sidebar__badge">{unreadFeedback > 99 ? '99+' : unreadFeedback}</span>
+              )}
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      <div className="sidebar__footer">
+        <button className="sidebar__theme-toggle" onClick={toggle} aria-label="Toggle theme">
+          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          <span>{isDark ? 'Light mode' : 'Dark mode'}</span>
+        </button>
+        <button className="sidebar__signout" onClick={onSignOut}>
+          <LogOut size={17} />
+          <span>Sign out</span>
+        </button>
+      </div>
+    </aside>
+  );
+};

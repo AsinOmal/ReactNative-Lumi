@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useScreenTime } from '../hooks/useScreenTime';
+import { useBootstrapSession } from '../hooks/useBootstrapSession';
+import { useRemoteConfig } from '../hooks/useRemoteConfig';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { ScreenTimeLimitModal } from '../components/ScreenTimeLimitModal';
-import { getApp } from '@react-native-firebase/app';
-import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { LoginScreen } from '../screens/LoginScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
@@ -19,55 +20,31 @@ import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
-import { createUserIfNew } from '../services/userService';
 import { hasSeenOnboarding } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
-import { useRemoteContentStore } from '../store/useRemoteContentStore';
-import { createStackNavigator, CardStyleInterpolators, TransitionSpecs } from '@react-navigation/stack';
+import { strings } from '../constants/strings';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
+const SPRING = { animation: 'spring' as const, config: { stiffness: 280, damping: 26, mass: 0.8, overshootClamping: false, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 } };
+
 export const AppRoutes = () => {
-  const { user, initializing, setUser, setInitializing } = useAuthStore();
-  const { loadSettings, isParentUnlocked } = useParentalControlsStore();
-  const { loadRemoteModels } = useRemoteContentStore();
+  const { user } = useAuthStore();
+  const { isParentUnlocked } = useParentalControlsStore();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
+  const { initializing, suspendedError } = useBootstrapSession();
+  const appConfig = useRemoteContentStore(s => s.appConfig);
+  useRemoteConfig(!!user);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [showOnboarding, setShowOnboarding]   = useState(false);
 
-  // Check onboarding flag and schedule streak reminder on cold launch
   useEffect(() => {
     hasSeenOnboarding().then(seen => {
       setShowOnboarding(!seen);
       setOnboardingReady(true);
     });
     scheduleStreakReminder();
-  }, []);
-
-  useEffect(() => {
-    const authInstance = getAuth(getApp());
-    const subscriber = onAuthStateChanged(authInstance, async (userState) => {
-      setUser(userState);
-      if (initializing) setInitializing(false);
-
-      if (userState) {
-        try {
-          await createUserIfNew(userState);
-        } catch (e) {
-          console.warn('Firestore user create failed:', e);
-        }
-        // Load parental settings so mergedBlocklist is ready before first OCR frame
-        try {
-          await loadSettings(userState.uid);
-        } catch (e) {
-          console.warn('Parental settings load failed:', e);
-        }
-        // Fetch remote models — silent fail, local registry serves as fallback
-        loadRemoteModels().catch(() => {});
-
-      }
-    });
-    return subscriber;
   }, []);
 
   if (initializing || !onboardingReady) {
@@ -78,34 +55,42 @@ export const AppRoutes = () => {
     );
   }
 
-  if (showOnboarding) {
-    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
+  if (suspendedError) {
+    return (
+      <View style={styles.suspended}>
+        <Text style={styles.suspendedTitle}>Account Suspended</Text>
+        <Text style={styles.suspendedBody}>
+          Your account has been suspended. Please contact support if you believe this is an error.
+        </Text>
+      </View>
+    );
   }
 
-  if (!user) {
-    return <LoginScreen />;
+  if (showOnboarding && appConfig?.newUserOnboarding !== false) return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
+  if (!user) return <LoginScreen />;
+
+  if (appConfig?.maintenanceMode) {
+    return (
+      <View style={styles.suspended}>
+        <Text style={styles.suspendedTitle}>{strings.maintenanceModeTitle}</Text>
+        <Text style={styles.suspendedBody}>{strings.maintenanceModeBody}</Text>
+      </View>
+    );
   }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{
-        headerShown: false,
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        transitionSpec: {
-          open:  { animation: 'spring', config: { stiffness: 280, damping: 26, mass: 0.8, overshootClamping: false, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 } },
-          close: { animation: 'spring', config: { stiffness: 280, damping: 26, mass: 0.8, overshootClamping: false, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 } },
-        },
-      }}>
-        <Stack.Screen name="MainTabs" component={MainTabNavigator} />
-        <Stack.Screen name="Achievements" component={AchievementsScreen} />
-        <Stack.Screen name="SavedWords" component={SavedWordsScreen} />
-        <Stack.Screen name="ARWordFind" component={ARWordFindScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, transitionSpec: { open: SPRING, close: SPRING } }}>
+        <Stack.Screen name="MainTabs"      component={MainTabNavigator} />
+        <Stack.Screen name="Achievements"  component={AchievementsScreen} />
+        <Stack.Screen name="SavedWords"    component={SavedWordsScreen} />
+        <Stack.Screen name="ARWordFind"    component={ARWordFindScreen} />
         <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
-        <Stack.Screen name="PackDetail" component={PackDetailScreen} />
+        <Stack.Screen name="PackDetail"    component={PackDetailScreen} />
         <Stack.Screen name="PackARPreview" component={PackARPreviewScreen} />
-        <Stack.Screen name="MakeAMeal" component={MakeAMealScreen} />
-        <Stack.Screen name="ScanAndCount" component={ScanAndCountScreen} />
-        <Stack.Screen name="Scan" component={ScanScreen} />
+        <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
+        <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
+        <Stack.Screen name="Scan"          component={ScanScreen} />
       </Stack.Navigator>
       <ScreenTimeLimitModal
         visible={isAtLimit && !isParentUnlocked}
@@ -118,10 +103,8 @@ export const AppRoutes = () => {
 };
 
 const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    backgroundColor: '#F0EBFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  loading: { flex: 1, backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center' },
+  suspended: { flex: 1, backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, gap: 12 },
+  suspendedTitle: { fontFamily: 'Fredoka-Bold', fontSize: 26, color: '#1A0A4B', textAlign: 'center' },
+  suspendedBody:  { fontFamily: 'Fredoka-Regular', fontSize: 16, color: '#7B5EA7', textAlign: 'center', lineHeight: 24 },
 });

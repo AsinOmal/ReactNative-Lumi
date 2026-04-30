@@ -5,12 +5,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePackStore } from '../store/usePackStore';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { PackGrid } from '../components/home/PackGrid';
 import { colors } from '../constants/colors';
 
 export const LibraryScreen = () => {
   const insets = useSafeAreaInsets();
   const { packs, loading, loadPacks } = usePackStore();
+  const appConfig = useRemoteContentStore(s => s.appConfig);
 
   useFocusEffect(React.useCallback(() => { loadPacks(); }, []));
 
@@ -47,7 +49,7 @@ export const LibraryScreen = () => {
             <PackGrid packs={freePacks} loading={loading} />
           </>
         )}
-        {premiumPacks.length > 0 && (
+        {premiumPacks.length > 0 && appConfig?.premiumPacksEnabled !== false && (
           <>
             <Text style={styles.sectionLabel}>Premium Packs</Text>
             <PackGrid packs={premiumPacks} loading={false} />

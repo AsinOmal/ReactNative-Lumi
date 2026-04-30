@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin users have the custom claim `admin: true` set via Firebase Admin SDK.
+    // The admin panel gate (useAdminAuth.ts) also enforces this client-side.
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ── Admin config ──────────────────────────────────────────────────────────
+    // Feature flags, game constants, banner, moderation, notifications.
+    // Mobile app reads these at boot; admin panel writes them.
+    match /adminConfig/{document} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Broadcasts subcollection written by the Cloud Function (Admin SDK bypasses
+    // rules) and read by the admin panel.
+    match /adminConfig/notifications/broadcasts/{broadcastId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ── Packs ─────────────────────────────────────────────────────────────────
+    // Mobile reads published packs at boot; admin panel creates/updates them.
+    match /packs/{packId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── 3D model registry ─────────────────────────────────────────────────────
+    // Mobile reads for AR scenes; admin panel registers new models.
+    match /adminModels/{modelId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── User data ─────────────────────────────────────────────────────────────
+    // Users own their profile and all subcollections.
+    // Admins can read (for moderation/support) but not write.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+      allow read: if isAdmin();
+    }
+
+    match /users/{uid}/{subcollection=**} {
+      allow read, write: if isOwner(uid);
+      allow read: if isAdmin();
+    }
+
+    // ── Feedback ──────────────────────────────────────────────────────────────
+    // Any signed-in user can submit; only admins can read/manage.
+    match /feedback/{feedbackId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Collection group queries (admin moderation) ───────────────────────────
+    // Firestore requires explicit collection-named rules for collectionGroup()
+    // queries; the {subcollection=**} wildcard above does not satisfy them.
+    match /{path=**}/activityLog/{logId} {
+      allow read: if isAdmin();
+      allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
+    }
+
+    match /{path=**}/hazardEvents/{eventId} {
+      allow read: if isAdmin();
+    }
+  }
+}

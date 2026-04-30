@@ -1,8 +1,9 @@
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, collection, getDocs } from '@react-native-firebase/firestore';
-import type { RemoteModelEntry } from '../types/remoteContent';
+import {
+  getFirestore, collection, getDocs, getDoc, doc, query, where,
+} from '@react-native-firebase/firestore';
+import type { RemoteModelEntry, RemotePack, BannerConfig, RemoteAppConfig } from '../types/remoteContent';
 
-/** Fetches all model entries the admin has uploaded. Empty array on failure (offline-safe). */
 export const fetchRemoteModels = async (): Promise<RemoteModelEntry[]> => {
   try {
     const db = getFirestore(getApp());
@@ -13,5 +14,71 @@ export const fetchRemoteModels = async (): Promise<RemoteModelEntry[]> => {
   } catch (e) {
     console.error('[remoteContentService] fetchRemoteModels:', e);
     return [];
+  }
+};
+
+export const fetchRemotePacks = async (): Promise<RemotePack[]> => {
+  try {
+    const db = getFirestore(getApp());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const q = query(collection(db, 'packs'), where('isPublished', '==', true));
+    const snap = await getDocs(q);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as RemotePack));
+  } catch (e) {
+    console.error('[remoteContentService] fetchRemotePacks:', e);
+    return [];
+  }
+};
+
+export const fetchGlobalBlocklist = async (): Promise<string[]> => {
+  try {
+    const db = getFirestore(getApp());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const snap = await getDoc(doc(db, 'adminConfig', 'moderation') as any);
+    return (snap.data() as any)?.globalBlocklist ?? [];
+  } catch (e) {
+    console.error('[remoteContentService] fetchGlobalBlocklist:', e);
+    return [];
+  }
+};
+
+export const fetchRemoteAppConfig = async (): Promise<RemoteAppConfig | null> => {
+  try {
+    const db = getFirestore(getApp());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const snap = await getDoc(doc(db, 'adminConfig', 'featureFlags') as any);
+    if (!snap.exists()) return null;
+    const d = snap.data() as any;
+    return {
+      maintenanceMode: d?.maintenanceMode ?? false,
+      newUserOnboarding: d?.newUserOnboarding ?? true,
+      premiumPacksEnabled: d?.premiumPacksEnabled ?? true,
+      arGamesEnabled: d?.arGamesEnabled ?? true,
+    };
+  } catch (e) {
+    console.error('[remoteContentService] fetchRemoteAppConfig:', e);
+    return null;
+  }
+};
+
+export const fetchActiveBanner = async (): Promise<BannerConfig | null> => {
+  try {
+    const db = getFirestore(getApp());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const snap = await getDoc(doc(db, 'adminConfig', 'banner') as any);
+    if (!snap.exists()) return null;
+    const d = snap.data() as any;
+    const expiresAt: Date = d?.expiresAt?.toDate() ?? new Date(0);
+    if (!d?.isActive || expiresAt < new Date()) return null;
+    return {
+      message: d?.message ?? '',
+      accentColor: d?.accentColor ?? '#7B3FC4',
+      expiresAt,
+      isActive: true,
+    };
+  } catch (e) {
+    console.error('[remoteContentService] fetchActiveBanner:', e);
+    return null;
   }
 };

@@ -1,44 +1,20 @@
+// rgba backgrounds work in both light and dark themes — no opaque overrides needed
 export const colors = {
-  // Sidebar
-  sidebarBg: '#111827',
-  sidebarText: '#9CA3AF',
-  sidebarTextActive: '#FFFFFF',
-  sidebarActiveBg: 'rgba(123, 63, 196, 0.2)',
-  sidebarBorder: 'rgba(255,255,255,0.06)',
+  accentBlue:     '#3B82F6',
+  accentBlueBg:   'rgba(59,  130, 246, 0.12)',
 
-  // Layout
-  bodyBg: '#F3F4F6',
-  cardBg: '#FFFFFF',
-  headerBg: '#FFFFFF',
-  border: '#E5E7EB',
+  accentGreen:    '#10B981',
+  accentGreenBg:  'rgba(16,  185, 129, 0.12)',
 
-  // Text
-  textPrimary: '#111827',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
+  accentAmber:    '#F59E0B',
+  accentAmberBg:  'rgba(245, 158,  11, 0.12)',
 
-  // Brand
-  primary: '#7B3FC4',
-  primaryLight: '#EDE9FE',
-  primaryDark: '#5B2DC0',
+  accentPurple:   '#8B5CF6',
+  accentPurpleBg: 'rgba(139,  92, 246, 0.12)',
 
-  // Stat card accents
-  accentBlue: '#3B82F6',
-  accentBlueBg: '#EFF6FF',
-  accentGreen: '#10B981',
-  accentGreenBg: '#ECFDF5',
-  accentAmber: '#F59E0B',
-  accentAmberBg: '#FFFBEB',
-  accentPurple: '#8B5CF6',
-  accentPurpleBg: '#F5F3FF',
-  accentRed: '#EF4444',
-  accentRedBg: '#FEF2F2',
-  accentTeal: '#14B8A6',
-  accentTealBg: '#F0FDFA',
+  accentRed:      '#EF4444',
+  accentRedBg:    'rgba(239,  68,  68, 0.12)',
 
-  // Status
-  success: '#10B981',
-  warning: '#F59E0B',
-  danger: '#EF4444',
-  info: '#3B82F6',
+  accentTeal:     '#14B8A6',
+  accentTealBg:   'rgba(20,  184, 166, 0.12)',
 };

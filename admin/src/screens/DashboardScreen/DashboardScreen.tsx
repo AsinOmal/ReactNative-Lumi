@@ -1,67 +1,54 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { KpiRow } from './components/KpiRow';
 import { UserActivityCard } from './components/UserActivityCard';
 import { TopWordsCard } from './components/TopWordsCard';
 import { RecentActivityCard } from './components/RecentActivityCard';
 import { PageHeader } from '../../components/common/PageHeader';
+import { useDashboard } from '../../hooks/useDashboard';
 import type { DashboardStats } from '../../types';
 import './DashboardScreen.css';
 
-// Placeholder data — replaced by real Firestore queries in Phase 9c
-const MOCK_STATS: DashboardStats = {
-  totalUsers: 284,
-  newUsersToday: 12,
-  activeToday: 47,
-  wordsSaved: 3821,
-  wordsSavedThisWeek: 318,
-  gamesPlayed: 1205,
-  achievementsUnlocked: 642,
-  flaggedEvents: 3,
+const EMPTY_STATS: DashboardStats = {
+  totalUsers: 0, newUsersToday: 0, activeToday: 0,
+  wordsSaved: 0, wordsSavedThisWeek: 0,
+  gamesPlayed: 0, achievementsUnlocked: 0, flaggedEvents: 0,
 };
 
-const MOCK_ACTIVITY_DATA = Array.from({ length: 14 }, (_, i) => ({
-  date: `Apr ${i + 14}`,
-  activeUsers: Math.floor(Math.random() * 60) + 20,
-  newUsers: Math.floor(Math.random() * 15) + 2,
-}));
-
-const MOCK_TOP_WORDS = [
-  { word: 'apple',      count: 412 },
-  { word: 'banana',     count: 388 },
-  { word: 'orange',     count: 301 },
-  { word: 'strawberry', count: 275 },
-  { word: 'mango',      count: 248 },
-  { word: 'pineapple',  count: 210 },
-  { word: 'grape',      count: 198 },
-  { word: 'watermelon', count: 167 },
-];
-
-const MOCK_RECENT_ACTIVITY = [
-  { uid: '1', email: 'parent@example.com',  word: 'apple',      game: 'AR Word Find', timestamp: '2 min ago',  flagged: false },
-  { uid: '2', email: 'learner@example.com', word: 'banana',     game: 'Scan',         timestamp: '5 min ago',  flagged: false },
-  { uid: '3', email: 'user3@example.com',   word: 'fire',       game: 'Scan',         timestamp: '11 min ago', flagged: true  },
-  { uid: '4', email: 'user4@example.com',   word: 'orange',     game: 'Make a Meal',  timestamp: '18 min ago', flagged: false },
-  { uid: '5', email: 'user5@example.com',   word: 'strawberry', game: 'AR Word Find', timestamp: '25 min ago', flagged: false },
-];
+const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
 export const DashboardScreen: React.FC = () => {
-  const [stats] = useState<DashboardStats>(MOCK_STATS);
+  const { stats, recentActivity, loading } = useDashboard();
 
   return (
     <div className="dashboard">
       <PageHeader
         title="Dashboard"
-        subtitle="Platform overview and key metrics"
+        subtitle={TODAY}
       />
 
-      <KpiRow stats={stats} />
+      {loading ? (
+        <p className="dashboard__loading">Loading metrics…</p>
+      ) : (
+        <>
+          <section aria-label="Key metrics">
+            <p className="dashboard__section-label">Key Metrics</p>
+            <KpiRow stats={stats ?? EMPTY_STATS} />
+          </section>
 
-      <div className="dashboard__charts">
-        <UserActivityCard data={MOCK_ACTIVITY_DATA} />
-        <TopWordsCard data={MOCK_TOP_WORDS} />
-      </div>
+          <section aria-label="Activity overview">
+            <p className="dashboard__section-label">Activity Overview</p>
+            <div className="dashboard__charts">
+              <UserActivityCard data={[]} />
+              <TopWordsCard data={[]} />
+            </div>
+          </section>
 
-      <RecentActivityCard rows={MOCK_RECENT_ACTIVITY} />
+          <section aria-label="Recent scans">
+            <p className="dashboard__section-label">Recent Scans</p>
+            <RecentActivityCard rows={recentActivity} />
+          </section>
+        </>
+      )}
     </div>
   );
 };

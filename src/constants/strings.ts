@@ -55,6 +55,10 @@ export const strings = {
   hazardAlertBody: "It looks like there's something unsafe nearby. Please move away and find a grown-up.",
   hazardAlertButton: "I'm Safe Now",
 
+  // Maintenance Mode
+  maintenanceModeTitle: 'Down for Maintenance',
+  maintenanceModeBody: "We're making Lumi even better! Check back soon.",
+
   // Parental Controls — Screen Time
   screenTimeLimitTitle: "Time's Up for Today!",
   screenTimeLimitBody: (used: number, limit: number) =>

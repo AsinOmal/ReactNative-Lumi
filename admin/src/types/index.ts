@@ -103,3 +103,26 @@ export interface Purchase {
   productId: string;
   purchasedAt: Date;
 }
+
+export interface BannerConfig {
+  message: string;
+  accentColor: string;
+  expiresAt: Date;
+  isActive: boolean;
+}
+
+export interface HazardEvent {
+  id: string;
+  uid: string;
+  label: string;
+  detectedAt: Date;
+  dismissed: boolean;
+}
+
+export interface GameConstants {
+  scanIntervalMs: number;
+  hazardCheckIntervalMs: number;
+  hazardCooldownMs: number;
+  arGameDurationSec: number;
+  dailyWordList: string[];
+}

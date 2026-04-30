@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useModeration } from '../../hooks/useModeration';
+import { HazardLogSection } from './HazardLogSection';
 import './ModerationScreen.css';
 
 export const ModerationScreen: React.FC = () => {
@@ -121,6 +122,8 @@ export const ModerationScreen: React.FC = () => {
           </div>
         )}
       </div>
+
+      <HazardLogSection />
     </div>
   );
 };

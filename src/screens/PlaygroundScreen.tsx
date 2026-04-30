@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../constants/colors';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 
 interface GameCard {
   key: string;
@@ -14,6 +15,7 @@ interface GameCard {
   iconName: string;
   accent: string;
   available: boolean;
+  badgeText?: string;
 }
 
 const GAMES: GameCard[] = [
@@ -26,6 +28,11 @@ const GAMES: GameCard[] = [
 export const PlaygroundScreen = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const appConfig = useRemoteContentStore(s => s.appConfig);
+  const arGamesEnabled = appConfig?.arGamesEnabled !== false;
+  const effectiveGames = arGamesEnabled
+    ? GAMES
+    : GAMES.map(g => g.available ? { ...g, available: false, badgeText: 'Off' } : g);
 
   return (
     <View style={styles.container}>
@@ -54,7 +61,7 @@ export const PlaygroundScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.grid}>
-          {GAMES.map(game => (
+          {effectiveGames.map(game => (
             <TouchableOpacity
               key={game.key}
               style={[styles.card, { shadowColor: game.accent }, !game.available && styles.cardLocked]}
@@ -79,7 +86,7 @@ export const PlaygroundScreen = () => {
                   )}
                   {!game.available && (
                     <View style={styles.badge}>
-                      <Text style={styles.badgeText}>Soon</Text>
+                      <Text style={styles.badgeText}>{game.badgeText ?? 'Soon'}</Text>
                     </View>
                   )}
                 </View>

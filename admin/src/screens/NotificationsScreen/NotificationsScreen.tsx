@@ -6,6 +6,7 @@ import { Badge } from '../../components/common/Badge';
 import { EmptyState } from '../../components/common/EmptyState';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useNotifications } from '../../hooks/useNotifications';
+import { BannerSection } from './BannerSection';
 import './NotificationsScreen.css';
 
 const fmt = (d: Date) =>
@@ -114,6 +115,8 @@ export const NotificationsScreen: React.FC = () => {
           </div>
         )}
       </div>
+
+      <BannerSection />
     </div>
   );
 };
