@@ -25,7 +25,7 @@ export const BannerSection: React.FC = () => {
   const [form, setForm] = useState<BannerConfig>(EMPTY);
   const [error, setError] = useState('');
 
-  useEffect(() => { if (banner) setForm(banner); }, [banner]);
+  useEffect(() => { setForm(banner ?? EMPTY); }, [banner]);
 
   const handleSave = async () => {
     if (!form.message.trim()) { setError('Message is required.'); return; }

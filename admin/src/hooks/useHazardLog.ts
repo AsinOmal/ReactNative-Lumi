@@ -31,7 +31,7 @@ export const useHazardLog = (): UseHazardLogResult => {
             id: d.id,
             uid,
             label: data.label ?? '',
-            detectedAt: data.detectedAt?.toDate() ?? new Date(),
+            detectedAt: data.detectedAt?.toDate() ?? new Date(0),
             dismissed: data.dismissed ?? false,
           } as HazardEvent;
         }));

@@ -68,7 +68,7 @@ export const PlaygroundScreen = () => {
               onPress={() => game.available && (navigation as any).navigate(game.key)}
               activeOpacity={game.available ? 0.85 : 1}
               accessibilityLabel={game.title}
-              accessibilityHint={game.available ? game.desc : 'Coming soon'}
+              accessibilityHint={game.available ? game.desc : (game.badgeText ?? 'Coming soon')}
               accessibilityRole="button"
             >
               <View style={[styles.iconArea, { backgroundColor: game.available ? game.accent : '#CBD5E1' }]}>

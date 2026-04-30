@@ -72,8 +72,8 @@ export const useParentalControlsStore = create<ParentalControlsState>((set, get)
   },
 
   mergeGlobalBlocklist: (globalWords) => {
-    const { settings, mergedBlocklist } = get();
-    const merged = new Set([...mergedBlocklist, ...STATIC_BLOCKLIST, ...settings.customBlocklist, ...globalWords]);
+    const { settings } = get();
+    const merged = new Set([...STATIC_BLOCKLIST, ...settings.customBlocklist, ...globalWords]);
     set({ mergedBlocklist: merged });
   },
 }));

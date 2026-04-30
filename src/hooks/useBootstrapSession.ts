@@ -46,9 +46,15 @@ export const useBootstrapSession = (): BootstrapResult => {
   const [suspendedError, setSuspendedError] = useState(false);
 
   useEffect(() => {
+    let activeUid: string | null = null;
     let unsubTokenRefresh: (() => void) | null = null;
     const authInstance = getAuth(getApp());
     const unsub = onAuthStateChanged(authInstance, async (userState) => {
+      // Capture this callback's session identity; any later await checks this
+      // against activeUid to detect sign-in/sign-out churn mid-flight.
+      activeUid = userState?.uid ?? null;
+      const sessionUid = activeUid;
+
       setUser(userState);
       if (initializing) {
         setInitializing(false);
@@ -65,8 +71,10 @@ export const useBootstrapSession = (): BootstrapResult => {
       } catch (e) {
         console.warn("[useBootstrapSession] createUserIfNew:", e);
       }
+      if (sessionUid !== activeUid) return;
 
       const suspended = await isUserSuspended(userState.uid);
+      if (sessionUid !== activeUid) return;
       if (suspended) {
         setSuspendedError(true);
         await signOut(authInstance).catch(() => {});
@@ -82,6 +90,7 @@ export const useBootstrapSession = (): BootstrapResult => {
       } catch (e) {
         console.warn("[useBootstrapSession] loadSettings:", e);
       }
+      if (sessionUid !== activeUid) return;
 
       loadRemoteModels().catch(() => {});
 
@@ -90,6 +99,7 @@ export const useBootstrapSession = (): BootstrapResult => {
           fetchRemotePacks(),
           fetchGlobalBlocklist(),
         ]);
+        if (sessionUid !== activeUid) return;
         setRemoteContent({ remotePacks: packs, globalBlocklist: blocklist });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {

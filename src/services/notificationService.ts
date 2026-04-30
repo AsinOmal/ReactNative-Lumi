@@ -45,8 +45,8 @@ export async function scheduleStreakReminder(): Promise<void> {
     const fireAt = new Date();
     fireAt.setHours(REMINDER_HOUR, 0, 0, 0);
     if (fireAt.getTime() <= Date.now()) {
-      return;
-    } // 8pm already passed today
+      fireAt.setDate(fireAt.getDate() + 1); // past 8pm — roll to tomorrow
+    }
 
     // Android requires a channel
     await notifee.createChannel({
