@@ -14,14 +14,25 @@
  *   on a cold start with a slow connection. Each fetch returns a safe empty on failure.
  */
 
-import { useState, useEffect } from 'react';
-import { getApp } from '@react-native-firebase/app';
-import { getAuth, onAuthStateChanged, signOut } from '@react-native-firebase/auth';
-import { useAuthStore } from '../store/useAuthStore';
-import { useParentalControlsStore } from '../store/useParentalControlsStore';
-import { useRemoteContentStore } from '../store/useRemoteContentStore';
-import { createUserIfNew, isUserSuspended } from '../services/userService';
-import { fetchRemotePacks, fetchGlobalBlocklist } from '../services/remoteContentService';
+import { useState, useEffect } from "react";
+import { getApp } from "@react-native-firebase/app";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from "@react-native-firebase/auth";
+import { useAuthStore } from "../store/useAuthStore";
+import { useParentalControlsStore } from "../store/useParentalControlsStore";
+import { useRemoteContentStore } from "../store/useRemoteContentStore";
+import { createUserIfNew, isUserSuspended } from "../services/userService";
+import {
+  fetchRemotePacks,
+  fetchGlobalBlocklist,
+} from "../services/remoteContentService";
+import {
+  registerFcmToken,
+  setupTokenRefresh,
+} from "../services/notificationService";
 
 interface BootstrapResult {
   initializing: boolean;
@@ -35,15 +46,25 @@ export const useBootstrapSession = (): BootstrapResult => {
   const [suspendedError, setSuspendedError] = useState(false);
 
   useEffect(() => {
+    let unsubTokenRefresh: (() => void) | null = null;
     const authInstance = getAuth(getApp());
     const unsub = onAuthStateChanged(authInstance, async (userState) => {
       setUser(userState);
-      if (initializing) setInitializing(false);
+      if (initializing) {
+        setInitializing(false);
+      }
 
-      if (!userState) { setSuspendedError(false); return; }
+      if (!userState) {
+        setSuspendedError(false);
+        unsubTokenRefresh?.();
+        return;
+      }
 
-      try { await createUserIfNew(userState); }
-      catch (e) { console.warn('[useBootstrapSession] createUserIfNew:', e); }
+      try {
+        await createUserIfNew(userState);
+      } catch (e) {
+        console.warn("[useBootstrapSession] createUserIfNew:", e);
+      }
 
       const suspended = await isUserSuspended(userState.uid);
       if (suspended) {
@@ -52,8 +73,15 @@ export const useBootstrapSession = (): BootstrapResult => {
         return;
       }
 
-      try { await loadSettings(userState.uid); }
-      catch (e) { console.warn('[useBootstrapSession] loadSettings:', e); }
+      registerFcmToken(userState.uid).catch(() => {});
+      unsubTokenRefresh?.();
+      unsubTokenRefresh = setupTokenRefresh(userState.uid);
+
+      try {
+        await loadSettings(userState.uid);
+      } catch (e) {
+        console.warn("[useBootstrapSession] loadSettings:", e);
+      }
 
       loadRemoteModels().catch(() => {});
 
@@ -65,10 +93,13 @@ export const useBootstrapSession = (): BootstrapResult => {
         setRemoteContent({ remotePacks: packs, globalBlocklist: blocklist });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
-        console.warn('[useBootstrapSession] remote content fetch:', e);
+        console.warn("[useBootstrapSession] remote content fetch:", e);
       }
     });
-    return unsub;
+    return () => {
+      unsub();
+      unsubTokenRefresh?.();
+    };
   }, []);
 
   return { initializing, suspendedError };
