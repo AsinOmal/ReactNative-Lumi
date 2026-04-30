@@ -27,10 +27,10 @@ export const HazardLogSection: React.FC = () => {
           <table className="hazard-log__table">
             <thead>
               <tr>
-                <th>Label</th>
-                <th>User UID</th>
-                <th>Time</th>
-                <th>Dismissed</th>
+                <th scope="col">Label</th>
+                <th scope="col">User UID</th>
+                <th scope="col">Time</th>
+                <th scope="col">Dismissed</th>
               </tr>
             </thead>
             <tbody>

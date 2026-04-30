@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator,
@@ -20,6 +20,23 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, emai
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (autoCloseTimerRef.current) clearTimeout(autoCloseTimerRef.current);
+    };
+  }, []);
+
+  const handleClose = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+    setSent(false);
+    setMessage('');
+    onClose();
+  };
 
   const handleSubmit = async () => {
     if (!message.trim()) return;
@@ -35,15 +52,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, emai
       });
       setSent(true);
       setMessage('');
-      setTimeout(onClose, 1500);
+      autoCloseTimerRef.current = setTimeout(handleClose, 1500);
     } catch (e) {
       console.error('[FeedbackModal] submit:', e);
     } finally {
       setSending(false);
     }
   };
-
-  const handleClose = () => { setSent(false); setMessage(''); onClose(); };
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>

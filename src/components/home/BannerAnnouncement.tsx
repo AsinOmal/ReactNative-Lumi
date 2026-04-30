@@ -11,7 +11,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRemoteContentStore } from '../../store/useRemoteContentStore';
-import { colors } from '../../constants/colors';
 
 const dismissKey = (msg: string, exp: Date) =>
   `@banner_dismissed_${msg.slice(0, 40)}_${exp.getTime()}`;
@@ -22,10 +21,12 @@ export const BannerAnnouncement: React.FC = () => {
 
   useEffect(() => {
     if (!banner) { setDismissed(true); return; }
+    let mounted = true;
     const key = dismissKey(banner.message, banner.expiresAt);
     AsyncStorage.getItem(key)
-      .then(val => setDismissed(val === 'true'))
-      .catch(() => setDismissed(false));
+      .then(val => { if (mounted) setDismissed(val === 'true'); })
+      .catch(() => { if (mounted) setDismissed(false); });
+    return () => { mounted = false; };
   }, [banner]);
 
   const handleDismiss = async () => {

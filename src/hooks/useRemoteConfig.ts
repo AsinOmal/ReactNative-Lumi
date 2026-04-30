@@ -20,14 +20,17 @@ export const useRemoteConfig = (enabled: boolean): void => {
   const { setRemoteContent } = useRemoteContentStore();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      setRemoteContent({ appConfig: null });
+      return;
+    }
 
     const db = getFirestore(getApp());
 
     const unsubFlags = onSnapshot(
       doc(db, 'adminConfig', 'featureFlags') as any,
       (snap: any) => {
-        if (!snap.exists()) return;
+        if (!snap.exists()) { setRemoteContent({ appConfig: null }); return; }
         const d = snap.data();
         const appConfig: RemoteAppConfig = {
           maintenanceMode:    d?.maintenanceMode    ?? false,
@@ -61,6 +64,6 @@ export const useRemoteConfig = (enabled: boolean): void => {
       (err: any) => console.error('[useRemoteConfig] banner:', err),
     );
 
-    return () => { unsubFlags(); unsubBanner(); };
+    return () => { unsubFlags(); unsubBanner(); setRemoteContent({ appConfig: null }); };
   }, [enabled]);
 };

@@ -34,7 +34,7 @@ service cloud.firestore {
     // ── Packs ─────────────────────────────────────────────────────────────────
     // Mobile reads published packs at boot; admin panel creates/updates them.
     match /packs/{packId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (resource.data.isPublished == true || isAdmin());
       allow write: if isAdmin();
     }
 
@@ -49,8 +49,13 @@ service cloud.firestore {
     // Users own their profile and all subcollections.
     // Admins can read (for moderation/support) but not write.
     match /users/{uid} {
-      allow read, write: if isOwner(uid);
-      allow read: if isAdmin();
+      allow read: if isOwner(uid);
+      // Owners may not alter admin-managed fields (suspended).
+      // resource == null on first write (new user), so skip the check then.
+      allow write: if isOwner(uid)
+        && (resource == null
+          || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['suspended']));
+      allow read, write: if isAdmin();
     }
 
     match /users/{uid}/{subcollection=**} {
@@ -61,7 +66,10 @@ service cloud.firestore {
     // ── Feedback ──────────────────────────────────────────────────────────────
     // Any signed-in user can submit; only admins can read/manage.
     match /feedback/{feedbackId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && !request.resource.data.keys().hasAny(['isRead', 'isModerated', 'reviewedAt']);
       allow read, update, delete: if isAdmin();
     }
 
