@@ -70,6 +70,17 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
+// Force older androidx.core — Kotlin 1.9.x pulls in core:1.16.0 which requires
+// compileSdk 35 and AGP 8.6.0; pin to 1.15.0 to stay on current toolchain.
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'androidx.core' &&
+            (details.requested.name == 'core' || details.requested.name == 'core-ktx')) {
+            details.useVersion '1.13.0'
+        }
+    }
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
