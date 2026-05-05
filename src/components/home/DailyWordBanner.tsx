@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,6 +14,11 @@ interface Props {
 export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
   const navigation = useNavigation();
   const display = word.charAt(0).toUpperCase() + word.slice(1);
+  const [playFlip, setPlayFlip] = useState(false);
+
+  useEffect(() => {
+    if (isFound) setPlayFlip(true);
+  }, [isFound]);
 
   const sparkleColor = isFound ? 'rgba(5,150,105,0.25)' : 'rgba(180,140,0,0.22)';
 
@@ -48,10 +54,19 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
         </TouchableOpacity>
       )}
 
-      {isFound && (
+      {isFound && !playFlip && (
         <View style={styles.checkCircle}>
           <Ionicons name="checkmark-circle" size={42} color={colors.successDark} />
         </View>
+      )}
+      {playFlip && (
+        <LottieView
+          source={require('../../assets/lottie/page-flip.json')}
+          autoPlay
+          loop={false}
+          style={styles.flipAnim}
+          onAnimationFinish={() => setPlayFlip(false)}
+        />
       )}
     </View>
   );
@@ -85,4 +100,5 @@ const styles = StyleSheet.create({
   },
   scanBtnText: { fontFamily: 'Fredoka-Bold', fontSize: 13, color: '#FFF' },
   checkCircle: { paddingLeft: 8 },
+  flipAnim: { width: 64, height: 64 },
 });

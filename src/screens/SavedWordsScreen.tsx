@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import LottieView from "lottie-react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuthStore } from "../store/useAuthStore";
 import { useSavedWords } from "../hooks/useSavedWords";
@@ -99,10 +100,11 @@ export const SavedWordsScreen = () => {
       {tab === "saved" &&
         (savedWords.length === 0 ? (
           <View style={styles.empty}>
-            <Ionicons
-              name="search-outline"
-              size={56}
-              color={colors.textLight}
+            <LottieView
+              source={require("../assets/lottie/sleepy.json")}
+              autoPlay
+              loop
+              style={{ width: 120, height: 120 }}
             />
             <Text style={styles.emptyTitle}>Nothing saved yet!</Text>
             <Text style={styles.emptySub}>

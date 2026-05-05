@@ -17,7 +17,7 @@ import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Camera } from "react-native-vision-camera";
-import { LumiMascot } from "../components/common/LumiMascot";
+import LottieView from "lottie-react-native";
 import { markOnboardingDone } from "../utils/onboardingStore";
 import { requestNotificationPermission } from "../services/notificationService";
 import { styles, SLIDE_W } from "./OnboardingScreenStyles";
@@ -32,7 +32,14 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     gradient: ["#5BC8F5", "#A8E6FF"],
-    icon: <LumiMascot state="celebrate" size={110} />,
+    icon: (
+      <LottieView
+        source={require("../assets/lottie/mascot_idle2.json")}
+        autoPlay
+        loop
+        style={{ width: 110, height: 110 }}
+      />
+    ),
     title: "Welcome to Lumi!",
     desc: "Learn new words by exploring the world around you with augmented reality.",
   },

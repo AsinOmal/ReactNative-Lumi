@@ -145,4 +145,11 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     color: '#FFF',
   },
+  confettiAnim: {
+    position: 'absolute',
+    top: -50,
+    alignSelf: 'center',
+    width: 300,
+    height: 200,
+  },
 });

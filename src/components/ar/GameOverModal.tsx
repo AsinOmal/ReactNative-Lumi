@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors } from '../../constants/colors';
 import { styles } from '../../screens/ARWordFindScreenStyles';
 
 interface GameOverModalProps {
@@ -28,16 +30,28 @@ export const GameOverModal = ({
   onPlayAgain,
   onDone,
 }: GameOverModalProps) => {
+  const lottieRef = useRef<LottieView>(null);
+
+  useEffect(() => {
+    if (gameOver && !timedOut) {
+      lottieRef.current?.reset();
+      lottieRef.current?.play();
+    }
+  }, [gameOver]);
+
   return (
     <Modal transparent visible={gameOver} animationType="fade" onRequestClose={() => {}}>
       <View style={styles.gameOverBg}>
         <View style={styles.gameOverCard}>
           <View style={styles.gameOverEmoji}>
             {timedOut
-              ? <MaterialCommunityIcons name="timer-sand" size={64} color="#A78BFA" />
-              : wrongCount === 0
-                ? <MaterialCommunityIcons name="trophy" size={64} color="#F59E0B" />
-                : <MaterialCommunityIcons name="party-popper" size={64} color="#A78BFA" />
+              ? <MaterialCommunityIcons name="timer-sand" size={64} color={colors.primaryLight} />
+              : <LottieView
+                  ref={lottieRef}
+                  source={require('../../assets/lottie/mascot_celebration.json')}
+                  loop={false}
+                  style={{ width: 120, height: 120 }}
+                />
             }
           </View>
           <Text style={styles.gameOverTitle}>

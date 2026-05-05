@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../screens/ScanScreenStyles';
 import { SyllablePlayer } from '../../components/ar/SyllablePlayer';
@@ -41,9 +42,23 @@ export const ScanOverlayLayer = ({
 }: ScanOverlayLayerProps) => {
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    setShowConfetti(true);
+  }, [activeWord]);
 
   return (
     <Animated.View style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}>
+      {showConfetti && (
+        <LottieView
+          source={require('../../assets/lottie/confetti.json')}
+          autoPlay
+          loop={false}
+          style={styles.confettiAnim}
+          onAnimationFinish={() => setShowConfetti(false)}
+        />
+      )}
       <View style={styles.resultCardHandle} />
       <View style={styles.resultCardRow}>
         <View style={styles.resultWordBlock}>
