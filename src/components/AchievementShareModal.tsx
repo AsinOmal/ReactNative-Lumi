@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { colors } from '../constants/colors';
 import {
   View,
   Text,
@@ -116,13 +117,13 @@ const styles = StyleSheet.create({
   // Card (the thing that gets captured)
   card: {
     width: 300,
-    backgroundColor: '#1A1050',
+    backgroundColor: colors.primaryDark,
     borderRadius: 28,
     alignItems: 'center',
     paddingVertical: 36,
     paddingHorizontal: 24,
     gap: 10,
-    shadowColor: '#5B2DC0',
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.6,
     shadowRadius: 24,
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#2D1B69',
     borderWidth: 3,
-    borderColor: '#5B2DC0',
+    borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
   },
   shareBtn: {
     flex: 2,
-    backgroundColor: '#5B2DC0',
+    backgroundColor: colors.primary,
     borderRadius: 16,
     paddingVertical: 14,
     flexDirection: 'row',

@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Pack } from '../../services/packService';
 import { getPackAccent } from '../../constants/packAccents';
 import { colors } from '../../constants/colors';
+import { woodBorderOuter, woodBorderInner, woodBorderContent } from '../../constants/skeuomorphicTokens';
 
 interface Props {
   pack: Pack;
@@ -15,40 +16,46 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const accent = getPackAccent(pack.id);
 
   return (
-    <TouchableOpacity style={[styles.card, { shadowColor: accent }]} onPress={onPress} activeOpacity={0.85} accessibilityLabel={`${pack.name} pack`} accessibilityHint="Double tap to open pack details" accessibilityRole="button">
-      <View style={[styles.body, { backgroundColor: accent }]}>
-        <MaterialCommunityIcons name="cube-outline" size={40} color="rgba(255,255,255,0.9)" />
-      </View>
-      <View style={styles.footer}>
-        <Text style={styles.name} numberOfLines={1}>{pack.name}</Text>
-        <View style={styles.metaRow}>
-          <Text style={styles.wordCount}>{pack.wordCount} words</Text>
-          {pack.isPremium
-            ? <View style={[styles.badge, styles.badgePremium]}>
-                <Ionicons name="star" size={9} color={colors.accentAmber} />
-                <Text style={[styles.badgeText, { color: colors.accentAmber }]}>Premium</Text>
+    <TouchableOpacity style={[styles.touchable, { shadowColor: accent }]} onPress={onPress} activeOpacity={0.85} accessibilityLabel={`${pack.name} pack`} accessibilityHint="Double tap to open pack details" accessibilityRole="button">
+      <View style={woodBorderOuter}>
+        <View style={woodBorderInner}>
+          <View style={[woodBorderContent, styles.cardContent]}>
+            <View style={[styles.body, { backgroundColor: accent }]}>
+              <MaterialCommunityIcons name="cube-outline" size={40} color="rgba(255,255,255,0.9)" />
+            </View>
+            <View style={styles.footer}>
+              <Text style={styles.name} numberOfLines={1}>{pack.name}</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.wordCount}>{pack.wordCount} words</Text>
+                {pack.isPremium
+                  ? <View style={[styles.badge, styles.badgePremium]}>
+                      <Ionicons name="star" size={9} color={colors.accentAmber} />
+                      <Text style={[styles.badgeText, { color: colors.accentAmber }]}>Premium</Text>
+                    </View>
+                  : <View style={[styles.badge, styles.badgeFree]}>
+                      <Ionicons name="checkmark" size={9} color={colors.successDark} />
+                      <Text style={[styles.badgeText, { color: colors.successDark }]}>Free</Text>
+                    </View>}
               </View>
-            : <View style={[styles.badge, styles.badgeFree]}>
-                <Ionicons name="checkmark" size={9} color={colors.successDark} />
-                <Text style={[styles.badgeText, { color: colors.successDark }]}>Free</Text>
-              </View>}
+            </View>
+            {pack.isPremium && (
+              <View style={styles.lockOverlay}>
+                <Ionicons name="lock-closed" size={22} color="rgba(255,255,255,0.9)" />
+              </View>
+            )}
+          </View>
         </View>
       </View>
-      {pack.isPremium && (
-        <View style={styles.lockOverlay}>
-          <Ionicons name="lock-closed" size={22} color="rgba(255,255,255,0.9)" />
-        </View>
-      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    flex: 1, borderRadius: 20, backgroundColor: colors.backgroundCard,
-    overflow: 'hidden',
+  touchable: {
+    flex: 1,
     shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
   },
+  cardContent: { flex: 1 },
   body: {
     height: 110, alignItems: 'center', justifyContent: 'center',
   },

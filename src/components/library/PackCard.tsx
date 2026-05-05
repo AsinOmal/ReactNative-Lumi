@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../../constants/colors';
+import { woodBorderOuter, woodBorderInner, woodBorderContent } from '../../constants/skeuomorphicTokens';
 
 const CARD_WIDTH = (Dimensions.get('window').width - 32 - 24) / 3;
 
@@ -30,50 +31,54 @@ export const PackCard = ({ id, name, progress, total, isPremium = false, isUnloc
 
   return (
     <TouchableOpacity
-      style={[styles.card, { shadowColor: accent.color }, isLocked && styles.cardLocked]}
+      style={[styles.touchable, { shadowColor: accent.color }, isLocked && styles.cardLocked]}
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <View style={[styles.strip, { backgroundColor: accent.color }]}>
-        <MaterialCommunityIcons name={accent.icon} size={28} color="#FFF" />
-      </View>
+      <View style={woodBorderOuter}>
+        <View style={woodBorderInner}>
+          <View style={[woodBorderContent, styles.cardContent]}>
+            <View style={[styles.strip, { backgroundColor: accent.color }]}>
+              <MaterialCommunityIcons name={accent.icon} size={28} color="#FFF" />
+            </View>
 
-      <View style={styles.body}>
-        <View style={[styles.badge, isLocked ? styles.badgePremium : styles.badgeFree]}>
-          <Ionicons name={isLocked ? 'star' : 'checkmark'} size={10} color={isLocked ? '#92400E' : '#166534'} />
-          <Text style={[styles.badgeText, isLocked ? styles.badgeTextPremium : styles.badgeTextFree]}>
-            {isLocked ? 'Premium' : 'Free'}
-          </Text>
-        </View>
+            <View style={styles.body}>
+              <View style={[styles.badge, isLocked ? styles.badgePremium : styles.badgeFree]}>
+                <Ionicons name={isLocked ? 'star' : 'checkmark'} size={10} color={isLocked ? '#92400E' : '#166534'} />
+                <Text style={[styles.badgeText, isLocked ? styles.badgeTextPremium : styles.badgeTextFree]}>
+                  {isLocked ? 'Premium' : 'Free'}
+                </Text>
+              </View>
 
-        {isLocked && (
-          <View style={styles.lockOverlay}>
-            <Ionicons name="lock-closed" size={14} color={colors.textLight} />
+              {isLocked && (
+                <View style={styles.lockOverlay}>
+                  <Ionicons name="lock-closed" size={14} color={colors.textLight} />
+                </View>
+              )}
+
+              <Text style={styles.packName} numberOfLines={1}>{name}</Text>
+              <Text style={styles.progressText}>
+                {isLocked ? 'Tap to preview' : `${progress} / ${total} found`}
+              </Text>
+            </View>
           </View>
-        )}
-
-        <Text style={styles.packName} numberOfLines={1}>{name}</Text>
-        <Text style={styles.progressText}>
-          {isLocked ? 'Tap to preview' : `${progress} / ${total} found`}
-        </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
+  touchable: {
     width: CARD_WIDTH,
-    backgroundColor: colors.backgroundCard,
-    borderRadius: 24,
     margin: 4,
-    overflow: 'hidden',
     minHeight: 150,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.14,
     shadowRadius: 10,
     elevation: 4,
   },
+  cardContent: { flex: 1, minHeight: 150 },
   cardLocked: { opacity: 0.8 },
   strip: {
     height: 56,

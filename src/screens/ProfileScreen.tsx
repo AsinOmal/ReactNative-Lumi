@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,15 +6,16 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuthStore } from '../store/useAuthStore';
-import { getApp } from '@react-native-firebase/app';
-import { getAuth, signOut } from '@react-native-firebase/auth';
-import { useParentAuth } from '../hooks/useParentAuth';
-import { useParentalControlsStore } from '../store/useParentalControlsStore';
-import { PINEntryModal } from '../components/PINEntryModal';
-import { styles } from './ProfileScreenStyles';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useAuthStore } from "../store/useAuthStore";
+import { getApp } from "@react-native-firebase/app";
+import { getAuth, signOut } from "@react-native-firebase/auth";
+import { useParentAuth } from "../hooks/useParentAuth";
+import { useParentalControlsStore } from "../store/useParentalControlsStore";
+import { PINEntryModal } from "../components/PINEntryModal";
+import { GameBackground } from "../components/common/GameBackground";
+import { styles } from "./ProfileScreenStyles";
 
 export const ProfileScreen = () => {
   const { user } = useAuthStore();
@@ -25,15 +26,20 @@ export const ProfileScreen = () => {
   const [pinError, setPinError] = useState(false);
 
   const initials = user?.displayName
-    ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    : '?';
+    ? user.displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?";
 
   const handleSignOut = async () => {
     try {
       const auth = getAuth(getApp());
       await signOut(auth);
     } catch (e) {
-      console.error('Sign out error:', e);
+      console.error("Sign out error:", e);
     }
   };
 
@@ -45,9 +51,9 @@ export const ProfileScreen = () => {
 
   // Watch for biometric success (no PIN needed path)
   React.useEffect(() => {
-    if (authStep === 'success') {
-      (navigation as any).navigate('ParentDashboard');
-    } else if (authStep === 'pin') {
+    if (authStep === "success") {
+      (navigation as any).navigate("ParentDashboard");
+    } else if (authStep === "pin") {
       setShowPin(true);
     }
   }, [authStep, navigation]);
@@ -56,7 +62,7 @@ export const ProfileScreen = () => {
     const ok = verifyPin(pin);
     if (ok) {
       setShowPin(false);
-      (navigation as any).navigate('ParentDashboard');
+      (navigation as any).navigate("ParentDashboard");
     } else {
       setPinError(true);
       setTimeout(() => setPinError(false), 1500);
@@ -64,11 +70,13 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <GameBackground>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Header */}
           <Text style={styles.headerTitle}>My Profile</Text>
 
@@ -77,7 +85,9 @@ export const ProfileScreen = () => {
             <View style={styles.avatarCircle}>
               <Text style={styles.avatarText}>{initials}</Text>
             </View>
-            <Text style={styles.displayName}>{user?.displayName ?? 'Seeker'}</Text>
+            <Text style={styles.displayName}>
+              {user?.displayName ?? "Seeker"}
+            </Text>
             <Text style={styles.email}>{user?.email}</Text>
 
             {/* Streak badge */}
@@ -104,28 +114,38 @@ export const ProfileScreen = () => {
           </View>
 
           {/* Parent Dashboard */}
-          <TouchableOpacity style={styles.parentDashBtn} onPress={handleParentDashboard} activeOpacity={0.8} accessibilityLabel="Open parent dashboard" accessibilityRole="button">
-            <Text style={styles.parentDashText}>🔒  Parent Dashboard</Text>
+          <TouchableOpacity
+            style={styles.parentDashBtn}
+            onPress={handleParentDashboard}
+            activeOpacity={0.8}
+            accessibilityLabel="Open parent dashboard"
+            accessibilityRole="button"
+          >
+            <Text style={styles.parentDashText}>🔒 Parent Dashboard</Text>
           </TouchableOpacity>
 
           {/* Sign out */}
-          <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8} accessibilityLabel="Sign out" accessibilityRole="button">
+          <TouchableOpacity
+            style={styles.signOutBtn}
+            onPress={handleSignOut}
+            activeOpacity={0.8}
+            accessibilityLabel="Sign out"
+            accessibilityRole="button"
+          >
             <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
-
         </ScrollView>
       </SafeAreaView>
 
       <PINEntryModal
         visible={showPin}
-        mode={settings.pinHash ? 'verify' : 'set'}
+        mode={settings.pinHash ? "verify" : "set"}
         onSubmit={handlePinSubmit}
         onCancel={() => setShowPin(false)}
         hasError={pinError}
       />
       {/* Space for floating tab bar */}
       <View style={{ height: 90 }} />
-    </View>
+    </GameBackground>
   );
 };
-

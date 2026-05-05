@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
@@ -52,27 +53,27 @@ export const styles = StyleSheet.create({
 
   resultCard: {
     position: 'absolute', bottom: 24, left: 16, right: 16,
-    backgroundColor: '#FFFFFF', borderRadius: 24, padding: 20,
-    shadowColor: '#5B2DC0', shadowOffset: { width: 0, height: -4 },
+    backgroundColor: colors.backgroundCard, borderRadius: 24, padding: 20,
+    shadowColor: colors.primary, shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15, shadowRadius: 20, elevation: 12,
   },
   resultCardHandle: {
     width: 36, height: 4, borderRadius: 2,
-    backgroundColor: '#E0D7F5', alignSelf: 'center', marginBottom: 16,
+    backgroundColor: colors.handleBar, alignSelf: 'center', marginBottom: 16,
   },
   resultCardRow: {
     flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', marginBottom: 12,
   },
   resultWordBlock: { flex: 1 },
-  resultWord: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: '#1A1050' },
-  resultPack: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: '#9B87CC', marginTop: 1 },
+  resultWord: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: colors.textDark },
+  resultPack: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: colors.textMid, marginTop: 1 },
   pronunciationBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#5B2DC0', alignItems: 'center', justifyContent: 'center', marginLeft: 12,
+    backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginLeft: 12,
   },
   factBox: {
-    flexDirection: 'row', backgroundColor: '#F0EBFF',
+    flexDirection: 'row', backgroundColor: colors.factBoxBg,
     borderRadius: 14, padding: 12, gap: 8, marginBottom: 16, alignItems: 'flex-start',
   },
   factEmoji: { fontSize: 16, marginTop: 1 },
@@ -80,20 +81,20 @@ export const styles = StyleSheet.create({
   cardActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   dismissBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.backgroundLight, alignItems: 'center', justifyContent: 'center',
   },
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#5B2DC0',
+    backgroundColor: colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 24,
   },
   saveBtnDisabled: {
-    backgroundColor: 'rgba(91, 45, 192, 0.3)',
-    borderColor: 'rgba(139, 92, 246, 0.4)',
+    backgroundColor: colors.primaryDisabled,
+    borderColor: colors.borderPrimary,
     borderWidth: 1,
   },
   saveBtnText: {
@@ -102,7 +103,7 @@ export const styles = StyleSheet.create({
     color: '#fff',
   },
   saveBtnTextDisabled: {
-    color: '#A78BFA',
+    color: colors.primaryLight,
   },
 
   unknownChip: {
@@ -131,7 +132,7 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   wishBtn: {
-    backgroundColor: '#5B2DC0',
+    backgroundColor: colors.primary,
     borderRadius: 14,
     paddingHorizontal: 10,
     paddingVertical: 6,

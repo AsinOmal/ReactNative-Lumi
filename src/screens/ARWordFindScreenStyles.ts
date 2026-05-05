@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
@@ -15,7 +16,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   scorePill: {
-    backgroundColor: '#5B2DC0', borderRadius: 20,
+    backgroundColor: colors.primary, borderRadius: 20,
     paddingHorizontal: 12, paddingVertical: 6,
   },
   scorePillText: { fontFamily: 'Fredoka-Bold', fontSize: 16, color: '#FFF' },
@@ -88,7 +89,7 @@ export const styles = StyleSheet.create({
   },
   progressContainer: { width: '100%', alignItems: 'center', gap: 8 },
   loadingSubtitle: {
-    fontFamily: 'Fredoka-SemiBold', fontSize: 16, color: '#A78BFA',
+    fontFamily: 'Fredoka-SemiBold', fontSize: 16, color: colors.primaryLight,
   },
   progressBarTrack: {
     width: '100%', height: 12, backgroundColor: 'rgba(255,255,255,0.1)',
@@ -131,20 +132,20 @@ export const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', padding: 32,
   },
   gameOverCard: {
-    backgroundColor: '#1A1050', borderRadius: 32,
+    backgroundColor: colors.primaryDark, borderRadius: 32,
     paddingVertical: 40, paddingHorizontal: 36,
     alignItems: 'center', gap: 10, width: '100%',
     borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.3)',
   },
   gameOverEmoji:  { marginBottom: 4, alignItems: 'center', justifyContent: 'center' },
   gameOverTitle:  { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFF' },
-  timedOutSub:    { fontFamily: 'Fredoka-Regular', fontSize: 16, color: '#A78BFA' },
+  timedOutSub:    { fontFamily: 'Fredoka-Regular', fontSize: 16, color: colors.primaryLight },
   scoreRow:       { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 4 },
-  scoreLabel:     { fontFamily: 'Fredoka-Regular', fontSize: 17, color: '#A78BFA' },
+  scoreLabel:     { fontFamily: 'Fredoka-Regular', fontSize: 17, color: colors.primaryLight },
   scoreNum:       { fontFamily: 'Fredoka-Bold', fontSize: 40, color: '#C4B5FD' },
   mistakesText:   { fontFamily: 'Fredoka-Regular', fontSize: 15, color: '#6B7280' },
   playAgainBtn: {
-    marginTop: 12, backgroundColor: '#5B2DC0',
+    marginTop: 12, backgroundColor: colors.primary,
     borderRadius: 20, paddingHorizontal: 36, paddingVertical: 14,
     width: '100%', alignItems: 'center',
   },
@@ -154,5 +155,5 @@ export const styles = StyleSheet.create({
     borderRadius: 20, paddingHorizontal: 36, paddingVertical: 12,
     width: '100%', alignItems: 'center',
   },
-  doneBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: '#A78BFA' },
+  doneBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: colors.primaryLight },
 });

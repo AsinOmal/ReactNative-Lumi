@@ -5,6 +5,7 @@
 // Done triggers safeGoBack with the 350ms Metal cleanup delay.
 
 import React from 'react';
+import { colors } from '../../constants/colors';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Recipe } from '../../types/makeAMeal';
 
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', padding: 28,
   },
   card: {
-    backgroundColor: '#1A1050', borderRadius: 32,
+    backgroundColor: colors.primaryDark, borderRadius: 32,
     paddingVertical: 36, paddingHorizontal: 28,
     alignItems: 'center', gap: 12, width: '100%',
     borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.3)',
@@ -67,5 +68,5 @@ const styles = StyleSheet.create({
     borderRadius: 24, paddingHorizontal: 36, paddingVertical: 12,
     width: '100%', alignItems: 'center',
   },
-  doneBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: '#A78BFA' },
+  doneBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: colors.primaryLight },
 });

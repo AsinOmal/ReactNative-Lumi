@@ -7,6 +7,7 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
+import { colors } from '../../constants/colors';
 import { strings } from '../../constants/strings';
 import { PACK_WORDS } from '../../constants/packWords';
 
@@ -70,7 +71,7 @@ export const ScanOverlayLayer = ({
       
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
-          <Ionicons name="close" size={20} color="#5B2DC0" />
+          <Ionicons name="close" size={20} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}

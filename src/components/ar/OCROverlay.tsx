@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { colors } from '../../constants/colors';
 import {
   View,
   Text,
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   },
   arButton: {
     flexDirection: 'row', alignItems: 'center', gap: 7,
-    backgroundColor: '#5B2DC0',
+    backgroundColor: colors.primary,
     borderRadius: 26,
     paddingHorizontal: 18, paddingVertical: 12,
     shadowColor: '#8B5CF6',
