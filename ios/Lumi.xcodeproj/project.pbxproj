@@ -26,6 +26,7 @@
 		442AEE812F6076C000E674A1 /* grape.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE722F6076C000E674A1 /* grape.mp3 */; };
 		442AEE822F6076C000E674A1 /* cherry.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE712F6076C000E674A1 /* cherry.mp3 */; };
 		442AEE832F6076C000E674A1 /* mango.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE742F6076C000E674A1 /* mango.mp3 */; };
+		444E61022FAD0CE900DEFFA0 /* File.txt in Resources */ = {isa = PBXBuildFile; fileRef = 444E61012FAD0CE900DEFFA0 /* File.txt */; };
 		44CA06202F5876BB0078D79E /* LumiVisionOCR.m in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */; };
 		44CA06212F5876BB0078D79E /* LumiVisionOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */; };
 		7F76C9C2CAF644C482FB2791 /* Fredoka-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */; };
@@ -71,6 +72,7 @@
 		442AEE762F6076C000E674A1 /* pineapple.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = pineapple.mp3; sourceTree = "<group>"; };
 		442AEE772F6076C000E674A1 /* strawberry.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = strawberry.mp3; sourceTree = "<group>"; };
 		442AEE782F6076C000E674A1 /* watermelon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = watermelon.mp3; sourceTree = "<group>"; };
+		444E61012FAD0CE900DEFFA0 /* File.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = File.txt; sourceTree = "<group>"; };
 		44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LumiVisionOCR.m; sourceTree = "<group>"; };
 		44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiVisionOCR.swift; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Lumi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi.release.xcconfig"; path = "Target Support Files/Pods-Lumi/Pods-Lumi.release.xcconfig"; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				444E61012FAD0CE900DEFFA0 /* File.txt */,
 				44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */,
 				44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */,
 				13B07FAE1A68108700A75B9A /* Lumi */,
@@ -329,6 +332,7 @@
 				442AEE812F6076C000E674A1 /* grape.mp3 in Resources */,
 				442AEE822F6076C000E674A1 /* cherry.mp3 in Resources */,
 				442AEE832F6076C000E674A1 /* mango.mp3 in Resources */,
+				444E61022FAD0CE900DEFFA0 /* File.txt in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				060F4EE8000C4F5D98D7274F /* Fredoka-Bold.ttf in Resources */,

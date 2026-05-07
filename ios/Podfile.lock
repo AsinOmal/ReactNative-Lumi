@@ -1198,10 +1198,6 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - AsyncStorage (3.0.1):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - boost (1.83.0)
   - BoringSSL-GRPC (0.0.37):
     - BoringSSL-GRPC/Implementation (= 0.0.37)
@@ -2305,9 +2301,7 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.14.1):
     - React-Core
-  - react-native-view-shot (4.0.3):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
+  - react-native-view-shot (3.8.0):
     - React-Core
   - react-native-worklets-core (1.2.0):
     - React
@@ -2481,6 +2475,8 @@ PODS:
     - React-logger (= 0.73.3)
     - React-perflogger (= 0.73.3)
   - RecaptchaInterop (101.0.0)
+  - RNCAsyncStorage (2.2.0):
+    - React-Core
   - RNFBApp (23.8.6):
     - Firebase/CoreOnly (= 12.8.0)
     - glog
@@ -2505,7 +2501,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.30.0):
+  - RNGestureHandler (2.20.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -2517,7 +2513,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
-  - RNScreens (3.37.0):
+  - RNScreens (3.35.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -2553,7 +2549,6 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - "AsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -2610,6 +2605,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -2661,8 +2657,6 @@ SPEC REPOS:
     - SocketRocket
 
 EXTERNAL SOURCES:
-  AsyncStorage:
-    :path: "../node_modules/@react-native-async-storage/async-storage"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   BVLinearGradient:
@@ -2770,6 +2764,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -2805,7 +2801,6 @@ SPEC CHECKSUMS:
   abseil: a05cc83bf02079535e17169a73c5be5ba47f714b
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  AsyncStorage: 887b5e47aa4e41627221c802d2c964d662882f66
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   BoringSSL-GRPC: dded2a44897e45f28f08ae87a55ee4bcd19bc508
   BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
@@ -2863,7 +2858,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 1733ee5eb07a2ab3b2f41dcdfcce0ed22951948e
   react-native-biometrics: 43ed5b828646a7862dbc7945556446be00798e7d
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
-  react-native-view-shot: a6c50365dc2d86b146811b4ab510eb36cb7727b5
+  react-native-view-shot: d1a701eb0719c6dccbd20b4bb43b1069f304cb70
   react-native-worklets-core: db800bd102693c6ee2452c7483b9b4d3190cae78
   React-nativeconfig: 4662ac75a0a77789c9ed896ed77baa1a25cdf006
   React-NativeModulesApple: 060205bc6b15b38a9f0142ddd7a47d0217ed0bdb
@@ -2886,14 +2881,15 @@ SPEC CHECKSUMS:
   React-utils: 2d7acc34d7190309e05ef44936dc9398e036fc08
   ReactCommon: 69cd9c1c2e2fbfc0d50bcaf850aa478cdfff7aa7
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
+  RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
   RNFBApp: 25f246a77f8b3a458ac5f1cd34ade26a7fb45f20
   RNFBAuth: a5964ccae9b457415bad15ab69809e98f2ccdb67
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
   RNFBMessaging: d4c77e8c2bb10e51a6c732ddc0cb15a7ef6857ec
-  RNGestureHandler: ed9eaaf0becdb57555c55afeb5ebc99e4477a9cf
+  RNGestureHandler: 6f90591be7c15f90cc2d54a96e8be35038c56810
   RNGoogleSignin: b11289afb825c32c250272e4d92446f71091814e
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
-  RNScreens: 7846157ae38d967c9a9be3dc9c35e3428b450d7e
+  RNScreens: b8cead5eb79b58d78348094d62f154ffd163361d
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
   RNVectorIcons: 433d2e7249acbcd2921118a2ea5f254cba798d31
