@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useAuthStore } from "../store/useAuthStore";
+import { useUserProfile } from "../hooks/useUserProfile";
 import { getApp } from "@react-native-firebase/app";
 import { getAuth, signOut } from "@react-native-firebase/auth";
 import { getProgress, getStreak } from "../utils/achievementStore";
@@ -12,18 +13,22 @@ import { colors } from "../constants/colors";
 import { GameBackground } from "../components/common/GameBackground";
 import { SettingsRow } from "../components/settings/SettingsRow";
 import { FeedbackModal } from "../components/settings/FeedbackModal";
+import { EditUsernameModal } from "../components/settings/EditUsernameModal";
 
 export const SettingsScreen = () => {
   const { user } = useAuthStore();
+  const profile = useUserProfile(user?.uid);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [wordCount, setWordCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [achievementCount, setAchievementCount] = useState(0);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [usernameVisible, setUsernameVisible] = useState(false);
 
-  const initials = user?.displayName
-    ? user.displayName
+  const headerName = profile.username || profile.displayName || user?.displayName || "Explorer";
+  const initials = headerName !== "Explorer"
+    ? headerName
         .split(" ")
         .map((n: string) => n[0])
         .join("")
@@ -63,7 +68,7 @@ export const SettingsScreen = () => {
           <Text style={styles.avatarText}>{initials}</Text>
         </View>
         <Text style={styles.displayName}>
-          {user?.displayName ?? "Explorer"}
+          {headerName}
         </Text>
         <Text style={styles.email}>{user?.email}</Text>
       </LinearGradient>
@@ -102,6 +107,15 @@ export const SettingsScreen = () => {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.sectionLabel}>Profile</Text>
+        <View style={styles.section}>
+          <SettingsRow
+            iconName="person-outline"
+            label="Edit Username"
+            onPress={() => setUsernameVisible(true)}
+          />
+        </View>
+
         <Text style={styles.sectionLabel}>Parent Controls</Text>
         <View style={styles.section}>
           <SettingsRow
@@ -136,6 +150,13 @@ export const SettingsScreen = () => {
         uid={user?.uid ?? ""}
         email={user?.email ?? ""}
         onClose={() => setFeedbackVisible(false)}
+      />
+
+      <EditUsernameModal
+        visible={usernameVisible}
+        uid={user?.uid ?? ""}
+        currentUsername={profile.username || profile.displayName || ""}
+        onClose={() => setUsernameVisible(false)}
       />
     </GameBackground>
   );

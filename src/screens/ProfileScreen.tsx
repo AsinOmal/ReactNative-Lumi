@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../store/useAuthStore";
+import { useUserProfile } from "../hooks/useUserProfile";
 import { getApp } from "@react-native-firebase/app";
 import { getAuth, signOut } from "@react-native-firebase/auth";
 import { useParentAuth } from "../hooks/useParentAuth";
@@ -19,14 +20,16 @@ import { styles } from "./ProfileScreenStyles";
 
 export const ProfileScreen = () => {
   const { user } = useAuthStore();
+  const profile = useUserProfile(user?.uid);
   const navigation = useNavigation();
   const { authStep, authenticate, verifyPin } = useParentAuth();
   const { settings } = useParentalControlsStore();
   const [showPin, setShowPin] = useState(false);
   const [pinError, setPinError] = useState(false);
 
-  const initials = user?.displayName
-    ? user.displayName
+  const headerName = profile.username || profile.displayName || user?.displayName || "Seeker";
+  const initials = headerName !== "Seeker"
+    ? headerName
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -86,7 +89,7 @@ export const ProfileScreen = () => {
               <Text style={styles.avatarText}>{initials}</Text>
             </View>
             <Text style={styles.displayName}>
-              {user?.displayName ?? "Seeker"}
+              {headerName}
             </Text>
             <Text style={styles.email}>{user?.email}</Text>
 
