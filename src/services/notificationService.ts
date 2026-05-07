@@ -4,6 +4,7 @@
 // Uses @notifee/react-native — local only, no APNs server required.
 // Requires: pod install + Push Notifications capability in Xcode.
 
+import { Platform } from "react-native";
 import notifee, { TriggerType, AndroidImportance } from "@notifee/react-native";
 import messaging from "@react-native-firebase/messaging";
 import firestore from "@react-native-firebase/firestore";
@@ -72,8 +73,24 @@ export async function scheduleStreakReminder(): Promise<void> {
   }
 }
 
+// 📖 What this does:
+// On iOS, getToken() throws messaging/unregistered until the device is registered for remote
+// messages via APNs. Newer @react-native-firebase versions no longer auto-register — we must
+// call registerDeviceForRemoteMessages() and request notification permission first.
+// requestPermission() is also iOS-only; on Android the Firebase Messaging SDK uses the system
+// notification permission granted at install/runtime by notifee.
 export const registerFcmToken = async (uid: string): Promise<void> => {
   try {
+    if (Platform.OS === "ios") {
+      if (!messaging().isDeviceRegisteredForRemoteMessages) {
+        await messaging().registerDeviceForRemoteMessages();
+      }
+      const status = await messaging().requestPermission();
+      const authorized =
+        status === messaging.AuthorizationStatus.AUTHORIZED ||
+        status === messaging.AuthorizationStatus.PROVISIONAL;
+      if (!authorized) return;
+    }
     const token = await messaging().getToken();
     await firestore().collection("users").doc(uid).update({ fcmToken: token });
   } catch (e) {

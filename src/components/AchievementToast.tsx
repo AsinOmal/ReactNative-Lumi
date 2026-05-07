@@ -12,6 +12,7 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
+import LottieView from 'lottie-react-native';
 import type { Achievement } from '../utils/achievementRegistry';
 
 interface Props {
@@ -23,10 +24,13 @@ export const AchievementToast: React.FC<Props> = ({ queue, onDismissed }) => {
   const slideAnim = useRef(new Animated.Value(120)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const [current, setCurrent] = useState<Achievement | null>(null);
+  const lottieRef = useRef<LottieView>(null);
 
   useEffect(() => {
     if (queue.length === 0) return;
     setCurrent(queue[0]);
+    lottieRef.current?.reset();
+    lottieRef.current?.play();
 
     // Slide in
     Animated.parallel([
@@ -80,7 +84,12 @@ export const AchievementToast: React.FC<Props> = ({ queue, onDismissed }) => {
       ]}
       pointerEvents="none"
     >
-      <Text style={styles.emoji}>{current.emoji}</Text>
+      <LottieView
+        ref={lottieRef}
+        source={require('../assets/lottie/trophy.json')}
+        loop={false}
+        style={styles.lottie}
+      />
       <View style={styles.textBlock}>
         <Text style={styles.label}>Achievement Unlocked!</Text>
         <Text style={styles.title}>{current.title}</Text>
@@ -111,8 +120,9 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
   },
-  emoji: {
-    fontSize: 36,
+  lottie: {
+    width: 56,
+    height: 56,
   },
   textBlock: {
     flex: 1,

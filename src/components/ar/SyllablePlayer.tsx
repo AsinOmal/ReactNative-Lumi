@@ -7,6 +7,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { colors } from '../../constants/colors';
 import {
   View,
   Text,
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   syllableText: {
     fontFamily: 'Fredoka-SemiBold',
     fontSize: 16,
-    color: '#5B2DC0',
+    color: colors.primary,
     letterSpacing: 0.5,
   },
   dot: {

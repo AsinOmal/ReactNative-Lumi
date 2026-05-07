@@ -1,0 +1,31 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // Pack cover art — uploaded by admin panel, read by mobile app.
+    match /covers/{file} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 3D model GLB files — uploaded by admin panel, read by mobile app for AR.
+    match /models/{file} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Word pronunciation audio — uploaded by admin panel, read by mobile app.
+    match /audio/{file} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

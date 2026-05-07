@@ -4,15 +4,15 @@
 // and the "Your Packs" section label. Passed as ListHeaderComponent to the FlatList
 // in HomeScreen so the whole screen virtualises as a single scroll unit.
 
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { LumiMascot } from '../common/LumiMascot';
-import { DailyWordBanner } from './DailyWordBanner';
-import { colors } from '../../constants/colors';
-import { styles } from './HomeHeaderSectionStyles';
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { LumiMascot } from "../common/LumiMascot";
+import { DailyWordBanner } from "./DailyWordBanner";
+import { colors } from "../../constants/colors";
+import { styles } from "./HomeHeaderSectionStyles";
 
 interface Props {
   firstName: string;
@@ -25,8 +25,13 @@ interface Props {
 }
 
 export const HomeHeaderSection: React.FC<Props> = ({
-  firstName, streak, wordCount, dailyWord, dailyFound,
-  onTrophyPress, onProgressPress,
+  firstName,
+  streak,
+  wordCount,
+  dailyWord,
+  dailyFound,
+  onTrophyPress,
+  onProgressPress,
 }) => (
   <View style={styles.container}>
     <View style={styles.logoRow}>
@@ -35,10 +40,25 @@ export const HomeHeaderSection: React.FC<Props> = ({
       </View>
     </View>
 
-    <LinearGradient colors={['#9B62D4', '#B57AE0']} style={styles.headerCard}>
-      <MaterialCommunityIcons name="star-four-points" size={14} color="rgba(255,255,255,0.35)" style={styles.deco1} />
-      <MaterialCommunityIcons name="star-four-points" size={9}  color="rgba(255,255,255,0.25)" style={styles.deco2} />
-      <MaterialCommunityIcons name="star-four-points" size={12} color="rgba(255,255,255,0.3)"  style={styles.deco3} />
+    <LinearGradient colors={["#FF9A2E", "#C96B00"]} style={styles.headerCard}>
+      <MaterialCommunityIcons
+        name="star-four-points"
+        size={14}
+        color="rgba(255,255,255,0.35)"
+        style={styles.deco1}
+      />
+      <MaterialCommunityIcons
+        name="star-four-points"
+        size={9}
+        color="rgba(255,255,255,0.25)"
+        style={styles.deco2}
+      />
+      <MaterialCommunityIcons
+        name="star-four-points"
+        size={12}
+        color="rgba(255,255,255,0.3)"
+        style={styles.deco3}
+      />
       <View style={styles.mascotCircle}>
         <LumiMascot state="idle" size={90} />
       </View>
@@ -52,14 +72,25 @@ export const HomeHeaderSection: React.FC<Props> = ({
           </View>
         )}
       </View>
-      <TouchableOpacity style={styles.trophyBtn} onPress={onTrophyPress} accessibilityLabel="View achievements" accessibilityRole="button">
+      <TouchableOpacity
+        style={styles.trophyBtn}
+        onPress={onTrophyPress}
+        accessibilityLabel="View achievements"
+        accessibilityRole="button"
+      >
         <Ionicons name="trophy" size={28} color="#FFF" />
       </TouchableOpacity>
     </LinearGradient>
 
     <DailyWordBanner word={dailyWord} isFound={dailyFound} />
 
-    <TouchableOpacity style={styles.progressBanner} activeOpacity={0.85} onPress={onProgressPress} accessibilityLabel="Words found, tap to see collection" accessibilityRole="button">
+    <TouchableOpacity
+      style={styles.progressBanner}
+      activeOpacity={0.85}
+      onPress={onProgressPress}
+      accessibilityLabel="Words found, tap to see collection"
+      accessibilityRole="button"
+    >
       <View style={styles.progressLeft}>
         <Ionicons name="bookmark" size={22} color={colors.primary} />
         <View>
@@ -71,7 +102,11 @@ export const HomeHeaderSection: React.FC<Props> = ({
     </TouchableOpacity>
 
     <View style={styles.sectionRow}>
-      <MaterialCommunityIcons name="package-variant-closed" size={22} color={colors.primary} />
+      <MaterialCommunityIcons
+        name="package-variant-closed"
+        size={22}
+        color={colors.primary}
+      />
       <Text style={styles.sectionTitle}>Your Packs</Text>
     </View>
   </View>

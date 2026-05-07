@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
@@ -46,14 +47,14 @@ export const styles = StyleSheet.create({
   // Session complete overlay
   sessionOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#1A1050',
+    backgroundColor: colors.primaryDark,
     alignItems: 'center', justifyContent: 'center', gap: 12,
   },
   sessionEmoji: { fontSize: 72, marginBottom: 8 },
   sessionTitle: { fontFamily: 'Fredoka-Bold', fontSize: 34, color: '#FFFFFF' },
   sessionSub: { fontFamily: 'Fredoka-Regular', fontSize: 18, color: '#C4B5FD', marginBottom: 24 },
   doneBtn: {
-    backgroundColor: '#5B2DC0', borderRadius: 28,
+    backgroundColor: colors.primary, borderRadius: 28,
     paddingHorizontal: 48, paddingVertical: 16,
   },
   doneBtnText: { fontFamily: 'Fredoka-Bold', fontSize: 20, color: '#FFFFFF' },

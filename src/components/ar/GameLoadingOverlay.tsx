@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, View, Text, TouchableOpacity } from 'react-native';
+import LottieView from 'lottie-react-native';
 import { styles } from '../../screens/ARWordFindScreenStyles';
 import { MODEL_REGISTRY } from '../../utils/modelRegistry';
 
@@ -27,6 +28,12 @@ export const GameLoadingOverlay = ({
 }: GameLoadingOverlayProps) => {
   return (
     <Animated.View style={[styles.loadingOverlay, { opacity: loadFadeAnim }]} pointerEvents="auto">
+      <LottieView
+        source={require('../../assets/lottie/glass_scan.json')}
+        autoPlay
+        loop
+        style={{ width: 120, height: 120 }}
+      />
       <Text style={styles.loadingTitle}>How to Play!</Text>
       
       <View style={styles.instructionsBox}>

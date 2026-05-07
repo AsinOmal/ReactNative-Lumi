@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { colors } from '../constants/colors';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated } from 'react-native';
 import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -52,7 +53,7 @@ export const WishConfirmModal = ({ word, visible, onClose }: Props) => {
 
           {/* Word pill */}
           <View style={styles.wordPill}>
-            <Ionicons name="star" size={16} color="#A78BFA" />
+            <Ionicons name="star" size={16} color={colors.primaryLight} />
             <Text style={styles.wordPillText}>{displayWord}</Text>
           </View>
 
@@ -79,13 +80,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', padding: 28,
   },
   card: {
-    backgroundColor: '#1A1050',
+    backgroundColor: colors.primaryDark,
     borderRadius: 36,
     paddingTop: 8, paddingBottom: 36, paddingHorizontal: 32,
     alignItems: 'center', gap: 14,
     width: '100%',
     borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.35)',
-    shadowColor: '#7B3FC4', shadowOffset: { width: 0, height: 20 },
+    shadowColor: colors.primary, shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.6, shadowRadius: 40, elevation: 20,
     overflow: 'hidden',
   },
@@ -99,17 +100,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: '#2D1B69',
     borderRadius: 24, paddingHorizontal: 22, paddingVertical: 10,
-    borderWidth: 1.5, borderColor: '#5B2DC0',
+    borderWidth: 1.5, borderColor: colors.primary,
   },
   wordPillText: { fontFamily: 'Fredoka-Bold', fontSize: 26, color: '#C4B5FD' },
 
   title:    { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFFFFF', textAlign: 'center' },
-  subtitle: { fontFamily: 'Fredoka-Regular', fontSize: 17, color: '#A78BFA', textAlign: 'center', lineHeight: 26 },
+  subtitle: { fontFamily: 'Fredoka-Regular', fontSize: 17, color: colors.primaryLight, textAlign: 'center', lineHeight: 26 },
   wordHighlight: { fontFamily: 'Fredoka-Bold', color: '#FFFFFF' },
 
   doneBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginTop: 6, backgroundColor: '#5B2DC0',
+    marginTop: 6, backgroundColor: colors.primary,
     borderRadius: 28, paddingHorizontal: 44, paddingVertical: 16,
     shadowColor: '#8B5CF6', shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5, shadowRadius: 12, elevation: 8,

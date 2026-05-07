@@ -7,8 +7,10 @@ import { db } from '../firebase';
 import type { DashboardStats } from '../types';
 
 export interface ActivityRow {
+  id: string;
   uid: string;
   email: string;
+  username: string;
   word: string;
   game: string;
   timestamp: string;
@@ -69,14 +71,14 @@ export const useDashboard = (): UseDashboardResult => {
         let newUsersToday = 0;
         let activeToday = 0;
         let wordsSaved = 0;
-        const uidToEmail = new Map<string, string>();
+        const uidToUser = new Map<string, { email: string; username: string }>();
 
         for (const d of usersSnap.docs) {
           const u = d.data();
           if (toMs(u.createdAt) >= todayMs) newUsersToday++;
           if (toMs(u.lastActive) >= todayMs) activeToday++;
           wordsSaved += u.wordCount ?? 0;
-          uidToEmail.set(d.id, u.email ?? d.id);
+          uidToUser.set(d.id, { email: u.email ?? d.id, username: u.username ?? '' });
         }
 
         setStats({
@@ -93,9 +95,12 @@ export const useDashboard = (): UseDashboardResult => {
         setRecentActivity(activitySnap.docs.map(d => {
           const data = d.data();
           const uid = d.ref.path.split('/')[1] ?? '';
+          const userInfo = uidToUser.get(uid);
           return {
+            id: d.id,
             uid,
-            email: uidToEmail.get(uid) ?? uid,
+            email: userInfo?.email ?? uid,
+            username: userInfo?.username ?? '',
             word: data.word ?? '',
             game: data.source ?? 'Scan',
             timestamp: formatRelative(toMs(data.timestamp)),

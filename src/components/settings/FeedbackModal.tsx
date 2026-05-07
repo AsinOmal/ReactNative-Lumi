@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator,
+  StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getApp } from '@react-native-firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,6 +18,7 @@ interface FeedbackModalProps {
 }
 
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, email, onClose }) => {
+  const insets = useSafeAreaInsets();
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -62,8 +64,11 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, emai
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
+      <KeyboardAvoidingView
+        style={styles.overlay}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={[styles.sheet, { marginTop: insets.top + 24 }]}>
           <View style={styles.header}>
             <Text style={styles.title}>Send Feedback</Text>
             <TouchableOpacity onPress={handleClose} accessibilityLabel="Close feedback">
@@ -98,14 +103,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, emai
             </>
           )}
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:         { backgroundColor: '#FFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 16 },
+  overlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-start' },
+  sheet:         { backgroundColor: '#FFF', borderRadius: 24, padding: 24, gap: 16, marginHorizontal: 16 },
   header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title:         { fontFamily: 'Fredoka-Bold', fontSize: 22, color: colors.textDark },
   input:         { borderWidth: 1, borderColor: colors.primaryLight, borderRadius: 12, padding: 12, fontFamily: 'Fredoka-Regular', fontSize: 15, color: colors.textDark, minHeight: 120 },

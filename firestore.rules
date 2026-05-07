@@ -65,11 +65,14 @@ service cloud.firestore {
 
     // ── Feedback ──────────────────────────────────────────────────────────────
     // Any signed-in user can submit; only admins can read/manage.
+    // isRead is allowed in the create payload only when false — admins flip it to
+    // true on review. isModerated/reviewedAt remain admin-only fields.
     match /feedback/{feedbackId} {
       allow create: if isSignedIn()
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.email
-        && !request.resource.data.keys().hasAny(['isRead', 'isModerated', 'reviewedAt']);
+        && request.resource.data.get('isRead', false) == false
+        && !request.resource.data.keys().hasAny(['isModerated', 'reviewedAt']);
       allow read, update, delete: if isAdmin();
     }
 

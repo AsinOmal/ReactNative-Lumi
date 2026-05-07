@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../screens/ScanScreenStyles';
 import { SyllablePlayer } from '../../components/ar/SyllablePlayer';
@@ -7,6 +8,7 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
+import { colors } from '../../constants/colors';
 import { strings } from '../../constants/strings';
 import { PACK_WORDS } from '../../constants/packWords';
 
@@ -40,9 +42,23 @@ export const ScanOverlayLayer = ({
 }: ScanOverlayLayerProps) => {
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    setShowConfetti(true);
+  }, [activeWord]);
 
   return (
     <Animated.View style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}>
+      {showConfetti && (
+        <LottieView
+          source={require('../../assets/lottie/confetti.json')}
+          autoPlay
+          loop={false}
+          style={styles.confettiAnim}
+          onAnimationFinish={() => setShowConfetti(false)}
+        />
+      )}
       <View style={styles.resultCardHandle} />
       <View style={styles.resultCardRow}>
         <View style={styles.resultWordBlock}>
@@ -70,7 +86,7 @@ export const ScanOverlayLayer = ({
       
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
-          <Ionicons name="close" size={20} color="#5B2DC0" />
+          <Ionicons name="close" size={20} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}

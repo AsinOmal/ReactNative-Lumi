@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Pack, fetchPacks, seedPacksIfNeeded } from '../services/packService';
+import { Pack, fetchPacks } from '../services/packService';
 
 interface PackState {
   packs: Pack[];
@@ -20,7 +20,6 @@ export const usePackStore = create<PackState>((set, get) => ({
     if (get().loading || get().packs.length > 0) return;
     set({ loading: true, error: null });
     try {
-      await seedPacksIfNeeded();
       const packs = await fetchPacks();
       // Sort: free packs first, then premium
       const sorted = packs.sort((a, b) => {

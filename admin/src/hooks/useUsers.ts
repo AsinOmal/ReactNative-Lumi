@@ -17,6 +17,7 @@ const docToUser = (id: string, data: DocumentData): AppUser => ({
   uid: id,
   email: data.email ?? '',
   displayName: data.displayName ?? '',
+  username: data.username ?? '',
   createdAt: data.createdAt?.toDate() ?? new Date(),
   lastActive: data.lastActive?.toDate() ?? new Date(),
   wordCount: data.wordCount ?? 0,

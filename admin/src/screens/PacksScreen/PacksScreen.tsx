@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, ImageOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/common/Button';
@@ -71,10 +71,21 @@ const PackRow: React.FC<PackRowProps> = ({ pack }) => (
   <tr className="packs__row">
     <td>
       <div className="packs__pack-cell">
-        <div
-          className="packs__accent-dot"
-          style={{ background: `linear-gradient(135deg, ${pack.accentColor}, ${pack.accentColorTo})` }}
-        />
+        {pack.coverImageUrl ? (
+          <img
+            className="packs__cover-thumb"
+            src={pack.coverImageUrl}
+            alt={`${pack.name} cover`}
+          />
+        ) : (
+          <div
+            className="packs__accent-dot packs__accent-dot--empty"
+            style={{ background: `linear-gradient(135deg, ${pack.accentColor}, ${pack.accentColorTo})` }}
+            title="No cover art uploaded"
+          >
+            <ImageOff size={16} className="packs__accent-dot-icon" />
+          </div>
+        )}
         <div>
           <p className="packs__pack-name">{pack.name}</p>
           <p className="packs__pack-desc">{pack.description}</p>

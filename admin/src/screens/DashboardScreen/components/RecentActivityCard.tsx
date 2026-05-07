@@ -6,8 +6,10 @@ import { ROUTES } from '../../../constants/routes';
 import './RecentActivityCard.css';
 
 interface ActivityRow {
+  id: string;
   uid: string;
   email: string;
+  username: string;
   word: string;
   game: string;
   timestamp: string;
@@ -42,8 +44,13 @@ export const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ rows }) 
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={`${row.uid}-${row.timestamp}`}>
-            <td className="ra-card__email">{row.email}</td>
+          <tr key={`${row.uid}-${row.id}`}>
+            <td className="ra-card__email">
+              <div className="ra-card__user-cell">
+                <span className="ra-card__user-name">{row.username || row.email}</span>
+                {row.username && <span className="ra-card__user-email">{row.email}</span>}
+              </div>
+            </td>
             <td><strong>{row.word}</strong></td>
             <td><span className="ra-card__source">{row.game}</span></td>
             <td className="ra-card__time">{row.timestamp}</td>

@@ -1,43 +1,76 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  buttonGradientColors,
+  woodBorderContent,
+  woodBorderInner,
+  woodBorderOuter,
+} from "../../constants/skeuomorphicTokens";
 
 interface LumiButtonProps {
   onPress: () => void;
   title: string;
-  icon?: string; // Optional icon or emoji
+  icon?: string; // Ionicons icon name (optional)
 }
 
-export const LumiButton = ({ onPress, title, icon }: LumiButtonProps) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      className={"w-full mb-6 shadow-xl"}
-      accessibilityLabel={title}
-      accessibilityRole="button"
-    >
-      <LinearGradient
-        colors={["#320757", "#770CB4"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 25 }} // Hardcoded Radius for smoother gradient
-        className={"p-1"}
-      >
-        <View
-          className={
-            "bg-primary-dark/20 rounded-2xl px-8 py-5 items-center flex-row justify-center"
-          }
+export const LumiButton = ({ onPress, title, icon }: LumiButtonProps) => (
+  <TouchableOpacity
+    onPress={onPress}
+    activeOpacity={0.8}
+    className="w-full mb-6"
+    accessibilityLabel={title}
+    accessibilityRole="button"
+  >
+    <View style={woodBorderOuter}>
+      <View style={woodBorderInner}>
+        <LinearGradient
+          colors={buttonGradientColors.primary}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={woodBorderContent}
         >
-          {icon && <Text className={"text-2xl mr-3"}>{icon}</Text>}
-          <Text
-            className={
-              "text-white text-3xl font-button font-bold tracking-widest text-center pt-1"
-            }
-          >
-            {title}
-          </Text>
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-};
+          <LinearGradient
+            colors={buttonGradientColors.sheen}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 0.5 }}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+          <View style={styles.content}>
+            {icon && (
+              <Ionicons
+                name={icon}
+                size={22}
+                color="#FFFFFF"
+                style={styles.icon}
+              />
+            )}
+            <Text style={styles.label}>{title}</Text>
+          </View>
+        </LinearGradient>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  label: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: 1.5,
+    textAlign: "center",
+  },
+});

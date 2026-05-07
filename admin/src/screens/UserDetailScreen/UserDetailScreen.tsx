@@ -24,7 +24,7 @@ export const UserDetailScreen: React.FC = () => {
   return (
     <div className="user-detail">
       <PageHeader
-        title={detail.displayName || detail.email}
+        title={detail.username || detail.displayName || detail.email}
         subtitle={detail.email}
         actions={
           <Link to={ROUTES.USERS}>
@@ -38,6 +38,8 @@ export const UserDetailScreen: React.FC = () => {
           <h3 className="user-detail__card-title">Profile</h3>
           <dl className="user-detail__dl">
             <dt>UID</dt><dd className="user-detail__mono">{detail.uid}</dd>
+            <dt>Username</dt><dd>{detail.username || '—'}</dd>
+            <dt>Display Name</dt><dd>{detail.displayName || '—'}</dd>
             <dt>Email</dt><dd>{detail.email}</dd>
             <dt>Joined</dt><dd>{fmt(detail.createdAt)}</dd>
             <dt>Last Active</dt><dd>{fmt(detail.lastActive)}</dd>

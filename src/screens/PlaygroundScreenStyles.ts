@@ -1,33 +1,77 @@
-import { StyleSheet } from 'react-native';
-import { colors } from '../constants/colors';
+import { StyleSheet } from "react-native";
+import { colors } from "../constants/colors";
+import { shadowHeader } from "../constants/skeuomorphicTokens";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundMain },
-  safeArea:  { flex: 1 },
-  scroll:    { paddingHorizontal: 16, paddingTop: 16 },
+  container: { flex: 1 },
 
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 },
-  title:    { fontFamily: 'Fredoka-Bold', fontSize: 32, color: colors.textDark },
-  subtitle: { fontFamily: 'Fredoka-Regular', fontSize: 17, color: colors.textMid, marginBottom: 20 },
+  header: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    overflow: "hidden",
+    ...shadowHeader,
+  },
+  watermark: {
+    position: "absolute",
+    right: -28,
+    bottom: -24,
+  },
+  title: { fontFamily: "Fredoka-Bold", fontSize: 40, color: colors.textDark },
+  subtitle: {
+    fontFamily: "Fredoka-Regular",
+    fontSize: 16,
+    color: colors.textMid,
+    marginTop: 2,
+  },
 
+  body: { flex: 1 },
+  scroll: { paddingHorizontal: 16, paddingTop: 20 },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: 14 },
   card: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.backgroundCard, borderRadius: 24,
-    padding: 16, marginBottom: 14, gap: 16,
-    shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 4,
+    width: "47%",
+    borderRadius: 24,
+    backgroundColor: colors.backgroundCard,
+    overflow: "hidden",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  cardLocked: { opacity: 0.6 },
-  iconBlock: {
-    width: 56, height: 56, borderRadius: 16,
-    alignItems: 'center', justifyContent: 'center',
+  cardLocked: { opacity: 0.55 },
+  iconArea: { height: 130, alignItems: "center", justifyContent: "center" },
+  cardFooter: { padding: 12, gap: 6 },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  cardTitle: {
+    fontFamily: "Fredoka-Bold",
+    fontSize: 18,
+    color: colors.textDark,
+    flex: 1,
   },
-  cardBody:  { flex: 1, gap: 4 },
-  cardTitle: { fontFamily: 'Fredoka-Bold', fontSize: 22, color: colors.textDark },
   cardTitleLocked: { color: colors.textLight },
-  cardDesc:  { fontFamily: 'Fredoka-Regular', fontSize: 15, color: colors.textMid, lineHeight: 20 },
-  badge: {
-    alignSelf: 'flex-start', backgroundColor: '#EDE9FE',
-    borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, marginTop: 4,
+  cardDesc: {
+    fontFamily: "Fredoka-Regular",
+    fontSize: 13,
+    color: colors.textMid,
+    lineHeight: 18,
   },
-  badgeText: { fontFamily: 'Fredoka-SemiBold', fontSize: 11, color: colors.primary },
+  badge: {
+    backgroundColor: "#F1F5F9",
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontFamily: "Fredoka-SemiBold",
+    fontSize: 10,
+    color: colors.textMid,
+  },
+  playBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
