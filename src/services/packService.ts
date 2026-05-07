@@ -1,5 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from '@react-native-firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, where } from '@react-native-firebase/firestore';
 
 export interface Pack {
   id: string;
@@ -88,11 +88,14 @@ export const seedPacksIfNeeded = async () => {
   }
 };
 
-/** Fetch all packs from Firestore. */
+/** Fetch published packs from Firestore. Filter is required by security rules. */
 export const fetchPacks = async (): Promise<Pack[]> => {
   try {
     const db = getFirestore(getApp());
-    const snap = await getDocs(collection(db, 'packs'));
+    const snap = await getDocs(query(collection(db, 'packs'), where('isPublished', '==', true)));
+    if (snap.empty) {
+      console.warn('[packService] fetchPacks: no published packs found. Toggle Published in the admin Packs screen.');
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return snap.docs.map((d: any) => d.data() as Pack);
   } catch (e) {
