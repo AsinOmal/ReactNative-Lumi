@@ -13,7 +13,7 @@ import { usePackStore } from "../store/usePackStore";
 import { HomeHeaderSection } from "../components/home/HomeHeaderSection";
 import { BannerAnnouncement } from "../components/home/BannerAnnouncement";
 import { ColorPackCard } from "../components/library/ColorPackCard";
-import { getProgress, getStreak } from "../utils/achievementStore";
+import { getSavedWords, getStreak } from "../utils/achievementStore";
 import { getDailyWord, isDailyWordFound } from "../utils/dailyWordHunt";
 import { loadSavedWordsFromFirestore } from "../services/savedWordsService";
 import { Pack } from "../services/packService";
@@ -41,12 +41,12 @@ export const HomeScreen = () => {
           if (user) {
             const fw = await loadSavedWordsFromFirestore(user.uid);
             setWordCount(fw.length);
-            setDailyFound(isDailyWordFound(fw.map((w) => w.word)));
+            setDailyFound(isDailyWordFound(fw));
             return;
           }
-          const p = await getProgress();
-          setWordCount(p.scannedWords.length);
-          setDailyFound(isDailyWordFound(p.scannedWords));
+          const local = await getSavedWords();
+          setWordCount(local.length);
+          setDailyFound(isDailyWordFound(local));
         } catch (e) {
           console.error("[HomeScreen] loadData:", e);
         }

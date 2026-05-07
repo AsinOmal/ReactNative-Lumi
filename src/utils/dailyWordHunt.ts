@@ -6,6 +6,7 @@
  */
 
 import { MODEL_REGISTRY } from './modelRegistry';
+import { SavedWord } from './achievementStore';
 
 /** Today's date as YYYY-MM-DD in local time */
 export function todayISO(): string {
@@ -31,7 +32,15 @@ export function getDailyWord(): string {
   return ALL_WORDS[idx];
 }
 
-/** True if the user has already saved today's hunt word */
-export function isDailyWordFound(scannedWords: string[]): boolean {
-  return scannedWords.includes(getDailyWord());
+// 📖 What this does:
+// Returns true only if the user saved today's daily word *today*. Older logic just checked
+// `scannedWords.includes(getDailyWord())`, which marked the hunt as complete whenever the
+// daily picker happened to land on a word the user had ever saved — so the hunt would
+// "auto-complete" the moment a previously-saved word came back around.
+export function isDailyWordFound(savedWords: SavedWord[]): boolean {
+  const target = getDailyWord();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayMs = todayStart.getTime();
+  return savedWords.some(w => w.word === target && w.savedAt >= todayMs);
 }
