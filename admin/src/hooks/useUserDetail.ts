@@ -57,6 +57,7 @@ export const useUserDetail = (uid: string): UseUserDetailResult => {
           uid,
           email: u.email ?? '',
           displayName: u.displayName ?? '',
+          username: u.username ?? '',
           createdAt: u.createdAt?.toDate() ?? new Date(),
           lastActive: u.lastActive?.toDate() ?? new Date(),
           wordCount: u.wordCount ?? 0,

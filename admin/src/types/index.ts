@@ -37,6 +37,7 @@ export interface AppUser {
   uid: string;
   email: string;
   displayName: string;
+  username: string;
   createdAt: Date;
   lastActive: Date;
   wordCount: number;

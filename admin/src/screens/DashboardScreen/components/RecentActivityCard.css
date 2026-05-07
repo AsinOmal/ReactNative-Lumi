@@ -73,7 +73,28 @@
 
 .ra-card__email {
   font-size: var(--font-size-xs);
-  max-width: 160px;
+  max-width: 200px;
+}
+
+.ra-card__user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.ra-card__user-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ra-card__user-email {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

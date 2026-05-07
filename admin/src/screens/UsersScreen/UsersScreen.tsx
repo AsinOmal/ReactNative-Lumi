@@ -17,9 +17,11 @@ export const UsersScreen: React.FC = () => {
   const { users, loading, error, suspendUser } = useUsers();
   const [search, setSearch] = useState('');
 
+  const q = search.toLowerCase();
   const filtered = users.filter(u =>
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    (u.displayName ?? '').toLowerCase().includes(search.toLowerCase()),
+    u.email.toLowerCase().includes(q) ||
+    (u.displayName ?? '').toLowerCase().includes(q) ||
+    (u.username ?? '').toLowerCase().includes(q),
   );
 
   return (
@@ -34,7 +36,7 @@ export const UsersScreen: React.FC = () => {
           <Search size={14} className="users__search-icon" />
           <input
             className="users__search-input"
-            placeholder="Search by name or email…"
+            placeholder="Search by username, name, or email…"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -86,13 +88,14 @@ const UserRow: React.FC<UserRowProps> = ({ user, onToggleSuspend }) => {
     finally { setBusy(false); }
   };
 
+  const displayLabel = user.username || user.displayName || '—';
   return (
     <tr className="users__row">
       <td>
         <div className="users__user-cell">
-          <div className="users__avatar">{(user.displayName || user.email)[0].toUpperCase()}</div>
+          <div className="users__avatar">{(displayLabel === '—' ? user.email : displayLabel)[0].toUpperCase()}</div>
           <div>
-            <p className="users__name">{user.displayName || '—'}</p>
+            <p className="users__name">{displayLabel}</p>
             <p className="users__email">{user.email}</p>
           </div>
         </div>
