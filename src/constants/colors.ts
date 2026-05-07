@@ -32,7 +32,7 @@ export const colors = {
   textLight: "#C4A882",
 
   // Tab bar
-  tabInactive: "#B8D4E8",
+  tabInactive: "#7B9EB5",
 
   // Wood bevel system — card borders
   woodBorder: "#8B5A2B",

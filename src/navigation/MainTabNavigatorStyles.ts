@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { colors } from "../constants/colors";
 import {
   scanButtonStyle,
   tabBarPillStyle,
@@ -34,11 +35,11 @@ export const styles = StyleSheet.create({
     ...scanButtonStyle,
   },
 
-  // Sky blue pill — tabBarPillStyle provides bg, border, and shadow
+  // White pill — tabBarPillStyle provides bg, border, and shadow
   tabBarPill: {
     flexDirection: "row",
-    paddingHorizontal: 4,
-    paddingVertical: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 10,
     alignItems: "center",
     width: "100%",
     ...tabBarPillStyle,
@@ -49,10 +50,20 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tabInner: { alignItems: "center", gap: 3, paddingVertical: 4 },
+  tabInner: {
+    alignItems: "center",
+    gap: 3,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 18,
+  },
+  activeTabPill: {
+    backgroundColor: "rgba(255,154,46,0.15)",
+  },
   tabLabel: {
     fontFamily: "Fredoka-SemiBold",
     fontSize: 11,
+    color: colors.tabInactive,
   },
 
   // Transparent gap in the pill under the scan button

@@ -68,16 +68,16 @@ export const buttonGradientColors = {
 };
 
 export const tabBarPillStyle = {
-  backgroundColor: "#5BC8F5",
+  backgroundColor: "#FFFFFF",
   borderRadius: 36,
-  borderWidth: 2,
-  borderColor: "#3A7FA8",
+  borderWidth: 1.5,
+  borderColor: "rgba(0,0,0,0.06)",
   ...Platform.select({
     ios: {
-      shadowColor: "#3A7FA8",
-      shadowOffset: { width: 0, height: -4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 12,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: -3 },
+      shadowOpacity: 0.1,
+      shadowRadius: 16,
     },
     android: { elevation: 14 },
   }),
