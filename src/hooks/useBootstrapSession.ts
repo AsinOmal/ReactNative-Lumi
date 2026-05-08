@@ -24,11 +24,13 @@ import {
 import { useAuthStore } from "../store/useAuthStore";
 import { useParentalControlsStore } from "../store/useParentalControlsStore";
 import { useRemoteContentStore } from "../store/useRemoteContentStore";
+import { usePackDownloadStore } from "../store/usePackDownloadStore";
 import { createUserIfNew, isUserSuspended } from "../services/userService";
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
 } from "../services/remoteContentService";
+import { fetchPacks } from "../services/packService";
 import {
   registerFcmToken,
   setupTokenRefresh,
@@ -95,15 +97,28 @@ export const useBootstrapSession = (): BootstrapResult => {
       loadRemoteModels().catch(() => {});
 
       try {
-        const [packs, blocklist] = await Promise.all([
+        const [remotePacks, blocklist] = await Promise.all([
           fetchRemotePacks(),
           fetchGlobalBlocklist(),
         ]);
         if (sessionUid !== activeUid) return;
-        setRemoteContent({ remotePacks: packs, globalBlocklist: blocklist });
+        setRemoteContent({ remotePacks, globalBlocklist: blocklist });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
         console.warn("[useBootstrapSession] remote content fetch:", e);
+      }
+
+      // Boot-time stuck-download recovery: if the app was killed mid-download,
+      // AsyncStorage still says status: 'downloading' but the native task is
+      // gone. Wipe partial files and reset to 'idle' so the UI doesn't show a
+      // phantom progress bar forever. Runs after pack metadata is loaded so
+      // we know each pack's word list (= which files to clean).
+      try {
+        const packs = await fetchPacks();
+        if (sessionUid !== activeUid) return;
+        await usePackDownloadStore.getState().resetStuckDownloads(packs);
+      } catch (e) {
+        console.warn("[useBootstrapSession] resetStuckDownloads:", e);
       }
     });
     return () => {
