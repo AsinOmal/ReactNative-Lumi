@@ -15,7 +15,7 @@ import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ARWordScene } from '../components/ar/ARWordScene';
-import { Pack } from '../services/packService';
+import type { Pack } from '../types/pack';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { styles } from './PackARPreviewScreenStyles';
 

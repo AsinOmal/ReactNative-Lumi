@@ -16,7 +16,9 @@
  */
 
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import { usePackDownloadStore } from '../store/usePackDownloadStore';
 import type { RemoteModelEntry } from '../types/remoteContent';
+import { getAudioUriForPlayback, getModelUriForViro } from './packStorage';
 
 export type ModelKey = string;
 
@@ -37,6 +39,29 @@ const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   syllables: r.syllables,
   audio: '',
   audioUrl: r.audioUrl,
+  emoji: '',
+});
+
+// In-memory cache: AR loops call getModel many times per frame. Invalidated
+// whenever a pack's downloaded state changes (see usePackDownload hook).
+const _entryCache = new Map<string, ModelEntry | null>();
+
+export function invalidateModelCache(words: string[]): void {
+  words.forEach((w) => _entryCache.delete(w.toLowerCase()));
+}
+
+const downloadedToEntry = (
+  r: RemoteModelEntry,
+  modelPath: string,
+  audioPath: string | undefined,
+  assetVersion: string
+): ModelEntry => ({
+  source: { uri: getModelUriForViro(modelPath, assetVersion) },
+  scale: [r.scale, r.scale, r.scale],
+  position: [0, r.positionY, -1.0],
+  syllables: r.syllables,
+  audio: '',
+  audioUrl: audioPath ? getAudioUriForPlayback(audioPath) : r.audioUrl,
   emoji: '',
 });
 
@@ -81,15 +106,32 @@ export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
 };
 
 /**
- * Returns the model entry for a word.
- * Remote entries (uploaded via admin panel) take precedence over local ones —
- * this lets us push scale corrections and new models without a binary update.
- * Falls back to local registry if the word isn't in the remote store yet.
+ * Three-tier resolution: (1) downloaded local GLB (file:// URI with assetVersion
+ * cache-bust query string), (2) remote Firestore URL, (3) bundled require().
+ * Cached in-memory; invalidated by the download hook on complete/remove.
  */
 export const getModel = (word: string): ModelEntry | null => {
   const key = word.toLowerCase();
+  if (_entryCache.has(key)) return _entryCache.get(key) ?? null;
+
   const remote = useRemoteContentStore.getState().remoteModels[key];
-  // Only use remote entry if the GLB has actually been uploaded
-  if (remote?.modelUrl) return remoteToEntry(remote);
-  return MODEL_REGISTRY[key] ?? null;
+  let entry: ModelEntry | null = null;
+
+  if (remote?.packId) {
+    const dl = usePackDownloadStore.getState().packs[remote.packId];
+    const modelPath = dl?.localModelPaths[key];
+    if (dl && dl.status === 'downloaded' && modelPath) {
+      entry = downloadedToEntry(
+        remote,
+        modelPath,
+        dl.localAudioPaths[key],
+        dl.assetVersion
+      );
+    }
+  }
+  if (!entry && remote?.modelUrl) entry = remoteToEntry(remote);
+  if (!entry) entry = MODEL_REGISTRY[key] ?? null;
+
+  _entryCache.set(key, entry);
+  return entry;
 };

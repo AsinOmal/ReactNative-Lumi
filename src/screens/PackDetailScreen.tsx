@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Pack } from "../services/packService";
+import type { Pack } from "../types/pack";
 import { getPackAccent } from "../constants/packAccents";
 import { colors } from "../constants/colors";
 import { MODEL_REGISTRY } from "../utils/modelRegistry";

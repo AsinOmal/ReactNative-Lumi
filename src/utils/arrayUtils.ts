@@ -1,5 +1,5 @@
 /**
- * Shared utility for randomizing arrays (Fisher-Yates shuffle).
+ * Shared array utilities.
  */
 export function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -8,4 +8,12 @@ export function shuffleArray<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+export function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ColorPackCard } from '../library/ColorPackCard';
-import { Pack } from '../../services/packService';
+import type { Pack } from '../../types/pack';
 import { colors } from '../../constants/colors';
 
 interface Props {

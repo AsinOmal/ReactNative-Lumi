@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Pack } from "../../services/packService";
+import type { Pack } from "../../types/pack";
 import { getPackGradient, getPackIcon } from "../../constants/packAccents";
 import { colors } from "../../constants/colors";
 
