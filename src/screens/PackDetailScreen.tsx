@@ -17,6 +17,7 @@ import { getPackAccent } from "../constants/packAccents";
 import { colors } from "../constants/colors";
 import { MODEL_REGISTRY } from "../utils/modelRegistry";
 import { GameBackground } from "../components/common/GameBackground";
+import { PackDetailCTA } from "../components/library/PackDetailCTA";
 
 export const PackDetailScreen = () => {
   const navigation = useNavigation();
@@ -139,16 +140,13 @@ export const PackDetailScreen = () => {
         })}
       </ScrollView>
 
-      <TouchableOpacity
-        style={[styles.arBtn, { backgroundColor: accent }]}
-        activeOpacity={0.85}
-        onPress={() => (navigation as any).navigate("PackARPreview", { pack })}
-        accessibilityLabel="View pack in AR"
-        accessibilityRole="button"
-      >
-        <MaterialCommunityIcons name="target" size={22} color="#FFF" />
-        <Text style={styles.arBtnText}>View in AR</Text>
-      </TouchableOpacity>
+      <View style={styles.ctaWrap}>
+        <PackDetailCTA
+          pack={pack}
+          accent={accent}
+          onPlay={() => (navigation as any).navigate("PackARPreview", { pack })}
+        />
+      </View>
     </GameBackground>
   );
 };
@@ -258,22 +256,5 @@ const styles = StyleSheet.create({
     color: colors.textMid,
     marginTop: 4,
   },
-  // AR button
-  arBtn: {
-    marginHorizontal: 16,
-    marginBottom: 32,
-    marginTop: 8,
-    borderRadius: 32,
-    paddingVertical: 16,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  arBtnText: { fontFamily: "Fredoka-Bold", fontSize: 18, color: "#FFF" },
+  ctaWrap: { marginHorizontal: 16, marginBottom: 32, marginTop: 8 },
 });

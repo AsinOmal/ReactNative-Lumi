@@ -16,6 +16,7 @@ import { ARWordFindScreen } from '../screens/ARWordFindScreen';
 import { ParentDashboardScreen } from '../screens/ParentDashboardScreen';
 import { PackDetailScreen } from '../screens/PackDetailScreen';
 import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
+import { PackGateScreen } from '../screens/PackGateScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { ScanScreen } from '../screens/ScanScreen';
@@ -88,6 +89,7 @@ export const AppRoutes = () => {
         <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
         <Stack.Screen name="PackDetail"    component={PackDetailScreen} />
         <Stack.Screen name="PackARPreview" component={PackARPreviewScreen} />
+        <Stack.Screen name="PackGate"      component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
         <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
         <Stack.Screen name="Scan"          component={ScanScreen} />

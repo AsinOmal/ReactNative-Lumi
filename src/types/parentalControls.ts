@@ -19,7 +19,7 @@ export interface ActivityLogEntry {
   word: string;           // word that was scanned
   timestamp: number;      // epoch ms
   flagged: boolean;       // true when word matched blocklist
-  source: 'ocr_scan' | 'ar_word_find';  // extensible as new game modes are added
+  source: 'ocr_scan' | 'ar_word_find' | 'pack_gate';  // extensible as new game modes are added
 }
 
 /** Stored at /users/{uid}/screenTime/{YYYY-MM-DD} */
