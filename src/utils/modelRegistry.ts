@@ -35,7 +35,7 @@ export interface ModelEntry {
 const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   source: { uri: r.modelUrl },
   scale: [r.scale, r.scale, r.scale],
-  position: [0, r.positionY, -1.0],
+  position: [0, r.positionY, r.positionZ ?? -1.0],
   syllables: r.syllables,
   audio: '',
   audioUrl: r.audioUrl,
@@ -58,7 +58,7 @@ const downloadedToEntry = (
 ): ModelEntry => ({
   source: { uri: getModelUriForViro(modelPath, assetVersion) },
   scale: [r.scale, r.scale, r.scale],
-  position: [0, r.positionY, -1.0],
+  position: [0, r.positionY, r.positionZ ?? -1.0],
   syllables: r.syllables,
   audio: '',
   audioUrl: audioPath ? getAudioUriForPlayback(audioPath) : r.audioUrl,

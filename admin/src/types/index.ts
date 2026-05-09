@@ -29,6 +29,10 @@ export interface ModelEntry {
   modelRef: string;
   scale: number;
   positionY: number;
+  // Distance from the camera in metres along Viro's Z axis. Negative = in
+  // front of the user. Optional so docs that pre-date this field still load;
+  // mobile defaults missing values to -1.0.
+  positionZ?: number;
   packId: string;
   isCalibrated: boolean;
 }

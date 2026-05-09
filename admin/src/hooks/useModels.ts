@@ -36,6 +36,7 @@ const docToModel = (id: string, data: DocumentData): ModelEntry => ({
   modelRef: data.modelRef ?? '',
   scale: data.scale ?? 1,
   positionY: data.positionY ?? 0,
+  positionZ: data.positionZ ?? -1.0,
   packId: data.packId ?? '',
   isCalibrated: data.isCalibrated ?? false,
 });
@@ -72,6 +73,7 @@ export const useModels = (): UseModelsResult => {
         modelRef: model.modelRef,
         scale: model.scale,
         positionY: model.positionY,
+        positionZ: model.positionZ ?? -1.0,
         packId: model.packId,
         isCalibrated: model.isCalibrated,
       }, { merge: true });

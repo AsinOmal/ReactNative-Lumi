@@ -6,6 +6,7 @@ import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useScreenTime } from '../hooks/useScreenTime';
 import { useBootstrapSession } from '../hooks/useBootstrapSession';
 import { useRemoteConfig } from '../hooks/useRemoteConfig';
+import { useDevRemoteModelsSync } from '../hooks/useDevRemoteModelsSync';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { ScreenTimeLimitModal } from '../components/ScreenTimeLimitModal';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -37,6 +38,7 @@ export const AppRoutes = () => {
   const { initializing, suspendedError } = useBootstrapSession();
   const appConfig = useRemoteContentStore(s => s.appConfig);
   useRemoteConfig(!!user);
+  useDevRemoteModelsSync();
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [showOnboarding, setShowOnboarding]   = useState(false);
 

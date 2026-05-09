@@ -14,7 +14,7 @@ import './ModelEditorScreen.css';
 
 const EMPTY_MODEL: ModelEntry = {
   word: '', syllables: [], audioUrl: '', modelUrl: '',
-  audioRef: '', modelRef: '', scale: 1, positionY: 0,
+  audioRef: '', modelRef: '', scale: 1, positionY: 0, positionZ: -1.0,
   packId: '', isCalibrated: false,
 };
 
@@ -27,6 +27,11 @@ export const ModelEditorScreen: React.FC = () => {
 
   const [form, setForm] = useState<ModelEntry>(EMPTY_MODEL);
   const [syllableInput, setSyllableInput] = useState('');
+  // Number inputs are kept as strings while focused so users can type partial
+  // values like "0" or "0." without the previous `parseFloat() || 1` snap-back.
+  const [scaleInput, setScaleInput] = useState(String(EMPTY_MODEL.scale));
+  const [positionYInput, setPositionYInput] = useState(String(EMPTY_MODEL.positionY));
+  const [positionZInput, setPositionZInput] = useState(String(EMPTY_MODEL.positionZ ?? -1.0));
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,14 +42,47 @@ export const ModelEditorScreen: React.FC = () => {
     if (!isNew) {
       const existing = models.find(m => m.word === wordKey);
       if (existing) {
-        setForm(existing);
+        setForm({ ...existing, positionZ: existing.positionZ ?? -1.0 });
         setSyllableInput(existing.syllables.join(', '));
+        setScaleInput(String(existing.scale));
+        setPositionYInput(String(existing.positionY));
+        setPositionZInput(String(existing.positionZ ?? -1.0));
       }
     }
   }, [models, wordKey, isNew]);
 
   const set = <K extends keyof ModelEntry>(key: K, value: ModelEntry[K]) =>
     setForm(prev => ({ ...prev, [key]: value }));
+
+  const onScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setScaleInput(e.target.value);
+    const n = parseFloat(e.target.value);
+    if (Number.isFinite(n) && n > 0) set('scale', n);
+  };
+  const onScaleBlur = () => {
+    const n = parseFloat(scaleInput);
+    if (!Number.isFinite(n) || n <= 0) setScaleInput(String(form.scale));
+  };
+
+  const onPositionYChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPositionYInput(e.target.value);
+    const n = parseFloat(e.target.value);
+    if (Number.isFinite(n)) set('positionY', n);
+  };
+  const onPositionYBlur = () => {
+    const n = parseFloat(positionYInput);
+    if (!Number.isFinite(n)) setPositionYInput(String(form.positionY));
+  };
+
+  const onPositionZChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPositionZInput(e.target.value);
+    const n = parseFloat(e.target.value);
+    if (Number.isFinite(n)) set('positionZ', n);
+  };
+  const onPositionZBlur = () => {
+    const n = parseFloat(positionZInput);
+    if (!Number.isFinite(n)) setPositionZInput(String(form.positionZ ?? -1.0));
+  };
 
   const handleGlbUpload = async (file: File) => {
     const path = `models/${form.word || 'unknown'}.glb`;
@@ -159,28 +197,40 @@ export const ModelEditorScreen: React.FC = () => {
               <input
                 type="number"
                 className="form-input"
-                value={form.scale}
+                value={scaleInput}
                 step={0.001}
                 min={0.0001}
-                onChange={e => set('scale', parseFloat(e.target.value) || 1)}
+                onChange={onScaleChange}
+                onBlur={onScaleBlur}
               />
             </FormField>
             <FormField label="Position Y" hint="Vertical offset in AR">
               <input
                 type="number"
                 className="form-input"
-                value={form.positionY}
+                value={positionYInput}
                 step={0.01}
-                onChange={e => set('positionY', parseFloat(e.target.value) || 0)}
+                onChange={onPositionYChange}
+                onBlur={onPositionYBlur}
+              />
+            </FormField>
+            <FormField label="Position Z" hint="Distance from camera. Negative = in front (e.g. -1.0).">
+              <input
+                type="number"
+                className="form-input"
+                value={positionZInput}
+                step={0.05}
+                onChange={onPositionZChange}
+                onBlur={onPositionZBlur}
               />
             </FormField>
           </div>
 
-          <FormField label="Calibration Status">
+          <FormField label="Calibrated on device" hint="Flip on once you've confirmed the model looks right in AR.">
             <Toggle
               checked={form.isCalibrated}
               onChange={v => set('isCalibrated', v)}
-              label={form.isCalibrated ? 'Scale confirmed on physical device' : 'Not yet calibrated on device'}
+              label={form.isCalibrated ? 'Calibrated' : 'Not calibrated'}
             />
           </FormField>
         </div>
