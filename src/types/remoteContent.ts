@@ -7,6 +7,9 @@ export interface RemoteModelEntry {
   modelRef: string;
   scale: number;
   positionY: number;
+  // Z offset in metres (negative = forward from camera). Optional for legacy
+  // docs; modelRegistry defaults to -1.0 when missing.
+  positionZ?: number;
   packId: string;
   isCalibrated: boolean;
 }

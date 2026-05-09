@@ -16,7 +16,7 @@ import { ColorPackCard } from "../components/library/ColorPackCard";
 import { getSavedWords, getStreak } from "../utils/achievementStore";
 import { getDailyWord, isDailyWordFound } from "../utils/dailyWordHunt";
 import { loadSavedWordsFromFirestore } from "../services/savedWordsService";
-import { Pack } from "../services/packService";
+import type { Pack } from "../types/pack";
 import { GameBackground } from "../components/common/GameBackground";
 
 export const HomeScreen = () => {

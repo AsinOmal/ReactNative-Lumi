@@ -47,4 +47,16 @@ export const config = {
   ] as string[],
   HAZARD_CHECK_INTERVAL_MS: 5000,  // classify every 5s — less aggressive than OCR loop
   HAZARD_COOLDOWN_MS: 30000,       // suppress repeat alerts for 30s after dismiss
+
+  // Pack Downloads (Phase 10)
+  // Concurrency caps parallel asset fetches per pack — too high spikes memory and stalls Wi-Fi on weak networks.
+  DOWNLOAD_CONCURRENCY: 3,
+  // Pre-flight free-space guard. We refuse to start a download if the device has less than this many bytes free.
+  // 50 MB > the largest single pack (≈15 MB) plus headroom for partial-write tmp files.
+  DOWNLOAD_MIN_FREE_BYTES: 50 * 1024 * 1024,
+  // Subdirectories under DocumentDirectoryPath. Permanent storage, NOT cache — iOS will not purge under pressure.
+  MODELS_CACHE_SUBDIR: "lumi_models",
+  AUDIO_CACHE_SUBDIR: "lumi_audio",
+  // AsyncStorage key for the stale-while-revalidate remote pack-metadata mirror.
+  REMOTE_MODELS_CACHE_KEY: "@lumi/remote_models_cache",
 };

@@ -15,31 +15,32 @@ import { useHazardDetection } from '../hooks/useHazardDetection';
 import { useModelCache } from '../hooks/useModelCache';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { wishWord } from '../utils/wishlistStore';
+import { decidePackGate } from '../utils/packUtils';
+import { usePackStore } from '../store/usePackStore';
+import { usePackDownloadStore } from '../store/usePackDownloadStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { logActivityEvent } from '../services/parentalControlsService';
 import { ScanMode } from '../types';
 import { HazardAlertOverlay } from '../components/HazardAlertOverlay';
 import { styles } from './ScanScreenStyles';
-
 const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
 
-// 📖 What this does:
-// The main orchestrator screen for Scan Mode. Reduced from 607 lines to < 100 lines.
-// It uses `useScanOCR` for the heavy camera logic and `useWordSaving` for Firestore logic.
-// It delegates rendering to `ScanCameraLayer` and `ScanOverlayLayer`.
+// 📖 Orchestrator for Scan Mode. Heavy logic lives in useScanOCR (camera) and
+// useWordSaving (Firestore). Rendering delegated to ScanCameraLayer / ScanOverlayLayer.
 export const ScanScreen = () => {
   const navigation = useNavigation();
-
   const [mode, setMode] = useState<ScanMode>('scan');
   const [activeWord, setActiveWord] = useState<string>('apple');
   const [showWishModal, setShowWishModal] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
-  
   const cardAnim = useRef(new Animated.Value(400)).current;
-
   const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords: ALL_SUPPORTED_WORDS });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
   const { recordView } = useModelCache();
-
+  const packs        = usePackStore(s => s.packs);
+  const isDownloaded = usePackDownloadStore(s => s.isDownloaded);
+  const uid          = useAuthStore(s => s.user?.uid);
   // Safety layer — only active in scan mode with camera live
   const { currentHazard, dismissHazard } = useHazardDetection({
     cameraRef,
@@ -51,15 +52,26 @@ export const ScanScreen = () => {
 
   const handleViewInAR = useCallback(async (word?: string) => {
     const target = word ?? matchResult?.word ?? activeWord;
-    setActiveWord(target);
-    setSceneKey(k => k + 1);
-    setModelLoaded(false);
-    cardAnim.setValue(400);
 
-    await checkWordSavedStatus(target);
-    recordView(target); // fire-and-forget — updates hot model rankings in background
-    setMode('ar');
-  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView]);
+    const gate = decidePackGate(target, packs, isDownloaded);
+    if (gate.status === 'gated' && gate.pack) {
+      if (uid) logActivityEvent(uid, { word: target, source: 'pack_gate', flagged: false });
+      (navigation as any).navigate('PackGate', { word: target, pack: gate.pack });
+      return;
+    }
+
+    try {
+      setActiveWord(target);
+      setSceneKey(k => k + 1);
+      setModelLoaded(false);
+      cardAnim.setValue(400);
+      await checkWordSavedStatus(target);
+      recordView(target); // fire-and-forget — updates hot model rankings in background
+      setMode('ar');
+    } catch (e) {
+      console.error('[ScanScreen] handleViewInAR:', e);
+    }
+  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, uid, navigation]);
 
   const handleBackToScan = useCallback(() => {
     setMode('scan');
@@ -90,7 +102,6 @@ export const ScanScreen = () => {
     return (
       <View style={styles.container}>
         <HazardAlertOverlay visible={!!currentHazard} onDismiss={dismissHazard} />
-
         <ScanCameraLayer
           device={device}
           hasPermission={hasPermission}
@@ -110,7 +121,6 @@ export const ScanScreen = () => {
           }}
           onBackPress={() => navigation.goBack()}
         />
-
       </View>
     );
   }

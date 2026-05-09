@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { Pack, fetchPacks } from '../services/packService';
+import { fetchPacks } from '../services/packService';
+import type { Pack } from "../types/pack";
 
 interface PackState {
   packs: Pack[];

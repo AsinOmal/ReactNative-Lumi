@@ -65,4 +65,23 @@ export const strings = {
     `You've used ${used} of ${limit} minutes today. Great job learning!`,
   screenTimeLimitParentNote: 'Ask a parent to unlock more time.',
   screenTimeLimitUnlock: 'Parent Unlock',
+
+  // Pack Downloads (Phase 10)
+  downloadPack: "Download Pack",
+  downloading: "Downloading…",
+  downloaded: "Downloaded",
+  deletePack: "Delete Pack",
+  downloadSizeFmt: (mb: number) => `${mb} MB`,
+  downloadProgressFmt: (done: number, total: number) =>
+    `${done} of ${total} files`,
+  downloadNoSpace:
+    "Not enough free space on this device to download this pack.",
+  downloadFailed: "Download failed. Please try again.",
+  packLocked: "Pack Locked",
+  packLockedComingSoon: "Premium packs unlock soon.",
+  packGateHeading: "Get this pack",
+  packGateSubtext: "Download it once and play offline anytime.",
+  packGateCta: "Download",
+  packGateDismiss: "Not now",
+  packFoundFmt: (word: string) => `You found "${word}"!`,
 };

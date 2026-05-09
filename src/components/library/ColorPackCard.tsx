@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Pack } from "../../services/packService";
+import type { Pack } from "../../types/pack";
 import { getPackGradient, getPackIcon } from "../../constants/packAccents";
 import { colors } from "../../constants/colors";
+import { usePackDownloadStore } from "../../store/usePackDownloadStore";
+import { DownloadBadge } from "./DownloadBadge";
 
 interface Props {
   pack: Pack;
@@ -15,6 +17,9 @@ interface Props {
 export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
+  const dlStatus = usePackDownloadStore((s) => s.packs[pack.id]?.status);
+  // Bundled (or legacy/undefined-typed) packs are already available — no badge.
+  const showBadge = !!pack.packType && pack.packType !== "bundled";
 
   return (
     <TouchableOpacity
@@ -48,6 +53,7 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
             <Ionicons name="lock-closed" size={14} color="#FFF" />
           </View>
         )}
+        {showBadge && <DownloadBadge status={dlStatus} />}
       </View>
       <View style={styles.footer}>
         <Text style={styles.name} numberOfLines={1}>

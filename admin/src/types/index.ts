@@ -5,6 +5,8 @@ export interface AdminUser {
   photoURL: string | null;
 }
 
+export type PackType = 'bundled' | 'free' | 'premium';
+
 export interface Pack {
   id: string;
   name: string;
@@ -18,6 +20,11 @@ export interface Pack {
   publishedAt?: Date;
   coverImageUrl?: string;
   coverImageRef?: string;
+  // Three-tier download fields (Phase 10). Optional so legacy docs load —
+  // mobile defaults missing values to bundled / 1.0.0 / 0.
+  packType?: PackType;
+  assetVersion?: string;
+  estimatedSizeMB?: number;
 }
 
 export interface ModelEntry {
@@ -29,6 +36,10 @@ export interface ModelEntry {
   modelRef: string;
   scale: number;
   positionY: number;
+  // Distance from the camera in metres along Viro's Z axis. Negative = in
+  // front of the user. Optional so docs that pre-date this field still load;
+  // mobile defaults missing values to -1.0.
+  positionZ?: number;
   packId: string;
   isCalibrated: boolean;
 }
