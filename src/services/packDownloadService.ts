@@ -51,9 +51,15 @@ async function fetchOne(packId: string, task: AssetTask): Promise<void> {
   const handles = inFlight.get(packId) ?? [];
   handles.push(handle);
   inFlight.set(packId, handles);
-  await handle;
+  const res = await handle;
   if (cancelled.has(packId)) {
     throw new CancelledError();
+  }
+  // Non-2xx writes the error body to disk as if it were the asset (e.g. a 404
+  // HTML page becomes the "GLB"). Reject explicitly so retries can recover.
+  const status = res.respInfo?.status ?? 0;
+  if (status < 200 || status >= 300) {
+    throw new Error(`HTTP ${status} for ${task.url}`);
   }
   const exists = await RNBlobUtil.fs.exists(task.path);
   if (!exists) {

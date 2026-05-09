@@ -60,14 +60,17 @@ export const ScanScreen = () => {
       return;
     }
 
-    setActiveWord(target);
-    setSceneKey(k => k + 1);
-    setModelLoaded(false);
-    cardAnim.setValue(400);
-
-    await checkWordSavedStatus(target);
-    recordView(target); // fire-and-forget — updates hot model rankings in background
-    setMode('ar');
+    try {
+      setActiveWord(target);
+      setSceneKey(k => k + 1);
+      setModelLoaded(false);
+      cardAnim.setValue(400);
+      await checkWordSavedStatus(target);
+      recordView(target); // fire-and-forget — updates hot model rankings in background
+      setMode('ar');
+    } catch (e) {
+      console.error('[ScanScreen] handleViewInAR:', e);
+    }
   }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, uid, navigation]);
 
   const handleBackToScan = useCallback(() => {

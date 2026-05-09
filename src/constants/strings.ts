@@ -76,10 +76,12 @@ export const strings = {
     `${done} of ${total} files`,
   downloadNoSpace:
     "Not enough free space on this device to download this pack.",
+  downloadFailed: "Download failed. Please try again.",
   packLocked: "Pack Locked",
   packLockedComingSoon: "Premium packs unlock soon.",
   packGateHeading: "Get this pack",
   packGateSubtext: "Download it once and play offline anytime.",
   packGateCta: "Download",
   packGateDismiss: "Not now",
+  packFoundFmt: (word: string) => `You found "${word}"!`,
 };

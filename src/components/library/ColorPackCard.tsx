@@ -18,7 +18,8 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
   const dlStatus = usePackDownloadStore((s) => s.packs[pack.id]?.status);
-  const showBadge = pack.packType && pack.packType !== "bundled";
+  // Bundled (or legacy/undefined-typed) packs are already available — no badge.
+  const showBadge = !!pack.packType && pack.packType !== "bundled";
 
   return (
     <TouchableOpacity

@@ -34,7 +34,10 @@ export function decidePackGate(
   isDownloaded: (packId: string, assetVersion: string) => boolean,
 ): PackGateDecision {
   const pack = getPackForWord(word, packs);
-  if (!pack || pack.packType === "bundled") {
+  // Legacy Firestore docs that pre-date Phase 10 have no `packType`. Treat the
+  // missing case as 'bundled' (the safe fallback documented in src/types/pack.ts).
+  const packType = pack?.packType ?? "bundled";
+  if (!pack || packType === "bundled") {
     return { status: "available", pack };
   }
   const ok = isDownloaded(pack.id, pack.assetVersion ?? "1.0.0");

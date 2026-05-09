@@ -1,6 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import {
-  getFirestore, collection, getDocs, getDoc, doc, query, where,
+  getFirestore, collection, getDocs, getDoc, doc, query, where, onSnapshot,
 } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { RemoteModelEntry, RemotePack, BannerConfig, RemoteAppConfig } from '../types/remoteContent';
@@ -29,13 +29,37 @@ const saveCachedRemoteModels = async (models: RemoteModelEntry[]): Promise<void>
   }
 };
 
+/**
+ * Real-time subscription to /adminModels. Calls back with the full list
+ * whenever any doc in the collection changes. Returns an unsubscribe fn.
+ *
+ * Used by the dev-only live-calibration hook — Firestore charges per change
+ * event, so production builds should stick to one-shot fetchRemoteModels.
+ */
+export const subscribeRemoteModels = (
+  onChange: (models: RemoteModelEntry[]) => void,
+): (() => void) => {
+  const db = getFirestore(getApp());
+  return onSnapshot(collection(db, 'adminModels'), (snap) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const models: RemoteModelEntry[] = snap.docs.map((d: any) => ({
+      word: d.id,
+      ...(d.data() as Omit<RemoteModelEntry, 'word'>),
+    }));
+    onChange(models);
+  }, (e) => console.warn('[remoteContentService] subscribeRemoteModels:', e));
+};
+
 export const fetchRemoteModels = async (): Promise<RemoteModelEntry[]> => {
   try {
     const db = getFirestore(getApp());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snap = await getDocs(collection(db, 'adminModels'));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const models = snap.docs.map((d: any) => ({ word: d.id, ...d.data() } as RemoteModelEntry));
+    const models: RemoteModelEntry[] = snap.docs.map((d: any) => ({
+      word: d.id,
+      ...(d.data() as Omit<RemoteModelEntry, 'word'>),
+    }));
     saveCachedRemoteModels(models); // fire-and-forget — refresh persistence
     return models;
   } catch (e) {

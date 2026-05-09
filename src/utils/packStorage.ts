@@ -35,8 +35,12 @@ export function getLocalAudioPath(word: string): string {
   return `${docsDir}/${config.AUDIO_CACHE_SUBDIR}/${word}.mp3`;
 }
 
-export function getModelUriForViro(path: string, assetVersion: string): string {
-  return `file://${path}?v=${encodeURIComponent(assetVersion)}`;
+export function getModelUriForViro(path: string, _assetVersion: string): string {
+  // ViroReact's GLB loader on iOS doesn't reliably handle query strings on
+  // file:// URIs (the raw string can reach a C++ file reader that treats it as
+  // part of the filename). Cache busting is already handled by remounting the
+  // AR scene with a fresh `sceneKey` on every entry, so omit the version param.
+  return `file://${path}`;
 }
 
 export function getAudioUriForPlayback(path: string): string {

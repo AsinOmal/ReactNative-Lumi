@@ -68,7 +68,7 @@ export const PackGateScreen = () => {
           <MaterialCommunityIcons name={icon} size={72} color="#FFF" />
         </LinearGradient>
 
-        <Text style={styles.heading}>{`You found "${word}"!`}</Text>
+        <Text style={styles.heading}>{strings.packFoundFmt(word)}</Text>
         <Text style={styles.subtext}>
           {isPremium ? strings.packLockedComingSoon : strings.packGateSubtext}
         </Text>

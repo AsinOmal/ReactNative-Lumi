@@ -7,7 +7,13 @@
  */
 
 import React from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import type { Pack } from "../../types/pack";
@@ -15,6 +21,13 @@ import { usePackDownload } from "../../hooks/usePackDownload";
 import { strings } from "../../constants/strings";
 import { colors } from "../../constants/colors";
 import { styles } from "./PackDetailCTAStyles";
+
+const confirmDelete = (packName: string, onConfirm: () => void) => {
+  Alert.alert(`Delete ${packName}?`, "You can re-download it anytime.", [
+    { text: "Cancel", style: "cancel" },
+    { text: "Delete", style: "destructive", onPress: onConfirm },
+  ]);
+};
 
 interface Props {
   pack: Pack;
@@ -46,10 +59,10 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
           <MaterialCommunityIcons name="target" size={22} color="#FFF" />
           <Text style={styles.primaryText}>View in AR</Text>
         </TouchableOpacity>
-        {pack.packType !== "bundled" && (
+        {pack.packType && pack.packType !== "bundled" && (
           <TouchableOpacity
             style={styles.secondary}
-            onPress={remove}
+            onPress={() => confirmDelete(pack.name, remove)}
             accessibilityRole="button"
           >
             <Ionicons name="trash-outline" size={20} color={colors.textMid} />
@@ -92,32 +105,36 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
     return (
       <View style={styles.errorBlock}>
         <Text style={styles.errorText}>{errorMessage ?? strings.error}</Text>
-        <TouchableOpacity
-          style={[styles.primary, { backgroundColor: accent }]}
-          onPress={download}
-          accessibilityRole="button"
-        >
-          <Ionicons name="refresh" size={20} color="#FFF" />
-          <Text style={styles.primaryText}>{strings.downloadPack}</Text>
-        </TouchableOpacity>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.primary, { backgroundColor: accent }]}
+            onPress={download}
+            accessibilityRole="button"
+          >
+            <Ionicons name="refresh" size={20} color="#FFF" />
+            <Text style={styles.primaryText}>{strings.downloadPack}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 
   return (
-    <TouchableOpacity
-      style={[styles.primary, { backgroundColor: accent }]}
-      activeOpacity={0.85}
-      onPress={download}
-      accessibilityRole="button"
-    >
-      <Ionicons name="cloud-download" size={22} color="#FFF" />
-      <Text style={styles.primaryText}>
-        {strings.downloadPack}
-        {pack.estimatedSizeMB
-          ? ` (${strings.downloadSizeFmt(pack.estimatedSizeMB)})`
-          : ""}
-      </Text>
-    </TouchableOpacity>
+    <View style={styles.row}>
+      <TouchableOpacity
+        style={[styles.primary, { backgroundColor: accent }]}
+        activeOpacity={0.85}
+        onPress={download}
+        accessibilityRole="button"
+      >
+        <Ionicons name="cloud-download" size={22} color="#FFF" />
+        <Text style={styles.primaryText}>
+          {strings.downloadPack}
+          {pack.estimatedSizeMB
+            ? ` (${strings.downloadSizeFmt(pack.estimatedSizeMB)})`
+            : ""}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };

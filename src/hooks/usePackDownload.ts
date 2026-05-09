@@ -1,9 +1,14 @@
-/**
- * Hook screens use to render a pack's download UI. Wraps the store + service so
- * callers don't reimplement NoSpace/Cancelled handling. Bundled packs always
- * report `'downloaded'` so render branches stay identical once a pack flips to
- * `'free'`.
- */
+// 📖 What this does:
+// One-stop hook that screens (PackDetailCTA, PackGateScreen) consume to render
+// download state for a given pack. Wraps the Zustand download store + the
+// imperative download service so each surface gets identical NoSpace /
+// Cancelled / generic-error handling without re-implementing it.
+//
+// Bundled packs are normalised to status='downloaded' so the same render
+// branches keep working when a pack later flips from 'bundled' to 'free'.
+//
+// Watch out: callers should treat status transitions as the source of truth —
+// progress fields are only meaningful while status === 'downloading'.
 
 import { useCallback } from "react";
 import { Pack } from "../types/pack";
@@ -39,7 +44,8 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
   const deleteDownload = usePackDownloadStore((s) => s.deleteDownload);
   const remoteModels = useRemoteContentStore((s) => s.remoteModels);
 
-  const isBundled = pack.packType === "bundled";
+  // Legacy Firestore docs without `packType` default to bundled (see src/types/pack.ts).
+  const isBundled = (pack.packType ?? "bundled") === "bundled";
   const status: DownloadStatus = isBundled
     ? "downloaded"
     : state?.status ?? "idle";
@@ -74,7 +80,7 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
           ? strings.downloadNoSpace
           : e instanceof Error
           ? e.message
-          : "Download failed";
+          : strings.downloadFailed;
       failDownload(pack.id, message);
     }
   }, [
@@ -101,8 +107,14 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
     if (isBundled) {
       return;
     }
-    await deleteDownload(pack.id);
-    invalidateModelCache(pack.words);
+    try {
+      await deleteDownload(pack.id);
+    } catch (e) {
+      console.error("[usePackDownload] remove:", e);
+    } finally {
+      // Always invalidate so a partial cleanup still forces re-resolution.
+      invalidateModelCache(pack.words);
+    }
   }, [isBundled, pack.id, pack.words, deleteDownload]);
 
   return {
