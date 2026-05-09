@@ -16,6 +16,7 @@ const EMPTY_PACK: Pack = {
   id: '', name: '', description: '', isPremium: false,
   isPublished: false, accentColor: '#FF6B6B', accentColorTo: '#F97316',
   wordCount: 0, words: [], coverImageUrl: '', coverImageRef: '',
+  packType: 'bundled', assetVersion: '1.0.0', estimatedSizeMB: 0,
 };
 
 export const PackEditorScreen: React.FC = () => {
@@ -26,6 +27,8 @@ export const PackEditorScreen: React.FC = () => {
 
   const [form, setForm] = useState<Pack>(EMPTY_PACK);
   const [wordInput, setWordInput] = useState('');
+  // String draft for estimatedSizeMB to avoid the parseFloat() || 0 snap-back.
+  const [sizeMbInput, setSizeMbInput] = useState(String(EMPTY_PACK.estimatedSizeMB ?? 0));
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,9 +37,27 @@ export const PackEditorScreen: React.FC = () => {
   useEffect(() => {
     if (!isNew) {
       const existing = packs.find(p => p.id === packId);
-      if (existing) setForm(existing);
+      if (existing) {
+        setForm({
+          ...existing,
+          packType: existing.packType ?? 'bundled',
+          assetVersion: existing.assetVersion ?? '1.0.0',
+          estimatedSizeMB: existing.estimatedSizeMB ?? 0,
+        });
+        setSizeMbInput(String(existing.estimatedSizeMB ?? 0));
+      }
     }
   }, [packs, packId, isNew]);
+
+  const onSizeMbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSizeMbInput(e.target.value);
+    const n = parseFloat(e.target.value);
+    if (Number.isFinite(n) && n >= 0) set('estimatedSizeMB', n);
+  };
+  const onSizeMbBlur = () => {
+    const n = parseFloat(sizeMbInput);
+    if (!Number.isFinite(n) || n < 0) setSizeMbInput(String(form.estimatedSizeMB ?? 0));
+  };
 
   const set = <K extends keyof Pack>(key: K, value: Pack[K]) =>
     setForm(prev => ({ ...prev, [key]: value }));
@@ -160,6 +181,39 @@ export const PackEditorScreen: React.FC = () => {
               />
             </FormField>
           </div>
+
+          <FormField label="Pack Type" hint="Bundled = ships in the app binary. Free / Premium download on demand from Storage.">
+            <select
+              className="form-input"
+              value={form.packType ?? 'bundled'}
+              onChange={e => set('packType', e.target.value as Pack['packType'])}
+            >
+              <option value="bundled">Bundled</option>
+              <option value="free">Free</option>
+              <option value="premium">Premium</option>
+            </select>
+          </FormField>
+
+          <FormField label="Asset Version" hint="Auto-bumped on file replace. Manually bump major/minor for content changes (e.g. 1.0.0 → 2.0.0).">
+            <input
+              className="form-input"
+              value={form.assetVersion ?? '1.0.0'}
+              onChange={e => set('assetVersion', e.target.value)}
+              placeholder="1.0.0"
+            />
+          </FormField>
+
+          <FormField label="Estimated Size (MB)" hint="Shown to users before they tap Download. 0 for bundled packs.">
+            <input
+              className="form-input"
+              type="number"
+              value={sizeMbInput}
+              step={1}
+              min={0}
+              onChange={onSizeMbChange}
+              onBlur={onSizeMbBlur}
+            />
+          </FormField>
         </div>
 
         {/* Middle column — colours */}

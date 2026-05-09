@@ -22,7 +22,7 @@ export const ModelEditorScreen: React.FC = () => {
   const { wordKey } = useParams<{ wordKey: string }>();
   const navigate = useNavigate();
   const { models, saveModel, deleteModel, uploadFile } = useModels();
-  const { packs } = usePacks();
+  const { packs, bumpAssetVersion } = usePacks();
   const isNew = !wordKey || wordKey === 'new';
 
   const [form, setForm] = useState<ModelEntry>(EMPTY_MODEL);
@@ -84,11 +84,26 @@ export const ModelEditorScreen: React.FC = () => {
     if (!Number.isFinite(n)) setPositionZInput(String(form.positionZ ?? -1.0));
   };
 
+  // After a GLB or audio file is replaced, bump the parent pack's
+  // assetVersion so devices treat the new bytes as fresh content. Calibration
+  // metadata (scale, positionY/Z) is keyed against specific GLB geometry —
+  // without an auto-bump, devices would serve cached calibration against
+  // the new geometry and models would render at wrong sizes.
+  const bumpParentPack = async () => {
+    if (!form.packId) return;
+    try {
+      await bumpAssetVersion(form.packId);
+    } catch (e) {
+      console.warn('[ModelEditor] bumpAssetVersion failed:', e);
+    }
+  };
+
   const handleGlbUpload = async (file: File) => {
     const path = `models/${form.word || 'unknown'}.glb`;
     const { url } = await uploadFile(file, path, setGlbProgress);
     set('modelUrl', url);
     set('modelRef', path);
+    await bumpParentPack();
   };
 
   const handleAudioUpload = async (file: File) => {
@@ -96,6 +111,7 @@ export const ModelEditorScreen: React.FC = () => {
     const { url } = await uploadFile(file, path, setAudioProgress);
     set('audioUrl', url);
     set('audioRef', path);
+    await bumpParentPack();
   };
 
   const handleSave = async () => {
