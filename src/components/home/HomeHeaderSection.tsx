@@ -84,24 +84,31 @@ export const HomeHeaderSection: React.FC<Props> = ({
 
       <DailyWordBanner word={dailyWord} isFound={dailyFound} />
 
-      <TouchableOpacity style={styles.progressBanner} activeOpacity={0.85} onPress={onProgressPress} accessibilityLabel="Words found, tap to see collection" accessibilityRole="button">
+      <TouchableOpacity style={styles.progressBanner} activeOpacity={0.88} onPress={onProgressPress} accessibilityLabel="Words found, tap to see collection" accessibilityRole="button">
         <View style={styles.progressLeft}>
           <View style={styles.gemRow}>
             {GEM_COLORS.slice(0, Math.min(3, wordCount)).map((color, i) => (
-              <View key={i} style={[styles.gem, { backgroundColor: color + "22", borderColor: color }]}>
-                <Ionicons name="star" size={11} color={color} />
+              <View key={i} style={[styles.gem, { backgroundColor: color + '18', borderColor: color }]}>
+                <Ionicons name="star" size={16} color={color} />
               </View>
             ))}
             {wordCount > 3 && <Text style={styles.gemMore}>+{wordCount - 3}</Text>}
           </View>
-          <Text style={styles.progressCount}>{wordCount}/{WORD_GOAL} words</Text>
+          <Text style={styles.progressCount}>{wordCount}/{WORD_GOAL} words collected</Text>
           <Text style={styles.progressSub}>Tap to see your collection</Text>
+          <View style={styles.progressTrack}>
+            <LinearGradient
+              colors={['#FF9A2E', '#FFD700']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: `${Math.max(progressRatio * 100, 6)}%` }]}
+            />
+          </View>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.primary} />
+        <View style={styles.chevronCircle}>
+          <Ionicons name="chevron-forward" size={22} color="#FF9A2E" />
+        </View>
       </TouchableOpacity>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${progressRatio * 100}%` }]} />
-      </View>
 
       <View style={styles.sectionRow}>
         <Ionicons name="star" size={20} color={colors.accentYellow} />

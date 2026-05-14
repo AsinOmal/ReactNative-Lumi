@@ -79,11 +79,11 @@ export const PackDetailScreen = () => {
               activeOpacity={0.85}
               accessibilityLabel={`Unlock ${pack.name} pack`}
               accessibilityRole="button"
+              onPress={() => (navigation as any).navigate('PremiumPackGate', { word: pack.words[0] ?? '', pack })}
             >
               <Ionicons name="star" size={20} color={colors.accentYellow} />
               <Text style={styles.unlockBtnText}>Unlock {pack.name}</Text>
             </TouchableOpacity>
-            <Text style={styles.comingSoon}>In-app purchase — coming soon</Text>
           </View>
         </ScrollView>
       </SkyScene>
