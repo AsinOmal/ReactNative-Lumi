@@ -34,6 +34,7 @@ export const ScanScreen = () => {
   const [showWishModal, setShowWishModal] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [arLeavingForPlacement, setArLeavingForPlacement] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
   const packs     = usePackStore(s => s.packs);
   const loadPacks = usePackStore(s => s.loadPacks);
@@ -141,7 +142,11 @@ export const ScanScreen = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ViroARSceneNavigator key={sceneKey} initialScene={{ scene: ARWordScene as any }} viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }} style={styles.arView} />
+      {/* opacity:0 hides the navigator without unmounting it — required before
+          navigating to ARPlacementScreen so Metal textures release asynchronously */}
+      <View style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}>
+        <ViroARSceneNavigator key={sceneKey} initialScene={{ scene: ARWordScene as any }} viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }} style={styles.arView} />
+      </View>
 
       <TouchableOpacity style={styles.backButton} onPress={handleBackToScan} accessibilityLabel="Back to scan mode" accessibilityRole="button">
         <Ionicons name="chevron-back" size={22} color="#fff" />
@@ -159,11 +164,16 @@ export const ScanScreen = () => {
         onDismiss={dismissCard}
         onSave={handleSaveWord}
         onPlace={() => {
-          // Drop back to scan mode first so ViroARSceneNavigator unmounts
-          // before ARPlacementScreen mounts its own — two navigators cannot
-          // share the camera simultaneously.
-          handleBackToScan();
-          setTimeout(() => (navigation as any).navigate('ARPlacement', { word: activeWord }), 100);
+          // Hide the AR navigator (opacity:0, keep mounted) and wait the full
+          // 350ms Metal texture release window before navigating — same pattern
+          // as safeGoBack in ARWordFindScreen. Without this ARPlacementScreen's
+          // navigator races for the camera and shows a permanent black screen.
+          setArLeavingForPlacement(true);
+          setTimeout(() => {
+            handleBackToScan();
+            setArLeavingForPlacement(false);
+            (navigation as any).navigate('ARPlacement', { word: activeWord });
+          }, 350);
         }}
       />
 
