@@ -21,11 +21,6 @@ export const PlacementScene = (props: any) => {
   const onPlaneSelectedProp: (() => void) | undefined =
     props?.sceneNavigator?.viroAppProps?.onPlaneSelected;
 
-  useEffect(() => {
-    console.log('[PlacementScene] mounted — word:', word);
-    return () => console.log('[PlacementScene] unmounted');
-  }, []);
-
   // Double-ref pattern: viroAppProps is read once at mount, so any callback
   // passed through it becomes stale after the first state change. Store the
   // latest value in a ref, expose a stable wrapper that reads from the ref.

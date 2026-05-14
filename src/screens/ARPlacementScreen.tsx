@@ -24,14 +24,6 @@ export const ARPlacementScreen = () => {
   const { word } = route.params as { word: string };
   const { state, isLeaving, sceneKey, onPlaneSelected, onReplace, safeGoBack } = useARPlacement();
 
-  React.useEffect(() => {
-    console.log('[ARPlacementScreen] mounted — word:', word);
-    return () => console.log('[ARPlacementScreen] unmounted');
-  }, []);
-  React.useEffect(() => {
-    console.log('[ARPlacementScreen] sceneKey changed:', sceneKey);
-  }, [sceneKey]);
-
   const pulseAnim = useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
     if (state !== 'searching') return;

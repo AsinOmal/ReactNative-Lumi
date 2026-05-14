@@ -164,13 +164,14 @@ export const ScanScreen = () => {
         onDismiss={dismissCard}
         onSave={handleSaveWord}
         onPlace={() => {
-          console.log('[ScanScreen] onPlace tapped — hiding AR navigator');
+          // Hide the AR navigator (opacity:0, keep mounted) and wait the full
+          // 350ms Metal texture release window before navigating — same pattern
+          // as safeGoBack in ARWordFindScreen. Without this ARPlacementScreen's
+          // navigator races for the camera and shows a permanent black screen.
           setArLeavingForPlacement(true);
           setTimeout(() => {
-            console.log('[ScanScreen] 350ms elapsed — calling handleBackToScan');
             handleBackToScan();
             setArLeavingForPlacement(false);
-            console.log('[ScanScreen] navigating to ARPlacement');
             (navigation as any).navigate('ARPlacement', { word: activeWord });
           }, 350);
         }}
