@@ -103,7 +103,15 @@ export const fetchPacks = async (): Promise<Pack[]> => {
       console.warn('[packService] fetchPacks: no published packs found. Toggle Published in the admin Packs screen.');
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return snap.docs.map((d: any) => d.data() as Pack);
+    return snap.docs.map((d: any) => {
+      const data = d.data();
+      return {
+        ...data,
+        packType: data.packType ?? 'bundled',
+        words: data.words ?? [],
+        assetVersion: data.assetVersion ?? '1.0.0',
+      } as Pack;
+    });
   } catch (e) {
     console.error('[packService] fetchPacks:', e);
     return [];

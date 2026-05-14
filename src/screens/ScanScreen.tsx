@@ -35,21 +35,23 @@ export const ScanScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
-  const packs             = usePackStore(s => s.packs);
-  const purchasedPackIds  = usePurchaseStore(s => s.purchasedPackIds);
-  // Purchased premium packs expand the scannable word pool beyond MODEL_REGISTRY defaults
+  const packs     = usePackStore(s => s.packs);
+  const loadPacks = usePackStore(s => s.loadPacks);
+  useEffect(() => { loadPacks(); }, []);
+  // All pack words are scannable so the gate flow triggers correctly.
+  // decidePackGate() decides whether to show AR or a gate screen based on
+  // pack type + download/purchase state — detection must come first.
   const allSupportedWords = React.useMemo(() => {
     const base = Object.keys(MODEL_REGISTRY);
-    const purchased = packs
-      .filter(p => purchasedPackIds.includes(p.id))
-      .flatMap(p => p.words);
-    return [...new Set([...base, ...purchased])];
-  }, [packs, purchasedPackIds]);
-  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords });
+    const allPackWords = packs.flatMap(p => p.words);
+    return [...new Set([...base, ...allPackWords])];
+  }, [packs]);
+  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult } = useScanOCR({ mode, allSupportedWords });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
   const { recordView } = useModelCache();
-  const isDownloaded = usePackDownloadStore(s => s.isDownloaded);
-  const uid          = useAuthStore(s => s.user?.uid);
+  const isDownloaded  = usePackDownloadStore(s => s.isDownloaded);
+  const isPurchased   = usePurchaseStore(s => s.isPurchased);
+  const uid           = useAuthStore(s => s.user?.uid);
   // Safety layer — only active in scan mode with camera live
   const { currentHazard, dismissHazard } = useHazardDetection({
     cameraRef,
@@ -65,7 +67,9 @@ export const ScanScreen = () => {
     const gate = decidePackGate(target, packs, isDownloaded);
     if (gate.status === 'gated' && gate.pack) {
       if (uid) logActivityEvent(uid, { word: target, source: 'pack_gate', flagged: false });
-      (navigation as any).navigate('PackGate', { word: target, pack: gate.pack });
+      const isPremiumUnpurchased = gate.pack.packType === 'premium' && !isPurchased(gate.pack.id);
+      const screen = isPremiumUnpurchased ? 'PremiumPackGate' : 'PackGate';
+      (navigation as any).navigate(screen, { word: target, pack: gate.pack });
       return;
     }
 
@@ -80,7 +84,7 @@ export const ScanScreen = () => {
     } catch (e) {
       console.error('[ScanScreen] handleViewInAR:', e);
     }
-  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, uid, navigation]);
+  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, isPurchased, uid, navigation]);
 
   const handleBackToScan = useCallback(() => {
     setMode('scan');

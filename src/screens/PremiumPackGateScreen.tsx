@@ -4,7 +4,7 @@
 // a full-screen background with a gradient overlay so text is readable.
 // The goal: make it so compelling that a child immediately asks a parent to unlock it.
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, ImageBackground, StatusBar,
 } from 'react-native';
@@ -29,14 +29,15 @@ export const PremiumPackGateScreen = () => {
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
 
+  useEffect(() => {
+    if (isPurchased) navigation.goBack();
+  }, [isPurchased, navigation]);
+
   const handleUnlock = () => {
     (navigation as any).navigate('Checkout', { pack });
   };
 
-  if (isPurchased) {
-    navigation.goBack();
-    return null;
-  }
+  if (isPurchased) return null;
 
   const content = (
     <View style={[styles.container, { paddingTop: insets.top }]}>
