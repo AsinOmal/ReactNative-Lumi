@@ -8,6 +8,7 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
+import { useNavigation } from '@react-navigation/native';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
@@ -43,6 +44,7 @@ export const ScanOverlayLayer = ({
   onSave,
 }: ScanOverlayLayerProps) => {
   const strings = useStrings();
+  const navigation = useNavigation();
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -96,6 +98,16 @@ export const ScanOverlayLayer = ({
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
           <Ionicons name="close" size={20} color={colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.placeBtn}
+          onPress={() => (navigation as any).navigate('ARPlacement', { word: activeWord })}
+          activeOpacity={0.8}
+          accessibilityLabel={strings.AR_PLACE_BUTTON}
+          accessibilityRole="button"
+        >
+          <Ionicons name="cube-outline" size={18} color={colors.primary} />
+          <Text style={styles.placeBtnText}>{strings.AR_PLACE_BUTTON}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}

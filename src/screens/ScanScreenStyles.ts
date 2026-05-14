@@ -84,6 +84,15 @@ export const styles = StyleSheet.create({
     width: 40, height: 40, borderRadius: 20,
     backgroundColor: colors.backgroundLight, alignItems: 'center', justifyContent: 'center',
   },
+  placeBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.backgroundLight,
+    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20,
+    borderWidth: 1, borderColor: colors.borderPrimary,
+  },
+  placeBtnText: {
+    fontFamily: 'Fredoka-SemiBold', fontSize: 14, color: colors.primary,
+  },
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',

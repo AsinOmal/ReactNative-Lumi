@@ -20,6 +20,7 @@ import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
 import { PackGateScreen } from '../screens/PackGateScreen';
 import { PremiumPackGateScreen } from '../screens/PremiumPackGateScreen';
 import { CheckoutScreen } from '../screens/CheckoutScreen';
+import { ARPlacementScreen } from '../screens/ARPlacementScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
@@ -107,6 +108,7 @@ export const AppRoutes = () => {
         <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
         <Stack.Screen name="WriteAndScan"  component={WriteAndScanScreen} />
         <Stack.Screen name="Scan"          component={ScanScreen} />
+        <Stack.Screen name="ARPlacement"   component={ARPlacementScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
       <ScreenTimeLimitModal
         visible={isAtLimit && !isParentUnlocked}
