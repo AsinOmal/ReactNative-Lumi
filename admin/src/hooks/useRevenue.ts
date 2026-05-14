@@ -46,7 +46,10 @@ export const useRevenue = (): UseRevenueResult => {
           return {
             uid,
             productId: d.id,
-            purchasedAt: data.purchasedAt?.toDate() ?? new Date(),
+            purchasedAt: typeof data.purchasedAt === 'number'
+              ? new Date(data.purchasedAt)
+              : data.purchasedAt?.toDate?.() ?? new Date(),
+            simulated: data.simulated ?? false,
           };
         });
 

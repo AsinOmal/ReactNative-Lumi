@@ -19,11 +19,11 @@ import { decidePackGate } from '../utils/packUtils';
 import { usePackStore } from '../store/usePackStore';
 import { usePackDownloadStore } from '../store/usePackDownloadStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { usePurchaseStore } from '../store/usePurchaseStore';
 import { logActivityEvent } from '../services/parentalControlsService';
 import { ScanMode } from '../types';
 import { HazardAlertOverlay } from '../components/HazardAlertOverlay';
 import { styles } from './ScanScreenStyles';
-const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
 
 // 📖 Orchestrator for Scan Mode. Heavy logic lives in useScanOCR (camera) and
 // useWordSaving (Firestore). Rendering delegated to ScanCameraLayer / ScanOverlayLayer.
@@ -35,10 +35,19 @@ export const ScanScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const cardAnim = useRef(new Animated.Value(400)).current;
-  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords: ALL_SUPPORTED_WORDS });
+  const packs             = usePackStore(s => s.packs);
+  const purchasedPackIds  = usePurchaseStore(s => s.purchasedPackIds);
+  // Purchased premium packs expand the scannable word pool beyond MODEL_REGISTRY defaults
+  const allSupportedWords = React.useMemo(() => {
+    const base = Object.keys(MODEL_REGISTRY);
+    const purchased = packs
+      .filter(p => purchasedPackIds.includes(p.id))
+      .flatMap(p => p.words);
+    return [...new Set([...base, ...purchased])];
+  }, [packs, purchasedPackIds]);
+  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
   const { recordView } = useModelCache();
-  const packs        = usePackStore(s => s.packs);
   const isDownloaded = usePackDownloadStore(s => s.isDownloaded);
   const uid          = useAuthStore(s => s.user?.uid);
   // Safety layer — only active in scan mode with camera live

@@ -114,6 +114,15 @@ service cloud.firestore {
       allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
     }
 
+    // ── Purchases ─────────────────────────────────────────────────────────────
+    match /users/{uid}/purchases/{packId} {
+      allow read, create: if request.auth != null && request.auth.uid == uid;
+      allow read, write: if isAdmin();
+    }
+    match /{path=**}/purchases/{packId} {
+      allow read: if isAdmin();
+    }
+
     match /{path=**}/hazardEvents/{eventId} {
       allow read: if isAdmin();
     }

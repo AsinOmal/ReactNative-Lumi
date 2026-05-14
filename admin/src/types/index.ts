@@ -115,6 +115,7 @@ export interface Purchase {
   uid: string;
   productId: string;
   purchasedAt: Date;
+  simulated?: boolean;
 }
 
 export interface BannerConfig {

@@ -104,3 +104,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.revenue__badge {
+  background: #f59e0b;
+  color: #1a0a4b;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}

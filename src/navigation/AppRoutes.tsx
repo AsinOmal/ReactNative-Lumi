@@ -18,6 +18,8 @@ import { ParentDashboardScreen } from '../screens/ParentDashboardScreen';
 import { PackDetailScreen } from '../screens/PackDetailScreen';
 import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
 import { PackGateScreen } from '../screens/PackGateScreen';
+import { PremiumPackGateScreen } from '../screens/PremiumPackGateScreen';
+import { CheckoutScreen } from '../screens/CheckoutScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
@@ -98,7 +100,9 @@ export const AppRoutes = () => {
         <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
         <Stack.Screen name="PackDetail"    component={PackDetailScreen} />
         <Stack.Screen name="PackARPreview" component={PackARPreviewScreen} />
-        <Stack.Screen name="PackGate"      component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="PackGate"         component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="PremiumPackGate" component={PremiumPackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="Checkout"         component={CheckoutScreen} options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
         <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
         <Stack.Screen name="WriteAndScan"  component={WriteAndScanScreen} />

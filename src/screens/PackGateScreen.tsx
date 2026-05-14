@@ -22,6 +22,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { Pack } from "../types/pack";
 import { usePackDownload } from "../hooks/usePackDownload";
+import { usePurchaseStore } from "../store/usePurchaseStore";
 import { getPackGradient, getPackIcon } from "../constants/packAccents";
 import { useStrings } from "../hooks/useStrings";
 import { colors } from "../constants/colors";
@@ -41,10 +42,18 @@ export const PackGateScreen = () => {
     errorMessage,
     download,
   } = usePackDownload(pack);
+  const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
 
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
   const isPremium = pack.packType === "premium";
+
+  // Redirect premium packs to the dedicated promo gate screen
+  useEffect(() => {
+    if (isPremium && !isPurchased) {
+      (navigation as any).replace('PremiumPackGate', { word, pack });
+    }
+  }, [isPremium, isPurchased, navigation, word, pack]);
 
   useEffect(() => {
     if (status === "downloaded") {

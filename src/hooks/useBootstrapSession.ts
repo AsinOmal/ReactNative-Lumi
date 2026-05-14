@@ -32,6 +32,7 @@ import {
   fetchActiveBanner,
 } from "../services/remoteContentService";
 import { useLanguageStore } from "../store/useLanguageStore";
+import { usePurchaseStore } from "../store/usePurchaseStore";
 import { fetchPacks } from "../services/packService";
 import {
   registerFcmToken,
@@ -70,9 +71,10 @@ export const useBootstrapSession = (): BootstrapResult => {
         return;
       }
 
-      // Load language + intro preference before anything else so the first
-      // screen that renders already has the correct language setting.
+      // Load language + intro preference and purchase history before anything
+      // else so the first screen renders with the correct state.
       useLanguageStore.getState().loadFromStorage().catch(() => {});
+      usePurchaseStore.getState().loadFromStorage().catch(() => {});
 
       try {
         await createUserIfNew(userState);
