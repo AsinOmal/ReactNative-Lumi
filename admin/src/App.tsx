@@ -16,6 +16,7 @@ import { NotificationsScreen } from './screens/NotificationsScreen/Notifications
 import { AppConfigScreen } from './screens/AppConfigScreen/AppConfigScreen';
 import { RevenueScreen } from './screens/RevenueScreen/RevenueScreen';
 import { FeedbackScreen } from './screens/FeedbackScreen/FeedbackScreen';
+import { WishlistScreen } from './screens/WishlistScreen/WishlistScreen';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { ROUTES } from './constants/routes';
 
@@ -51,6 +52,7 @@ export const App: React.FC = () => {
           <Route path={ROUTES.APP_CONFIG}    element={<AppConfigScreen />} />
           <Route path={ROUTES.REVENUE}       element={<RevenueScreen />} />
           <Route path={ROUTES.FEEDBACK}      element={<FeedbackScreen />} />
+          <Route path={ROUTES.WISHLIST}      element={<WishlistScreen />} />
           <Route path="*"                    element={<Navigate to={ROUTES.DASHBOARD} replace />} />
         </Routes>
       </Layout>

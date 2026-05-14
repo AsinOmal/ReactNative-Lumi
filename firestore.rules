@@ -114,6 +114,14 @@ service cloud.firestore {
       allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
     }
 
+    // ── Community Wishlist ────────────────────────────────────────────────────
+    // Any signed-in user can create/increment their word wish (merge writes only).
+    // Admins can read the full collection to see most-requested words.
+    match /wishlist/{wordId} {
+      allow create, update: if request.auth != null;
+      allow read, write: if isAdmin();
+    }
+
     // ── Purchases ─────────────────────────────────────────────────────────────
     match /users/{uid}/purchases/{packId} {
       allow read, create: if request.auth != null && request.auth.uid == uid;

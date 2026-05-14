@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Box, Users, BarChart2,
   Shield, Bell, Settings, DollarSign, MessageSquare,
-  LogOut, Moon, Sun,
+  Heart, LogOut, Moon, Sun,
 } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import { useDarkMode } from '../../hooks/useDarkMode';
@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'App Config',    path: ROUTES.APP_CONFIG,    icon: Settings },
   { label: 'Revenue',       path: ROUTES.REVENUE,       icon: DollarSign },
   { label: 'Feedback',      path: ROUTES.FEEDBACK,      icon: MessageSquare },
+  { label: 'Wishlist',      path: ROUTES.WISHLIST,      icon: Heart },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 }) => {

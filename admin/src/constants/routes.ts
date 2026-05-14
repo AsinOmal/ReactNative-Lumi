@@ -15,4 +15,5 @@ export const ROUTES = {
   APP_CONFIG: '/config',
   REVENUE: '/revenue',
   FEEDBACK: '/feedback',
+  WISHLIST: '/wishlist',
 } as const;
