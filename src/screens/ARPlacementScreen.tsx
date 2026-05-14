@@ -22,7 +22,7 @@ export const ARPlacementScreen = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { word } = route.params as { word: string };
-  const { state, isLeaving, onPlaneSelected, onReplace, safeGoBack } = useARPlacement();
+  const { state, isLeaving, sceneKey, onPlaneSelected, onReplace, safeGoBack } = useARPlacement();
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -43,6 +43,7 @@ export const ARPlacementScreen = () => {
 
       <View style={[StyleSheet.absoluteFill, { opacity: isLeaving ? 0 : 1 }]}>
         <ViroARSceneNavigator
+          key={sceneKey}
           autofocus
           initialScene={{ scene: PlacementScene }}
           viroAppProps={{ word, onPlaneSelected }}

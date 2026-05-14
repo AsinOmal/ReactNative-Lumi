@@ -8,7 +8,6 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
-import { useNavigation } from '@react-navigation/native';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
@@ -29,6 +28,7 @@ interface ScanOverlayLayerProps {
   isWordSaved: boolean;
   onDismiss: () => void;
   onSave: () => void;
+  onPlace: () => void;
 }
 
 // 📖 What this does:
@@ -42,9 +42,9 @@ export const ScanOverlayLayer = ({
   isWordSaved,
   onDismiss,
   onSave,
+  onPlace,
 }: ScanOverlayLayerProps) => {
   const strings = useStrings();
-  const navigation = useNavigation();
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -101,7 +101,7 @@ export const ScanOverlayLayer = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.placeBtn}
-          onPress={() => (navigation as any).navigate('ARPlacement', { word: activeWord })}
+          onPress={onPlace}
           activeOpacity={0.8}
           accessibilityLabel={strings.AR_PLACE_BUTTON}
           accessibilityRole="button"

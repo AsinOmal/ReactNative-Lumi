@@ -158,6 +158,13 @@ export const ScanScreen = () => {
         isWordSaved={isWordSaved}
         onDismiss={dismissCard}
         onSave={handleSaveWord}
+        onPlace={() => {
+          // Drop back to scan mode first so ViroARSceneNavigator unmounts
+          // before ARPlacementScreen mounts its own — two navigators cannot
+          // share the camera simultaneously.
+          handleBackToScan();
+          setTimeout(() => (navigation as any).navigate('ARPlacement', { word: activeWord }), 100);
+        }}
       />
 
       <AchievementToast queue={achievementQueue} onDismissed={() => setAchievementQueue(prev => prev.slice(1))} />
