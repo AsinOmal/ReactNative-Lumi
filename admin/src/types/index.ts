@@ -42,6 +42,7 @@ export interface ModelEntry {
   positionZ?: number;
   packId: string;
   isCalibrated: boolean;
+  sinhalaLabel?: string;
 }
 
 export interface AppUser {

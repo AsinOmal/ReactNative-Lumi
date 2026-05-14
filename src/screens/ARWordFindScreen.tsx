@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { useLanguageStore } from '../store/useLanguageStore';
 import { loadGameSounds, releaseGameSounds } from '../utils/gameSound';
 import { config } from '../constants/config';
 import { shuffleArray } from '../utils/arrayUtils';
@@ -44,6 +45,7 @@ export const ARWordFindScreen = () => {
   } = useARGameLoop({ wordQueue });
 
   const targetModel = MODEL_REGISTRY[targetWord];
+  const language = useLanguageStore(s => s.language);
 
   useEffect(() => {
     loadGameSounds();
@@ -117,6 +119,9 @@ export const ARWordFindScreen = () => {
             <Text style={styles.tapThe}>TAP THE</Text>
             <Text style={styles.targetEmoji}>{targetModel?.emoji ?? '❓'}</Text>
             <Text style={styles.targetWord}>{targetWord.toUpperCase()}</Text>
+            {language === 'si' && targetModel?.sinhalaLabel ? (
+              <Text style={styles.targetSinhala}>{targetModel.sinhalaLabel}</Text>
+            ) : null}
           </View>
         )}
         {feedback !== null && (

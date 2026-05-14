@@ -48,7 +48,8 @@ export const styles = StyleSheet.create({
   },
   tapThe:      { fontFamily: 'Fredoka-Regular', fontSize: 12, color: '#C4B5FD', letterSpacing: 2 },
   targetEmoji: { fontSize: 52 },
-  targetWord:  { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFF' },
+  targetWord:     { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFF' },
+  targetSinhala:  { fontFamily: 'Fredoka-Regular', fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 2 },
 
   // Feedback
   feedbackBanner: {

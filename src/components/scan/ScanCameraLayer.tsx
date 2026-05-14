@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { OCROverlay } from '../../components/ar/OCROverlay';
 import { WishConfirmModal } from '../../components/WishConfirmModal';
 import { styles } from '../../screens/ScanScreenStyles';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 
 interface ScanCameraLayerProps {
   device: CameraDevice | undefined;
@@ -30,6 +30,7 @@ export const ScanCameraLayer = ({
   matchResultWord, unknownWord, showWishModal, setShowWishModal,
   onViewInAR, onWishPress, onBackPress,
 }: ScanCameraLayerProps) => {
+  const strings = useStrings();
   const ringAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

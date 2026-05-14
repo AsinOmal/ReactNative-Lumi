@@ -17,7 +17,7 @@ import { useFloatLoop } from "../hooks/useFloatLoop";
 import { markOnboardingDone } from "../utils/onboardingStore";
 import { requestNotificationPermission } from "../services/notificationService";
 import { colors } from "../constants/colors";
-import { strings } from "../constants/strings";
+import { useStrings } from "../hooks/useStrings";
 import { styles, SLIDE_W } from "./OnboardingScreenStyles";
 
 interface Slide {
@@ -27,34 +27,33 @@ interface Slide {
   desc: string;
 }
 
-// Forest + space gradients are scene-specific (not reused outside onboarding)
-// so they stay inline rather than polluting the global colour token set.
-const SLIDES: Slide[] = [
-  {
-    gradient: [colors.skyTop, colors.skyMid, colors.skyBottom],
-    mascot: "wave",
-    title: strings.onboardingSlide0Title,
-    desc: strings.onboardingSlide0Desc,
-  },
-  {
-    gradient: ["#2D8C4E", "#4CAF50", "#81C784"],
-    mascot: "excited",
-    title: strings.onboardingSlide1Title,
-    desc: strings.onboardingSlide1Desc,
-  },
-  {
-    gradient: ["#1A1A4E", "#2D2D7E", "#4A4AB5"],
-    mascot: "celebrate",
-    title: strings.onboardingSlide2Title,
-    desc: strings.onboardingSlide2Desc,
-  },
-];
-
 interface Props {
   onComplete: () => void;
 }
 
 export const OnboardingScreen = ({ onComplete }: Props) => {
+  const strings = useStrings();
+  // Forest + space gradients are scene-specific — kept inline to avoid polluting global token set.
+  const SLIDES: Slide[] = [
+    {
+      gradient: [colors.skyTop, colors.skyMid, colors.skyBottom],
+      mascot: "wave",
+      title: strings.onboardingSlide0Title,
+      desc: strings.onboardingSlide0Desc,
+    },
+    {
+      gradient: ["#2D8C4E", "#4CAF50", "#81C784"],
+      mascot: "excited",
+      title: strings.onboardingSlide1Title,
+      desc: strings.onboardingSlide1Desc,
+    },
+    {
+      gradient: ["#1A1A4E", "#2D2D7E", "#4A4AB5"],
+      mascot: "celebrate",
+      title: strings.onboardingSlide2Title,
+      desc: strings.onboardingSlide2Desc,
+    },
+  ];
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
   const [currentIdx, setCurrentIdx] = useState(0);

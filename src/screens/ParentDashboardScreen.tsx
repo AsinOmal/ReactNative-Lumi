@@ -21,19 +21,20 @@ import { FlaggedWordsList } from "../components/parent/FlaggedWordsList";
 import { BlocklistEditor } from "../components/parent/BlocklistEditor";
 import { ParentAuthGate } from "../components/parent/ParentAuthGate";
 import { SkyScene } from "../components/scenes/SkyScene";
-import { strings } from "../constants/strings";
+import { useStrings } from "../hooks/useStrings";
 import { colors } from "../constants/colors";
 import { styles } from "./ParentDashboardStyles";
 
 type Tab = "time" | "activity" | "flagged" | "blocklist";
-const TABS: { key: Tab; label: string }[] = [
-  { key: "time", label: strings.dashboardTabTime },
-  { key: "activity", label: strings.dashboardTabActivity },
-  { key: "flagged", label: strings.dashboardTabFlagged },
-  { key: "blocklist", label: strings.dashboardTabBlocklist },
-];
 
 export const ParentDashboardScreen: React.FC = () => {
+  const strings = useStrings();
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "time", label: strings.dashboardTabTime },
+    { key: "activity", label: strings.dashboardTabActivity },
+    { key: "flagged", label: strings.dashboardTabFlagged },
+    { key: "blocklist", label: strings.dashboardTabBlocklist },
+  ];
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const { isParentUnlocked, settings, setParentUnlocked } = useParentalControlsStore();
@@ -85,7 +86,7 @@ export const ParentDashboardScreen: React.FC = () => {
           </View>
 
           <View style={styles.tabBar}>
-            {TABS.map((tab) => (
+            {tabs.map((tab) => (
               <TouchableOpacity
                 key={tab.key}
                 style={[styles.tab, activeTab === tab.key && styles.tabActive]}

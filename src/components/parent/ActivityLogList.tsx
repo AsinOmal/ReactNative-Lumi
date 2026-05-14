@@ -11,7 +11,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { ActivityLogEntry } from '../../types/parentalControls';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
 
 interface ActivityLogListProps {
@@ -40,6 +40,7 @@ const LogRow: React.FC<{ entry: ActivityLogEntry }> = ({ entry }) => (
 );
 
 export const ActivityLogList: React.FC<ActivityLogListProps> = ({ entries }) => {
+  const strings = useStrings();
   if (entries.length === 0) {
     return (
       <View style={styles.empty}>

@@ -8,9 +8,10 @@ interface SettingsRowProps {
   label: string;
   onPress: () => void;
   danger?: boolean;
+  rightElement?: React.ReactNode;
 }
 
-export const SettingsRow: React.FC<SettingsRowProps> = ({ iconName, label, onPress, danger = false }) => (
+export const SettingsRow: React.FC<SettingsRowProps> = ({ iconName, label, onPress, danger = false, rightElement }) => (
   <TouchableOpacity
     style={styles.row}
     onPress={onPress}
@@ -22,7 +23,7 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({ iconName, label, onPre
       <Ionicons name={iconName} size={22} color={danger ? colors.error : colors.primary} />
     </View>
     <Text style={[styles.label, danger && styles.labelDanger]}>{label}</Text>
-    <Ionicons name="chevron-forward" size={20} color={colors.textLight} />
+    {rightElement ?? <Ionicons name="chevron-forward" size={20} color={colors.textLight} />}
   </TouchableOpacity>
 );
 

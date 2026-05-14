@@ -6,7 +6,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { strings } from "../../constants/strings";
+import { useStrings } from "../../hooks/useStrings";
 import { colors } from "../../constants/colors";
 import { woodBorderOuter, woodBorderInner } from "../../constants/skeuomorphicTokens";
 
@@ -14,29 +14,32 @@ interface Props {
   onAuthenticate: () => void;
 }
 
-export const ParentAuthGate: React.FC<Props> = ({ onAuthenticate }) => (
-  <SafeAreaView style={styles.gate}>
-    <View style={styles.iconWrap}>
-      <Ionicons name="lock-closed" size={52} color={colors.primary} />
-    </View>
-    <Text style={styles.title}>{strings.dashboardAuthTitle}</Text>
-    <Text style={styles.subtitle}>{strings.dashboardAuthSubtitle}</Text>
-    <TouchableOpacity
-      onPress={onAuthenticate}
-      activeOpacity={0.85}
-      accessibilityLabel="Authenticate to open parent dashboard"
-      accessibilityRole="button"
-    >
-      <View style={woodBorderOuter}>
-        <View style={woodBorderInner}>
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>{strings.dashboardAuthBtn}</Text>
+export const ParentAuthGate: React.FC<Props> = ({ onAuthenticate }) => {
+  const strings = useStrings();
+  return (
+    <SafeAreaView style={styles.gate}>
+      <View style={styles.iconWrap}>
+        <Ionicons name="lock-closed" size={52} color={colors.primary} />
+      </View>
+      <Text style={styles.title}>{strings.dashboardAuthTitle}</Text>
+      <Text style={styles.subtitle}>{strings.dashboardAuthSubtitle}</Text>
+      <TouchableOpacity
+        onPress={onAuthenticate}
+        activeOpacity={0.85}
+        accessibilityLabel="Authenticate to open parent dashboard"
+        accessibilityRole="button"
+      >
+        <View style={woodBorderOuter}>
+          <View style={woodBorderInner}>
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>{strings.dashboardAuthBtn}</Text>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  </SafeAreaView>
-);
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   gate: { flex: 1, alignItems: "center", justifyContent: "center", padding: 40, gap: 12 },

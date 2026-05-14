@@ -14,6 +14,7 @@ import type { Pack } from "../types/pack";
 import { getPackAccent } from "../constants/packAccents";
 import { colors } from "../constants/colors";
 import { MODEL_REGISTRY } from "../utils/modelRegistry";
+import { useLanguageStore } from "../store/useLanguageStore";
 import { SkyScene } from "../components/scenes/SkyScene";
 import { PackDetailCTA } from "../components/library/PackDetailCTA";
 import { styles } from "./PackDetailScreenStyles";
@@ -25,6 +26,7 @@ export const PackDetailScreen = () => {
   const isFocused = useIsFocused();
   const { pack } = route.params as { pack: Pack };
   const accent = getPackAccent(pack.id);
+  const language = useLanguageStore(s => s.language);
 
   if (pack.isPremium) {
     return (
@@ -122,6 +124,9 @@ export const PackDetailScreen = () => {
             <View key={word} style={styles.wordRow}>
               <View style={[styles.wordDot, { backgroundColor: accent }]} />
               <Text style={styles.wordLabel}>{display}</Text>
+              {language === 'si' && model?.sinhalaLabel ? (
+                <Text style={styles.wordSinhala}>{model.sinhalaLabel}</Text>
+              ) : null}
               <Text style={styles.wordSyllables}>
                 {model?.syllables.join(" · ") ?? ""}
               </Text>

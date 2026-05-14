@@ -8,8 +8,9 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
+import { useLanguageStore } from '../../store/useLanguageStore';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
-import { strings } from '../../constants/strings';
 import { PACK_WORDS } from '../../constants/packWords';
 import { triggerHaptic } from '../../hooks/useHaptic';
 
@@ -41,9 +42,12 @@ export const ScanOverlayLayer = ({
   onDismiss,
   onSave,
 }: ScanOverlayLayerProps) => {
+  const strings = useStrings();
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
+  const language = useLanguageStore(s => s.language);
+  const sinhalaLabel = getModel(activeWord)?.sinhalaLabel;
 
   useEffect(() => {
     setShowConfetti(true);
@@ -67,6 +71,9 @@ export const ScanOverlayLayer = ({
           <Text style={styles.resultWord}>
             {activeWord.charAt(0).toUpperCase() + activeWord.slice(1)}
           </Text>
+          {language === 'si' && sinhalaLabel ? (
+            <Text style={styles.sinhalaLabel}>{sinhalaLabel}</Text>
+          ) : null}
           {packLabel ? <Text style={styles.resultPack}>{packLabel}</Text> : null}
         </View>
       </View>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StatusBar } from "react-native";
+import { View, Text, ScrollView, StatusBar, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
@@ -9,6 +9,8 @@ import { getApp } from "@react-native-firebase/app";
 import { getAuth, signOut } from "@react-native-firebase/auth";
 import { getProgress, getStreak } from "../utils/achievementStore";
 import { colors } from "../constants/colors";
+import { useLanguageStore } from "../store/useLanguageStore";
+import { useStrings } from "../hooks/useStrings";
 import { SkyScene } from "../components/scenes/SkyScene";
 import { LumiMascot } from "../components/common/LumiMascot";
 import { StatsCard } from "../components/settings/StatsCard";
@@ -23,6 +25,8 @@ export const SettingsScreen = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
+  const strings = useStrings();
+  const { language, setLanguage } = useLanguageStore();
   const [wordCount, setWordCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [achievementCount, setAchievementCount] = useState(0);
@@ -76,24 +80,42 @@ export const SettingsScreen = () => {
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionLabel}>Profile</Text>
+        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_PROFILE}</Text>
         <View style={styles.section}>
-          <SettingsRow iconName="person-outline" label="Edit Username" onPress={() => setUsernameVisible(true)} />
+          <SettingsRow iconName="person-outline" label={strings.SETTINGS_EDIT_USERNAME} onPress={() => setUsernameVisible(true)} />
         </View>
 
-        <Text style={styles.sectionLabel}>Parent Controls</Text>
+        <Text style={styles.sectionLabel}>{strings.SETTINGS_LANGUAGE_SECTION}</Text>
         <View style={styles.section}>
-          <SettingsRow iconName="lock-closed" label="Parent Dashboard" onPress={() => (navigation as any).navigate("ParentDashboard")} />
+          <SettingsRow
+            iconName="language-outline"
+            label={strings.SETTINGS_LANGUAGE_ROW}
+            onPress={() => setLanguage(language === 'si' ? 'en' : 'si')}
+            rightElement={
+              <Switch
+                value={language === 'si'}
+                onValueChange={(v) => setLanguage(v ? 'si' : 'en')}
+                trackColor={{ false: colors.textLight, true: colors.primary }}
+                thumbColor="#fff"
+                accessibilityLabel="Toggle Sinhala language"
+              />
+            }
+          />
         </View>
 
-        <Text style={styles.sectionLabel}>Support</Text>
+        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_PARENT}</Text>
         <View style={styles.section}>
-          <SettingsRow iconName="chatbubble-outline" label="Send Feedback" onPress={() => setFeedbackVisible(true)} />
+          <SettingsRow iconName="lock-closed" label={strings.SETTINGS_PARENT_DASHBOARD} onPress={() => (navigation as any).navigate("ParentDashboard")} />
         </View>
 
-        <Text style={styles.sectionLabel}>Account</Text>
+        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_SUPPORT}</Text>
         <View style={styles.section}>
-          <SettingsRow iconName="log-out-outline" label="Sign Out" onPress={handleSignOut} danger />
+          <SettingsRow iconName="chatbubble-outline" label={strings.SETTINGS_SEND_FEEDBACK} onPress={() => setFeedbackVisible(true)} />
+        </View>
+
+        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_ACCOUNT}</Text>
+        <View style={styles.section}>
+          <SettingsRow iconName="log-out-outline" label={strings.SETTINGS_SIGN_OUT} onPress={handleSignOut} danger />
         </View>
       </ScrollView>
 

@@ -19,10 +19,11 @@ import {
 } from 'react-native';
 import { useParentalControlsStore } from '../../store/useParentalControlsStore';
 import { useAuthStore } from '../../store/useAuthStore';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
 
 export const BlocklistEditor: React.FC = () => {
+  const strings = useStrings();
   const { settings, updateSettings } = useParentalControlsStore();
   const { user } = useAuthStore();
   const [input, setInput] = useState('');

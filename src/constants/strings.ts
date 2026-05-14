@@ -98,4 +98,61 @@ export const strings = {
     'Play AR games, save favourite words, and earn achievements as you explore!',
   onboardingNext: 'Next',
   onboardingGetStarted: 'Get Started',
+
+  // App Introduction Guide
+  INTRO_SKIP: 'Skip',
+  INTRO_NEXT: 'Next',
+  INTRO_LETS_GO: "Let's Go!",
+  INTRO_SCAN_TITLE: 'Point & Discover',
+  INTRO_SCAN_BODY: 'Tap the big Scan button in the center. Hold your camera up to any printed word and watch it come to life!',
+  INTRO_PLAYGROUND_TITLE: 'Play AR Games',
+  INTRO_PLAYGROUND_BODY: 'Head to Playground to find words in AR, cook a virtual meal, or count objects as they appear!',
+  INTRO_PARENT_TITLE: 'Made for Families',
+  INTRO_PARENT_BODY: 'Parents: press and hold the profile icon on Settings to set screen time limits and keep an eye on activity.',
+  INTRO_LANG_TITLE: 'Choose Your Language',
+  INTRO_LANG_BODY: 'How should we display word labels in the app?',
+  INTRO_LANG_ENGLISH: 'English',
+  INTRO_LANG_SINHALA: 'සිංහල',
+  INTRO_LANG_DISCLAIMER: 'Our scanner reads English words — that part stays English! Sinhala labels are shown alongside for learning.',
+
+  // Premium Pack Gate
+  PREMIUM_GATE_FOUND: (word: string) => `You found "${word}"!`,
+  PREMIUM_GATE_SUBHEADING: (packName: string) => `Unlock the ${packName}`,
+  PREMIUM_GATE_BODY: (count: number) => `${count} amazing models come to life in your world`,
+  PREMIUM_GATE_CTA: (price: string) => `Unlock — ${price}`,
+  PREMIUM_GATE_DISMISS: 'Maybe Later',
+  PACK_PRICE: '$2.99',
+
+  // Checkout
+  CHECKOUT_TITLE: 'Unlock Pack',
+  CHECKOUT_CARD_NUMBER: 'Card Number',
+  CHECKOUT_EXPIRY: 'MM / YY',
+  CHECKOUT_CVV: 'CVV',
+  CHECKOUT_CTA: 'Confirm Purchase',
+  CHECKOUT_PROCESSING: 'Processing…',
+  CHECKOUT_SUCCESS: 'Pack Unlocked!',
+  CHECKOUT_ERROR: 'Payment failed. Please try again.',
+  CHECKOUT_SIMULATED_NOTICE: 'Simulated payment — no real charge.',
+  CHECKOUT_UNLOCK_BENEFIT: (count: number) => `${count} 3D words become scannable after unlock.`,
+
+  // Settings
+  SETTINGS_SECTION_PROFILE: 'Profile',
+  SETTINGS_EDIT_USERNAME: 'Edit Username',
+  SETTINGS_LANGUAGE_SECTION: 'Language',
+  SETTINGS_LANGUAGE_ROW: 'සිංහල (Sinhala)',
+  SETTINGS_SECTION_PARENT: 'Parent Controls',
+  SETTINGS_PARENT_DASHBOARD: 'Parent Dashboard',
+  SETTINGS_SECTION_SUPPORT: 'Support',
+  SETTINGS_SEND_FEEDBACK: 'Send Feedback',
+  SETTINGS_SECTION_ACCOUNT: 'Account',
+  SETTINGS_SIGN_OUT: 'Sign Out',
+
+  // AR Tap-to-Place
+  AR_PLACE_BUTTON: 'Place This',
+  AR_PLACEMENT_SEARCHING: 'Point at a flat surface and tap',
+  AR_PLACEMENT_PLACED: 'Model placed!',
+  AR_PLACEMENT_REPLACE: 'Place Again',
+  AR_PLACEMENT_TIMEOUT: 'No flat surface found',
+  AR_PLACEMENT_TIMEOUT_SUB: 'Make sure the surface is well-lit and not too far away.',
+  AR_PLACEMENT_TRY_AGAIN: 'Try Again',
 };

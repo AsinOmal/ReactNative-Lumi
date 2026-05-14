@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { strings } from '../constants/strings';
+import { useStrings } from '../hooks/useStrings';
 import { config } from '../constants/config';
 import { styles } from './PINEntryModalStyles';
 
@@ -30,6 +30,7 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
 export const PINEntryModal: React.FC<PINEntryModalProps> = ({
   visible, mode, onSubmit, onCancel, hasError = false,
 }) => {
+  const strings = useStrings();
   const [pin, setPin] = useState('');
 
   const handleKey = (key: string) => {

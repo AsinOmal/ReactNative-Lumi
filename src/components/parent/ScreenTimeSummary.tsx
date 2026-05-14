@@ -18,12 +18,13 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { useParentalControlsStore } from '../../store/useParentalControlsStore';
 import { useAuthStore } from '../../store/useAuthStore';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
 
 const LIMIT_STEPS = [0, 1, 15, 30, 45, 60, 90, 120, 180];
 
 export const ScreenTimeSummary: React.FC = () => {
+  const strings = useStrings();
   const { settings, updateSettings, todayMinutes } = useParentalControlsStore();
   const { user } = useAuthStore();
 

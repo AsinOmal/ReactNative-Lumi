@@ -66,6 +66,7 @@ export const styles = StyleSheet.create({
   wishEmojiCircle: { backgroundColor: "#FEF3C7" },
   cardBody: { flex: 1, gap: 4 },
   wordText: { fontFamily: "Fredoka-Bold", fontSize: 22, color: colors.textDark },
+  sinhalaLabel: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: colors.textMuted, marginTop: 1 },
   dateText: { fontFamily: "Fredoka-Regular", fontSize: 15, color: "#94A3B8" },
   arBtn: {
     backgroundColor: colors.primary,

@@ -23,11 +23,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import type { Pack } from "../types/pack";
 import { usePackDownload } from "../hooks/usePackDownload";
 import { getPackGradient, getPackIcon } from "../constants/packAccents";
-import { strings } from "../constants/strings";
+import { useStrings } from "../hooks/useStrings";
 import { colors } from "../constants/colors";
 import { styles } from "./PackGateScreenStyles";
 
 export const PackGateScreen = () => {
+  const strings = useStrings();
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();

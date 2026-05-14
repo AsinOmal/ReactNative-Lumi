@@ -31,6 +31,7 @@ import {
   fetchGlobalBlocklist,
   fetchActiveBanner,
 } from "../services/remoteContentService";
+import { useLanguageStore } from "../store/useLanguageStore";
 import { fetchPacks } from "../services/packService";
 import {
   registerFcmToken,
@@ -68,6 +69,10 @@ export const useBootstrapSession = (): BootstrapResult => {
         unsubTokenRefresh?.();
         return;
       }
+
+      // Load language + intro preference before anything else so the first
+      // screen that renders already has the correct language setting.
+      useLanguageStore.getState().loadFromStorage().catch(() => {});
 
       try {
         await createUserIfNew(userState);

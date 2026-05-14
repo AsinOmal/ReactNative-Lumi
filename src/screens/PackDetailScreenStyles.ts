@@ -41,6 +41,12 @@ export const styles = StyleSheet.create({
     color: colors.textDark,
     flex: 1,
   },
+  wordSinhala: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 1,
+  },
   wordSyllables: {
     fontFamily: "Fredoka-Regular",
     fontSize: 16,

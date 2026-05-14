@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
   },
   resultWordBlock: { flex: 1 },
   resultWord: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: colors.textDark },
+  sinhalaLabel: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: colors.textMuted, marginTop: 2 },
   resultPack: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: colors.textMid, marginTop: 1 },
   pronunciationBtn: {
     width: 40, height: 40, borderRadius: 20,

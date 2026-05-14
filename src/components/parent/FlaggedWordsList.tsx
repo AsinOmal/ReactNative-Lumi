@@ -10,7 +10,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ActivityLogEntry } from '../../types/parentalControls';
 import { ActivityLogList } from './ActivityLogList';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
 
 interface FlaggedWordsListProps {
@@ -18,6 +18,7 @@ interface FlaggedWordsListProps {
 }
 
 export const FlaggedWordsList: React.FC<FlaggedWordsListProps> = ({ entries }) => {
+  const strings = useStrings();
   const flagged = entries.filter(e => e.flagged);
 
   if (flagged.length === 0) {

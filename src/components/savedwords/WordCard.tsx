@@ -8,6 +8,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
+import { MODEL_REGISTRY } from "../../utils/modelRegistry";
+import { useLanguageStore } from "../../store/useLanguageStore";
 import { colors } from "../../constants/colors";
 import { styles } from "../../screens/SavedWordsScreenStyles";
 
@@ -31,6 +33,8 @@ export const WordCard: React.FC<Props> = ({ word, timestamp, mode, onRemove }) =
   const navigation = useNavigation();
   const display = word.charAt(0).toUpperCase() + word.slice(1);
   const isSaved = mode === "saved";
+  const language = useLanguageStore(s => s.language);
+  const sinhalaLabel = MODEL_REGISTRY[word]?.sinhalaLabel;
 
   return (
     <View style={[styles.card, !isSaved && styles.wishCard]}>
@@ -43,6 +47,9 @@ export const WordCard: React.FC<Props> = ({ word, timestamp, mode, onRemove }) =
       </View>
       <View style={styles.cardBody}>
         <Text style={styles.wordText}>{display}</Text>
+        {language === 'si' && sinhalaLabel ? (
+          <Text style={styles.sinhalaLabel}>{sinhalaLabel}</Text>
+        ) : null}
         <Text style={styles.dateText}>{formatDate(timestamp)}</Text>
       </View>
       {isSaved ? (
