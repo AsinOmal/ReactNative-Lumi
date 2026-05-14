@@ -20,10 +20,14 @@ export const AnalyticsScreen: React.FC = () => {
       />
 
       <div className="analytics__kpis">
-        <KpiBlock label="Total Users"       value={kpis.totalUsers} />
-        <KpiBlock label="Active (7 days)"   value={kpis.activeLastWeek} />
-        <KpiBlock label="Total Words Seen"  value={kpis.totalWords} />
-        <KpiBlock label="Avg Day Streak"    value={`${kpis.avgStreak}d`} />
+        <KpiBlock label="Total Users"          value={kpis.totalUsers} />
+        <KpiBlock label="Active Today"         value={kpis.activeToday} />
+        <KpiBlock label="Active (7 days)"      value={kpis.activeLastWeek} />
+        <KpiBlock label="Avg Day Streak"       value={`${kpis.avgStreak}d`} />
+        <KpiBlock label="Words Saved"          value={kpis.wordsSaved} />
+        <KpiBlock label="Achievements"         value={kpis.achievementsUnlocked} />
+        <KpiBlock label="Games Played"         value={kpis.gamesPlayed} />
+        <KpiBlock label="Flagged Events"       value={kpis.flaggedEvents} />
       </div>
 
       <div className="analytics__chart-card">

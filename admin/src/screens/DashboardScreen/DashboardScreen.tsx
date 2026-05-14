@@ -17,7 +17,7 @@ const EMPTY_STATS: DashboardStats = {
 const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
 export const DashboardScreen: React.FC = () => {
-  const { stats, recentActivity, loading } = useDashboard();
+  const { stats, recentActivity, topWords, loading } = useDashboard();
 
   return (
     <div className="dashboard">
@@ -39,7 +39,7 @@ export const DashboardScreen: React.FC = () => {
             <p className="dashboard__section-label">Activity Overview</p>
             <div className="dashboard__charts">
               <UserActivityCard data={[]} />
-              <TopWordsCard data={[]} />
+              <TopWordsCard data={topWords} />
             </div>
           </section>
 

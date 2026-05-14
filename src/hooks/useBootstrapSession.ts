@@ -29,6 +29,7 @@ import { createUserIfNew, isUserSuspended } from "../services/userService";
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
+  fetchActiveBanner,
 } from "../services/remoteContentService";
 import { fetchPacks } from "../services/packService";
 import {
@@ -97,12 +98,13 @@ export const useBootstrapSession = (): BootstrapResult => {
       loadRemoteModels().catch(() => {});
 
       try {
-        const [remotePacks, blocklist] = await Promise.all([
+        const [remotePacks, blocklist, activeBanner] = await Promise.all([
           fetchRemotePacks(),
           fetchGlobalBlocklist(),
+          fetchActiveBanner(),
         ]);
         if (sessionUid !== activeUid) return;
-        setRemoteContent({ remotePacks, globalBlocklist: blocklist });
+        setRemoteContent({ remotePacks, globalBlocklist: blocklist, activeBanner });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
         console.warn("[useBootstrapSession] remote content fetch:", e);

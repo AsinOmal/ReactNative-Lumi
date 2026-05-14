@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  doc, onSnapshot, updateDoc,
+  doc, onSnapshot, setDoc, updateDoc,
   collectionGroup, query, where, getDocs,
   type DocumentData,
 } from 'firebase/firestore';
@@ -71,7 +71,7 @@ export const useModeration = (): UseModerationResult => {
     const trimmed = word.trim().toLowerCase();
     if (!trimmed || blocklist.includes(trimmed)) return;
     try {
-      await updateDoc(moderationDocRef(), { globalBlocklist: [...blocklist, trimmed] });
+      await setDoc(moderationDocRef(), { globalBlocklist: [...blocklist, trimmed] }, { merge: true });
     } catch (e) {
       console.error('[useModeration] addToBlocklist failed:', e);
       throw e;
@@ -80,9 +80,11 @@ export const useModeration = (): UseModerationResult => {
 
   const removeFromBlocklist = async (word: string): Promise<void> => {
     try {
-      await updateDoc(moderationDocRef(), {
-        globalBlocklist: blocklist.filter(w => w !== word),
-      });
+      await setDoc(
+        moderationDocRef(),
+        { globalBlocklist: blocklist.filter(w => w !== word) },
+        { merge: true },
+      );
     } catch (e) {
       console.error('[useModeration] removeFromBlocklist failed:', e);
       throw e;

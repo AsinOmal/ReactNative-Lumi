@@ -16,69 +16,99 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // Reject writes where the value is not a non-empty string under 200 chars.
+    function isValidString(val) {
+      return val is string && val.size() > 0 && val.size() <= 200;
+    }
+
     // ── Admin config ──────────────────────────────────────────────────────────
-    // Feature flags, game constants, banner, moderation, notifications.
-    // Mobile app reads these at boot; admin panel writes them.
+    // Feature flags, game constants, banner, moderation — mobile reads at boot.
+    // Broadcasts sub-path is admin-only (Cloud Function uses Admin SDK).
     match /adminConfig/{document} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
-    }
 
-    // Broadcasts subcollection written by the Cloud Function (Admin SDK bypasses
-    // rules) and read by the admin panel.
-    match /adminConfig/notifications/broadcasts/{broadcastId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+      match /notifications/broadcasts/{broadcastId} {
+        allow read, write: if isAdmin();
+      }
     }
 
     // ── Packs ─────────────────────────────────────────────────────────────────
-    // Mobile reads published packs at boot; admin panel creates/updates them.
     match /packs/{packId} {
       allow read: if isSignedIn() && (resource.data.isPublished == true || isAdmin());
       allow write: if isAdmin();
     }
 
     // ── 3D model registry ─────────────────────────────────────────────────────
-    // Mobile reads for AR scenes; admin panel registers new models.
     match /adminModels/{modelId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
 
-    // ── User data ─────────────────────────────────────────────────────────────
-    // Users own their profile and all subcollections.
-    // Admins can read (for moderation/support) but not write.
+    // ── User profile ──────────────────────────────────────────────────────────
+    // Users own their profile. Admins can read for moderation but not write
+    // (admin writes go through the Admin SDK from Cloud Functions).
+    // The `suspended` field is admin-managed — users cannot alter it.
     match /users/{uid} {
-      allow read: if isOwner(uid);
-      // Owners may not alter admin-managed fields (suspended).
-      // resource == null on first write (new user), so skip the check then.
-      allow write: if isOwner(uid)
-        && (resource == null
-          || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['suspended']));
-      allow read, write: if isAdmin();
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['suspended', 'fcmToken', 'createdAt']);
     }
 
-    match /users/{uid}/{subcollection=**} {
+    // ── User subcollections ───────────────────────────────────────────────────
+    match /users/{uid}/savedWords/{word} {
+      allow read, delete: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.word)
+        // Word must be a safe identifier: letters, hyphens, apostrophes only.
+        && request.resource.data.word.matches('^[a-zA-Z\'-]{1,50}$')
+        // Document ID must match the word field to prevent path injection.
+        && word == request.resource.data.word;
+      // No updates — words are created or deleted, never mutated.
+    }
+
+    match /users/{uid}/achievements/{achievementId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid);
+      // Achievements are append-only — no updates or deletes from the client.
+    }
+
+    match /users/{uid}/gameProgress/{progressId} {
       allow read, write: if isOwner(uid);
+    }
+
+    match /users/{uid}/activityLog/{logId} {
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.word)
+        && request.resource.data.get('flagged', false) is bool;
+      // Users cannot read or update their own logs (anti-tampering).
+    }
+
+    match /users/{uid}/parentSettings/{document=**} {
+      allow read, write: if isOwner(uid);
+    }
+
+    match /users/{uid}/screenTime/{document=**} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ── Collection group rules (admin analytics) ──────────────────────────────
+    // Firestore requires explicit {path=**} rules for collectionGroup() queries.
+    // The {subcollection=**} wildcard under /users/{uid} does NOT satisfy them.
+    match /{path=**}/savedWords/{wordId} {
       allow read: if isAdmin();
     }
 
-    // ── Feedback ──────────────────────────────────────────────────────────────
-    // Any signed-in user can submit; only admins can read/manage.
-    // isRead is allowed in the create payload only when false — admins flip it to
-    // true on review. isModerated/reviewedAt remain admin-only fields.
-    match /feedback/{feedbackId} {
-      allow create: if isSignedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.email == request.auth.token.email
-        && request.resource.data.get('isRead', false) == false
-        && !request.resource.data.keys().hasAny(['isModerated', 'reviewedAt']);
-      allow read, update, delete: if isAdmin();
+    match /{path=**}/achievements/{achievementId} {
+      allow read: if isAdmin();
     }
 
-    // ── Collection group queries (admin moderation) ───────────────────────────
-    // Firestore requires explicit collection-named rules for collectionGroup()
-    // queries; the {subcollection=**} wildcard above does not satisfy them.
+    match /{path=**}/gameProgress/{progressId} {
+      allow read: if isAdmin();
+    }
+
     match /{path=**}/activityLog/{logId} {
       allow read: if isAdmin();
       allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
@@ -86,6 +116,18 @@ service cloud.firestore {
 
     match /{path=**}/hazardEvents/{eventId} {
       allow read: if isAdmin();
+    }
+
+    // ── Feedback ──────────────────────────────────────────────────────────────
+    // Any signed-in user can submit; only admins can read/manage.
+    match /feedback/{feedbackId} {
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && isValidString(request.resource.data.message)
+        && request.resource.data.get('isRead', false) == false
+        && !request.resource.data.keys().hasAny(['isModerated', 'reviewedAt']);
+      allow read, update, delete: if isAdmin();
     }
   }
 }
