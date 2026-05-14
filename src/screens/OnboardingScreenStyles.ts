@@ -17,28 +17,62 @@ export const styles = StyleSheet.create({
     gap: 20,
   },
 
-  iconCircle: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
+  // Wraps the floating mascot. Sized to host the 220-px mascot.
+  mascotWrapper: {
+    width: 240,
+    height: 240,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
   },
 
+  // Decoration Lotties — absolute positioned around the slide so the mascot
+  // and text stay centred while the background reads as a "scene". Sparkles
+  // appear on every slide; sun + cloud only on slide 0 (sky theme).
+  decoSun: {
+    position: "absolute",
+    top: 70,
+    right: 24,
+    width: 90,
+    height: 90,
+  },
+  decoCloud: {
+    position: "absolute",
+    top: 130,
+    left: -30,
+    width: 200,
+    height: 80,
+  },
+  decoTL: { position: "absolute", top: 60, left: 20, width: 90, height: 90 },
+  decoTR: { position: "absolute", top: 90, right: 30, width: 110, height: 110 },
+  decoBL: {
+    position: "absolute",
+    bottom: 220,
+    left: 30,
+    width: 100,
+    height: 100,
+  },
+  decoBR: {
+    position: "absolute",
+    bottom: 280,
+    right: 40,
+    width: 120,
+    height: 120,
+  },
+
   slideTitle: {
     fontFamily: "Fredoka-Bold",
-    fontSize: 34,
+    fontSize: 38,
     color: "#FFFFFF",
     textAlign: "center",
-    lineHeight: 40,
+    lineHeight: 46,
   },
   slideDesc: {
     fontFamily: "Fredoka-Regular",
-    fontSize: 17,
-    color: "rgba(255,255,255,0.7)",
+    fontSize: 20,
+    color: "rgba(255,255,255,0.85)",
     textAlign: "center",
-    lineHeight: 26,
+    lineHeight: 30,
   },
 
   footer: {
@@ -55,15 +89,4 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.25)",
   },
   dotActive: { backgroundColor: "#FFFFFF" },
-
-  nextBtn: {
-    width: "100%",
-    borderRadius: 32,
-    paddingVertical: 17,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 10,
-  },
-  nextBtnText: { fontFamily: "Fredoka-Bold", fontSize: 20, color: "#FFF" },
 });

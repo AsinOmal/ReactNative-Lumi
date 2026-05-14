@@ -7,14 +7,14 @@ import {
   StatusBar,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, useIsFocused } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import type { Pack } from "../types/pack";
 import { getPackAccent } from "../constants/packAccents";
 import { colors } from "../constants/colors";
 import { MODEL_REGISTRY } from "../utils/modelRegistry";
-import { GameBackground } from "../components/common/GameBackground";
+import { SkyScene } from "../components/scenes/SkyScene";
 import { PackDetailCTA } from "../components/library/PackDetailCTA";
 import { styles } from "./PackDetailScreenStyles";
 
@@ -22,12 +22,13 @@ export const PackDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
   const { pack } = route.params as { pack: Pack };
   const accent = getPackAccent(pack.id);
 
   if (pack.isPremium) {
     return (
-      <GameBackground>
+      <SkyScene paused={!isFocused}>
         <StatusBar barStyle="light-content" />
         <LinearGradient
           colors={[accent, `${accent}CC`]}
@@ -51,11 +52,7 @@ export const PackDetailScreen = () => {
           ]}
         >
           <View style={styles.lockCard}>
-            <Ionicons
-              name="lock-closed"
-              size={52}
-              color={colors.primaryLight}
-            />
+            <Ionicons name="lock-closed" size={52} color={colors.primaryLight} />
             <Text style={styles.lockTitle}>This pack is locked</Text>
             <Text style={styles.lockBody}>
               Unlock {pack.name} to scan, discover, and play with all{" "}
@@ -71,9 +68,7 @@ export const PackDetailScreen = () => {
               ))}
               {pack.words.length > 6 && (
                 <View style={styles.chip}>
-                  <Text style={styles.chipText}>
-                    +{pack.words.length - 6} more
-                  </Text>
+                  <Text style={styles.chipText}>+{pack.words.length - 6} more</Text>
                 </View>
               )}
             </View>
@@ -89,12 +84,12 @@ export const PackDetailScreen = () => {
             <Text style={styles.comingSoon}>In-app purchase — coming soon</Text>
           </View>
         </ScrollView>
-      </GameBackground>
+      </SkyScene>
     );
   }
 
   return (
-    <GameBackground>
+    <SkyScene paused={!isFocused}>
       <StatusBar barStyle="light-content" />
       <LinearGradient
         colors={[accent, `${accent}BB`]}
@@ -142,7 +137,6 @@ export const PackDetailScreen = () => {
           onPlay={() => (navigation as any).navigate("PackARPreview", { pack })}
         />
       </View>
-    </GameBackground>
+    </SkyScene>
   );
 };
-

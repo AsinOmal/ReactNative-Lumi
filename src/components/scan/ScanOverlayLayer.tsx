@@ -11,6 +11,7 @@ import { MatchResult } from '../../utils/wordMatcher';
 import { colors } from '../../constants/colors';
 import { strings } from '../../constants/strings';
 import { PACK_WORDS } from '../../constants/packWords';
+import { triggerHaptic } from '../../hooks/useHaptic';
 
 function getPackLabel(word: string): string {
   for (const [pack, words] of Object.entries(PACK_WORDS)) {
@@ -46,6 +47,7 @@ export const ScanOverlayLayer = ({
 
   useEffect(() => {
     setShowConfetti(true);
+    triggerHaptic('medium');
   }, [activeWord]);
 
   return (

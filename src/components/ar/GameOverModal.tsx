@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../../constants/colors';
 import { styles } from '../../screens/ARWordFindScreenStyles';
 
@@ -45,7 +44,7 @@ export const GameOverModal = ({
         <View style={styles.gameOverCard}>
           <View style={styles.gameOverEmoji}>
             {timedOut
-              ? <MaterialCommunityIcons name="timer-sand" size={64} color={colors.primaryLight} />
+              ? <Ionicons name="hourglass-outline" size={64} color={colors.primaryLight} />
               : <LottieView
                   ref={lottieRef}
                   source={require('../../assets/lottie/mascot_celebration.json')}

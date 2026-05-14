@@ -11,13 +11,13 @@ export const strings = {
   wishForIt: '⭐ Wish for it!',
   unknownPrefix: '❓',
   unknownSuffix: "isn't in our collection yet",
-  
+
   // Packs
   fruitsPackName: 'Fruits Pack',
-  
+
   // Modals
   wishModalTitle: 'Wish for a word',
-  
+
   // General
   loading: 'Loading...',
   error: 'An error occurred',
@@ -52,7 +52,8 @@ export const strings = {
 
   // Safety Layer
   hazardAlertTitle: 'Whoa! Stop right there!',
-  hazardAlertBody: "It looks like there's something unsafe nearby. Please move away and find a grown-up.",
+  hazardAlertBody:
+    "It looks like there's something unsafe nearby. Please move away and find a grown-up.",
   hazardAlertButton: "I'm Safe Now",
 
   // Maintenance Mode
@@ -84,4 +85,17 @@ export const strings = {
   packGateCta: "Download",
   packGateDismiss: "Not now",
   packFoundFmt: (word: string) => `You found "${word}"!`,
+
+  // Onboarding (Phase C redesign)
+  onboardingSlide0Title: 'Welcome to Lumi!',
+  onboardingSlide0Desc:
+    'Learn new words by exploring the world around you with augmented reality.',
+  onboardingSlide1Title: 'Scan to Learn',
+  onboardingSlide1Desc:
+    'Point your camera at any printed word. Lumi will show you a 3D model and teach you how to say it.',
+  onboardingSlide2Title: 'Play & Collect',
+  onboardingSlide2Desc:
+    'Play AR games, save favourite words, and earn achievements as you explore!',
+  onboardingNext: 'Next',
+  onboardingGetStarted: 'Get Started',
 };

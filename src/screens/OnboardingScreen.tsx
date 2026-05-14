@@ -1,65 +1,52 @@
 // 📖 What this does:
-// 3-slide first-launch walkthrough. Shown once before the auth gate.
-// Last slide requests camera + notification permissions then marks onboarding done.
-// Uses a horizontal paging ScrollView — no extra library needed.
+// 3-slide first-launch walkthrough with theme-specific gradient scenes
+// (sky / forest / space) and a Lumi mascot per slide that floats and reacts.
+// Why the structure: paging ScrollView with scrollEnabled=false keeps slide
+// transitions driver-agnostic (works on iOS + Android the same way) and lets
+// us own pagination via the LumiButton CTA. Each slide instantiates its own
+// LumiMascot so each Lottie one-shot replays naturally on revisit.
 
 import React, { useRef, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
-  Animated,
-} from "react-native";
+import { View, ScrollView, StatusBar, Animated } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Camera } from "react-native-vision-camera";
-import LottieView from "lottie-react-native";
+import { MascotState } from "../components/common/LumiMascot";
+import { LumiButton } from "../components/common/LumiButton";
+import { OnboardingSlide } from "../components/onboarding/OnboardingSlide";
+import { useFloatLoop } from "../hooks/useFloatLoop";
 import { markOnboardingDone } from "../utils/onboardingStore";
 import { requestNotificationPermission } from "../services/notificationService";
+import { colors } from "../constants/colors";
+import { strings } from "../constants/strings";
 import { styles, SLIDE_W } from "./OnboardingScreenStyles";
 
 interface Slide {
   gradient: string[];
-  icon: React.ReactNode;
+  mascot: MascotState;
   title: string;
   desc: string;
 }
 
+// Forest + space gradients are scene-specific (not reused outside onboarding)
+// so they stay inline rather than polluting the global colour token set.
 const SLIDES: Slide[] = [
   {
-    gradient: ["#5BC8F5", "#A8E6FF"],
-    icon: (
-      <LottieView
-        source={require("../assets/lottie/mascot_idle2.json")}
-        autoPlay
-        loop
-        style={{ width: 110, height: 110 }}
-      />
-    ),
-    title: "Welcome to Lumi!",
-    desc: "Learn new words by exploring the world around you with augmented reality.",
+    gradient: [colors.skyTop, colors.skyMid, colors.skyBottom],
+    mascot: "wave",
+    title: strings.onboardingSlide0Title,
+    desc: strings.onboardingSlide0Desc,
   },
   {
-    gradient: ["#FF6B6B", "#FF9F43"],
-    icon: <MaterialCommunityIcons name="camera-iris" size={80} color="#FFF" />,
-    title: "Scan to Learn",
-    desc: "Point your camera at any printed word. Lumi will show you a 3D model and teach you how to say it.",
+    gradient: ["#2D8C4E", "#4CAF50", "#81C784"],
+    mascot: "excited",
+    title: strings.onboardingSlide1Title,
+    desc: strings.onboardingSlide1Desc,
   },
   {
-    gradient: ["#4ECDC4", "#45B7D1"],
-    icon: (
-      <MaterialCommunityIcons
-        name="gamepad-variant-outline"
-        size={80}
-        color="#FFF"
-      />
-    ),
-    title: "Play & Collect",
-    desc: "Play AR games, save favourite words, and earn achievements as you explore!",
+    gradient: ["#1A1A4E", "#2D2D7E", "#4A4AB5"],
+    mascot: "celebrate",
+    title: strings.onboardingSlide2Title,
+    desc: strings.onboardingSlide2Desc,
   },
 ];
 
@@ -71,22 +58,26 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
+  const translateY = useFloatLoop();
 
   const goNext = async () => {
-    if (currentIdx < SLIDES.length - 1) {
-      const next = currentIdx + 1;
-      scrollRef.current?.scrollTo({ x: next * SLIDE_W, animated: true });
-      setCurrentIdx(next);
-    } else {
+    try {
+      if (currentIdx < SLIDES.length - 1) {
+        const next = currentIdx + 1;
+        scrollRef.current?.scrollTo({ x: next * SLIDE_W, animated: true });
+        setCurrentIdx(next);
+        return;
+      }
       await Camera.requestCameraPermission();
       await requestNotificationPermission();
       await markOnboardingDone();
       onComplete();
+    } catch (error) {
+      console.error("[OnboardingScreen] goNext failed:", error);
     }
   };
 
   const isLast = currentIdx === SLIDES.length - 1;
-  const slide = SLIDES[currentIdx];
 
   return (
     <View style={styles.container}>
@@ -101,23 +92,19 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
         style={styles.pager}
       >
         {SLIDES.map((s, i) => (
-          <LinearGradient key={i} colors={s.gradient} style={styles.slide}>
-            <View
-              style={[
-                styles.iconCircle,
-                { backgroundColor: "rgba(255,255,255,0.15)" },
-              ]}
-            >
-              {s.icon}
-            </View>
-            <Text style={styles.slideTitle}>{s.title}</Text>
-            <Text style={styles.slideDesc}>{s.desc}</Text>
-          </LinearGradient>
+          <OnboardingSlide
+            key={i}
+            gradient={s.gradient}
+            mascot={s.mascot}
+            title={s.title}
+            desc={s.desc}
+            showSky={i === 0}
+            translateY={translateY}
+          />
         ))}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
-        {/* Dot indicators */}
         <View style={styles.dots}>
           {SLIDES.map((_, i) => (
             <Animated.View
@@ -131,22 +118,11 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
           ))}
         </View>
 
-        <TouchableOpacity
-          style={[styles.nextBtn, { backgroundColor: slide.gradient[0] }]}
+        <LumiButton
+          title={isLast ? strings.onboardingGetStarted : strings.onboardingNext}
           onPress={goNext}
-          activeOpacity={0.85}
-          accessibilityLabel={isLast ? "Get started" : "Next slide"}
-          accessibilityRole="button"
-        >
-          <Text style={styles.nextBtnText}>
-            {isLast ? "Get Started" : "Next"}
-          </Text>
-          <Ionicons
-            name={isLast ? "rocket-outline" : "arrow-forward"}
-            size={22}
-            color="#FFF"
-          />
-        </TouchableOpacity>
+          icon={isLast ? "rocket-outline" : "arrow-forward"}
+        />
       </View>
     </View>
   );

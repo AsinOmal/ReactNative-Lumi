@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontFamily: "Fredoka-Bold",
-    fontSize: 24,
+    fontSize: 28,
     color: "#FFF",
   },
   body: { flex: 1 },
@@ -37,13 +37,13 @@ export const styles = StyleSheet.create({
   wordDot: { width: 10, height: 10, borderRadius: 5 },
   wordLabel: {
     fontFamily: "Fredoka-Bold",
-    fontSize: 18,
+    fontSize: 22,
     color: colors.textDark,
     flex: 1,
   },
   wordSyllables: {
     fontFamily: "Fredoka-Regular",
-    fontSize: 13,
+    fontSize: 16,
     color: colors.textMid,
   },
   // Premium lock card
@@ -62,16 +62,16 @@ export const styles = StyleSheet.create({
   },
   lockTitle: {
     fontFamily: "Fredoka-Bold",
-    fontSize: 24,
+    fontSize: 28,
     color: colors.textDark,
     textAlign: "center",
   },
   lockBody: {
     fontFamily: "Fredoka-Regular",
-    fontSize: 15,
+    fontSize: 18,
     color: colors.textMid,
     textAlign: "center",
-    lineHeight: 22,
+    lineHeight: 26,
   },
   chipRow: {
     flexDirection: "row",
@@ -88,7 +88,7 @@ export const styles = StyleSheet.create({
   },
   chipText: {
     fontFamily: "Fredoka-SemiBold",
-    fontSize: 13,
+    fontSize: 16,
     color: colors.primary,
   },
   unlockBtn: {
@@ -100,10 +100,10 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  unlockBtnText: { fontFamily: "Fredoka-Bold", fontSize: 18, color: "#FFF" },
+  unlockBtnText: { fontFamily: "Fredoka-Bold", fontSize: 22, color: "#FFF" },
   comingSoon: {
     fontFamily: "Fredoka-Regular",
-    fontSize: 13,
+    fontSize: 16,
     color: colors.textMid,
     marginTop: 4,
   },

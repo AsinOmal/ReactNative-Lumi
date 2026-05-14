@@ -65,67 +65,6 @@ export const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.5)', textAlign: 'center',
   },
 
-  // Loading overlay
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0D0728',
-    alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: 24, gap: 20,
-  },
-  loadingTitle: {
-    fontFamily: 'Fredoka-Bold', fontSize: 36, color: '#FFF', textAlign: 'center',
-    marginTop: -20, textShadowColor: 'rgba(124,58,237,0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 10,
-  },
-  instructionsBox: {
-    backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 24,
-    padding: 24, width: '100%', gap: 14,
-    borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.2)',
-  },
-  instructionLine: {
-    fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: '#E2E8F0',
-  },
-  loadingActionArea: {
-    width: '100%', height: 80, justifyContent: 'center', alignItems: 'center', marginTop: 10,
-  },
-  progressContainer: { width: '100%', alignItems: 'center', gap: 8 },
-  loadingSubtitle: {
-    fontFamily: 'Fredoka-SemiBold', fontSize: 16, color: colors.primaryLight,
-  },
-  progressBarTrack: {
-    width: '100%', height: 12, backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 6, overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%', backgroundColor: '#7C3AED', borderRadius: 6,
-  },
-  progressCount: {
-    fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#7C5CBF',
-  },
-  startGameBtn: {
-    backgroundColor: '#10B981', paddingVertical: 18, paddingHorizontal: 40,
-    borderRadius: 30, width: '100%', alignItems: 'center',
-    shadowColor: '#10B981', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, elevation: 5,
-  },
-  startGameBtnText: {
-    fontFamily: 'Fredoka-Bold', fontSize: 22, color: '#FFF',
-  },
-  emojiGrid: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    justifyContent: 'center', gap: 12, marginTop: 10,
-  },
-  emojiCell: {
-    width: 54, height: 54, borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.08)',
-  },
-  emojiCellLoaded: {
-    backgroundColor: 'rgba(124,58,237,0.3)',
-    borderColor: '#7C3AED',
-  },
-  emojiIcon:    { fontSize: 28 },
-  emojiIconDim: { opacity: 0.25 },
-
   // Game Over
   gameOverBg: {
     flex: 1, backgroundColor: 'rgba(0,0,0,0.88)',

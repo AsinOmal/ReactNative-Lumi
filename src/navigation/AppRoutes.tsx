@@ -20,6 +20,7 @@ import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
 import { PackGateScreen } from '../screens/PackGateScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
+import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { hasSeenOnboarding } from '../utils/onboardingStore';
@@ -94,6 +95,7 @@ export const AppRoutes = () => {
         <Stack.Screen name="PackGate"      component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
         <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
+        <Stack.Screen name="WriteAndScan"  component={WriteAndScanScreen} />
         <Stack.Screen name="Scan"          component={ScanScreen} />
       </Stack.Navigator>
       <ScreenTimeLimitModal

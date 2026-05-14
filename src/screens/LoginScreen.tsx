@@ -8,44 +8,48 @@ import {
   GoogleAuthProvider,
 } from "@react-native-firebase/auth";
 import { LumiButton } from "../components/common/LumiButton";
+import { LumiMascot } from "../components/common/LumiMascot";
+import { WoodenSign } from "../components/home/WoodenSign";
+import { SkyScene } from "../components/scenes/SkyScene";
+import { styles } from "./LoginScreenStyles";
+
+const WEB_CLIENT_ID =
+  "991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd.apps.googleusercontent.com";
 
 export const LoginScreen = () => {
   useEffect(() => {
-    GoogleSignin.configure({
-      webClientId:
-        "991654335767-idkk7nq7qa6f4a5nspj5da0va1s26dnd.apps.googleusercontent.com",
-    });
+    GoogleSignin.configure({ webClientId: WEB_CLIENT_ID });
   }, []);
 
   const onGoogleButtonPress = async () => {
     try {
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const { data } = await GoogleSignin.signIn();
-
       const googleCredential = GoogleAuthProvider.credential(
         data?.idToken || ""
       );
-      const authInstance = getAuth(getApp());
-      return signInWithCredential(authInstance, googleCredential);
+      return signInWithCredential(getAuth(getApp()), googleCredential);
     } catch (error) {
-      console.error(error);
+      console.error("[LoginScreen] Google sign-in failed:", error);
     }
   };
 
   return (
-    <View className="flex-1 bg-[#5BC8F5] items-center justify-center p-6">
-      <View className="items-center mb-12">
-        <Text className="text-white text-5xl font-lumi-spicy mt-4">Lumi</Text>
-        <Text className="text-[#3D2008] font-lumi-regular text-lg mt-2 text-center">
-          Bring words to life.
-        </Text>
+    <SkyScene>
+      <View style={styles.content}>
+        <WoodenSign />
+        <View style={styles.mascotWrap}>
+          <LumiMascot state="wave" size={200} />
+        </View>
+        <Text style={styles.tagline}>Bring words to life.</Text>
+        <View style={styles.btnWrap}>
+          <LumiButton
+            title="Sign in with Google"
+            icon="logo-google"
+            onPress={onGoogleButtonPress}
+          />
+        </View>
       </View>
-
-      <View className="w-full max-w-sm space-y-4">
-        <LumiButton title="Sign in with Google" onPress={onGoogleButtonPress} />
-      </View>
-    </View>
+    </SkyScene>
   );
 };

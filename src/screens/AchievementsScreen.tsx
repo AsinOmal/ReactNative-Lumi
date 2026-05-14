@@ -1,26 +1,22 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ACHIEVEMENTS, Achievement } from "../utils/achievementRegistry";
 import { getProgress, EarnedAchievement } from "../utils/achievementStore";
 import { AchievementShareModal } from "../components/AchievementShareModal";
+import { AchievementCard } from "../components/achievements/AchievementCard";
+import { SkyScene } from "../components/scenes/SkyScene";
 import { colors } from "../constants/colors";
-import { GameBackground } from "../components/common/GameBackground";
 import { styles } from "./AchievementsScreenStyles";
 
 export const AchievementsScreen = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
   const [earned, setEarned] = useState<EarnedAchievement[]>([]);
   const [selected, setSelected] = useState<{
     achievement: Achievement;
@@ -34,14 +30,12 @@ export const AchievementsScreen = () => {
   );
 
   const unlockedCount = earned.length;
-  const progress =
-    ACHIEVEMENTS.length > 0 ? unlockedCount / ACHIEVEMENTS.length : 0;
+  const progress = ACHIEVEMENTS.length > 0 ? unlockedCount / ACHIEVEMENTS.length : 0;
 
   return (
-    <GameBackground>
+    <SkyScene paused={!isFocused}>
       <StatusBar barStyle="light-content" />
 
-      {/* Amber → dark-orange gradient — trophy watermark + wave bottom */}
       <LinearGradient
         colors={[colors.accentAmber, colors.primaryDark]}
         start={{ x: 0, y: 0 }}
@@ -75,84 +69,22 @@ export const AchievementsScreen = () => {
 
       <ScrollView
         style={styles.body}
-        contentContainerStyle={[
-          styles.scroll,
-          { paddingBottom: insets.bottom + 100 },
-        ]}
+        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Progress bar */}
         <View style={styles.progressBar}>
-          <MaterialCommunityIcons
-            name="trophy-outline"
-            size={22}
-            color="#F59E0B"
-          />
+          <MaterialCommunityIcons name="trophy-outline" size={22} color="#F59E0B" />
           <View style={styles.progressTrack}>
-            <View
-              style={[styles.progressFill, { width: `${progress * 100}%` }]}
-            />
+            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
           </View>
-          <Text style={styles.progressLabel}>
-            {unlockedCount}/{ACHIEVEMENTS.length}
-          </Text>
+          <Text style={styles.progressLabel}>{unlockedCount}/{ACHIEVEMENTS.length}</Text>
         </View>
 
         <View style={styles.grid}>
           {ACHIEVEMENTS.map((a) => {
             const earnedData = earned.find((e) => e.id === a.id);
             const isUnlocked = !!earnedData;
-
-            const card = (
-              <View
-                style={[
-                  styles.card,
-                  !isUnlocked && styles.cardLocked,
-                  isUnlocked && { shadowColor: a.iconColor },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.iconCircle,
-                    isUnlocked
-                      ? { backgroundColor: a.iconColor + "22" }
-                      : styles.iconCircleLocked,
-                  ]}
-                >
-                  {isUnlocked ? (
-                    <MaterialCommunityIcons
-                      name={a.iconName}
-                      size={30}
-                      color={a.iconColor}
-                    />
-                  ) : (
-                    <Ionicons name="lock-closed" size={22} color="#CBD5E1" />
-                  )}
-                </View>
-                <Text
-                  style={[
-                    styles.cardTitle,
-                    !isUnlocked && styles.cardTitleLocked,
-                  ]}
-                  numberOfLines={1}
-                >
-                  {isUnlocked ? a.title : "???"}
-                </Text>
-                <Text style={styles.cardDesc} numberOfLines={2}>
-                  {a.description}
-                </Text>
-                {isUnlocked && (
-                  <View style={styles.doneRow}>
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={13}
-                      color="#059669"
-                    />
-                    <Text style={styles.doneText}>Unlocked</Text>
-                  </View>
-                )}
-              </View>
-            );
+            const card = <AchievementCard achievement={a} isUnlocked={isUnlocked} />;
 
             return isUnlocked && earnedData ? (
               <TouchableOpacity
@@ -166,9 +98,7 @@ export const AchievementsScreen = () => {
                 {card}
               </TouchableOpacity>
             ) : (
-              <View key={a.id} style={styles.cell}>
-                {card}
-              </View>
+              <View key={a.id} style={styles.cell}>{card}</View>
             );
           })}
         </View>
@@ -181,6 +111,6 @@ export const AchievementsScreen = () => {
           onClose={() => setSelected(null)}
         />
       )}
-    </GameBackground>
+    </SkyScene>
   );
 };

@@ -15,7 +15,6 @@ import {
   createBottomTabNavigator,
   BottomTabBarProps,
 } from "@react-navigation/bottom-tabs";
-import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { HomeScreen } from "../screens/HomeScreen";
@@ -23,6 +22,7 @@ import { LibraryScreen } from "../screens/LibraryScreen";
 import { PlaygroundScreen } from "../screens/PlaygroundScreen";
 import { SettingsScreen } from "../screens/SettingsScreen";
 import { colors } from "../constants/colors";
+import { ScanButton } from "./ScanButton";
 import { styles } from "./MainTabNavigatorStyles";
 
 const LEFT_TABS = [
@@ -54,21 +54,6 @@ const RIGHT_TABS = [
     label: "Settings",
   },
 ];
-
-const ScanButton = () => {
-  const navigation = useNavigation();
-  return (
-    <TouchableOpacity
-      style={styles.scanBtn}
-      onPress={() => (navigation as any).navigate("Scan")}
-      activeOpacity={0.85}
-      accessibilityLabel="Open scanner"
-      accessibilityRole="button"
-    >
-      <Ionicons name="camera" size={28} color="#FFF" />
-    </TouchableOpacity>
-  );
-};
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
@@ -116,7 +101,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   return (
     <View style={[styles.tabBarWrapper, { paddingBottom: insets.bottom + 6 }]}>
       {/* Scan button sits above the pill — negative marginBottom overlaps the pill top */}
-      <View style={styles.scanBtnOuter}>
+      <View style={styles.scanBtnLift}>
         <ScanButton />
       </View>
 

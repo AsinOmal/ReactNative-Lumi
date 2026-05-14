@@ -1,33 +1,43 @@
-import { StyleSheet } from 'react-native';
-import { colors } from '../constants/colors';
+import { StyleSheet } from "react-native";
+import { colors } from "../constants/colors";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundMain },
-  safeArea: { flex: 1 },
-  scroll: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20 },
-  userCard: {
-    backgroundColor: colors.backgroundCard, borderRadius: 24,
-    padding: 24, alignItems: 'center', marginBottom: 24,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08, shadowRadius: 12, elevation: 4,
+  header: {
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 52,
+    gap: 6,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    overflow: "hidden",
+    shadowColor: "#3A7FA8",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 10,
   },
-  avatar: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: colors.primary, alignItems: 'center',
-    justifyContent: 'center', marginBottom: 12,
-  },
-  avatarText: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: colors.white },
-  displayName: { fontFamily: 'Fredoka-Bold', fontSize: 22, color: colors.textDark, marginBottom: 4 },
-  email: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: colors.textMid },
+  displayName: { fontFamily: "Fredoka-Bold", fontSize: 26, color: colors.textDark },
+  email: { fontFamily: "Fredoka-Regular", fontSize: 17, color: colors.textMid },
+  body: { flex: 1 },
+  scroll: { paddingHorizontal: 16, paddingTop: 24, gap: 4 },
   sectionLabel: {
-    fontFamily: 'Fredoka-SemiBold', fontSize: 13,
-    color: colors.textMid, textTransform: 'uppercase',
-    letterSpacing: 0.8, marginBottom: 6, paddingHorizontal: 4,
+    fontFamily: "Fredoka-SemiBold",
+    fontSize: 16,
+    color: colors.textMid,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    marginBottom: 6,
+    marginTop: 8,
+    paddingHorizontal: 4,
   },
   section: {
-    backgroundColor: colors.backgroundCard, borderRadius: 16,
-    marginBottom: 16, overflow: 'hidden',
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+    backgroundColor: colors.backgroundCard,
+    borderRadius: 16,
+    overflow: "hidden",
+    shadowColor: "#5C3317",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 3,
   },
 });
