@@ -20,6 +20,13 @@ export interface Pack {
   publishedAt?: Date;
   coverImageUrl?: string;
   coverImageRef?: string;
+  // Hero art for the pack-gate screen (shown when a child scans a word from
+  // a locked / not-downloaded pack). Used by both free and premium gates.
+  gateImageUrl?: string;
+  gateImageRef?: string;
+  // Hero art for the pack-detail screen (full-bleed background).
+  detailImageUrl?: string;
+  detailImageRef?: string;
   // Three-tier download fields (Phase 10). Optional so legacy docs load —
   // mobile defaults missing values to bundled / 1.0.0 / 0.
   packType?: PackType;

@@ -1,4 +1,4 @@
-import type { PackType } from "./download";
+import type { PackType } from './download';
 
 /**
  * Pack metadata — represents a Firestore /packs/{packId} document.
@@ -26,4 +26,5 @@ export interface Pack {
   assetVersion?: string;
   estimatedSizeMB?: number;
   gateImageUrl?: string;
+  detailImageUrl?: string;
 }

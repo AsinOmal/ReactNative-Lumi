@@ -10,8 +10,20 @@ service firebase.storage {
       return isSignedIn() && request.auth.token.admin == true;
     }
 
-    // Pack cover art — uploaded by admin panel, read by mobile app.
+    // Pack cover art — card thumbnail; uploaded by admin panel, read by mobile.
     match /covers/{file} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Pack gate art — full-bleed background for PackGate / PremiumPackGate.
+    match /gates/{file} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Pack detail art — full-bleed background for PackDetailScreen.
+    match /details/{file} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }

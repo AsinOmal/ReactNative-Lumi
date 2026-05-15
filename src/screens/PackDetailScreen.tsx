@@ -1,23 +1,28 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
+  ImageBackground,
   StatusBar,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useRoute, useIsFocused } from "@react-navigation/native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import type { Pack } from "../types/pack";
-import { getPackAccent } from "../constants/packAccents";
-import { colors } from "../constants/colors";
-import { MODEL_REGISTRY } from "../utils/modelRegistry";
-import { useLanguageStore } from "../store/useLanguageStore";
-import { SkyScene } from "../components/scenes/SkyScene";
-import { PackDetailCTA } from "../components/library/PackDetailCTA";
-import { styles } from "./PackDetailScreenStyles";
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  useNavigation,
+  useRoute,
+  useIsFocused,
+} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import type { Pack } from '../types/pack';
+import { getPackAccent } from '../constants/packAccents';
+import { colors } from '../constants/colors';
+import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { SkyScene } from '../components/scenes/SkyScene';
+import { PackDetailCTA } from '../components/library/PackDetailCTA';
+import { styles } from './PackDetailScreenStyles';
 
 export const PackDetailScreen = () => {
   const navigation = useNavigation();
@@ -26,11 +31,26 @@ export const PackDetailScreen = () => {
   const isFocused = useIsFocused();
   const { pack } = route.params as { pack: Pack };
   const accent = getPackAccent(pack.id);
-  const language = useLanguageStore(s => s.language);
+  const language = useLanguageStore((s) => s.language);
+
+  // Per-pack hero background takes precedence over the animated SkyScene.
+  // Falling back to SkyScene keeps unmigrated packs looking correct.
+  const Background: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+    pack.detailImageUrl ? (
+      <ImageBackground
+        source={{ uri: pack.detailImageUrl }}
+        style={styles.bg}
+        resizeMode="cover"
+      >
+        {children}
+      </ImageBackground>
+    ) : (
+      <SkyScene paused={!isFocused}>{children}</SkyScene>
+    );
 
   if (pack.isPremium) {
     return (
-      <SkyScene paused={!isFocused}>
+      <Background>
         <StatusBar barStyle="light-content" />
         <LinearGradient
           colors={[accent, `${accent}CC`]}
@@ -54,10 +74,14 @@ export const PackDetailScreen = () => {
           ]}
         >
           <View style={styles.lockCard}>
-            <Ionicons name="lock-closed" size={52} color={colors.primaryLight} />
+            <Ionicons
+              name="lock-closed"
+              size={52}
+              color={colors.primaryLight}
+            />
             <Text style={styles.lockTitle}>This pack is locked</Text>
             <Text style={styles.lockBody}>
-              Unlock {pack.name} to scan, discover, and play with all{" "}
+              Unlock {pack.name} to scan, discover, and play with all{' '}
               {pack.wordCount} 3D models!
             </Text>
             <View style={styles.chipRow}>
@@ -70,7 +94,9 @@ export const PackDetailScreen = () => {
               ))}
               {pack.words.length > 6 && (
                 <View style={styles.chip}>
-                  <Text style={styles.chipText}>+{pack.words.length - 6} more</Text>
+                  <Text style={styles.chipText}>
+                    +{pack.words.length - 6} more
+                  </Text>
                 </View>
               )}
             </View>
@@ -79,19 +105,24 @@ export const PackDetailScreen = () => {
               activeOpacity={0.85}
               accessibilityLabel={`Unlock ${pack.name} pack`}
               accessibilityRole="button"
-              onPress={() => (navigation as any).navigate('PremiumPackGate', { word: pack.words[0] ?? '', pack })}
+              onPress={() =>
+                (navigation as any).navigate('PremiumPackGate', {
+                  word: pack.words[0] ?? '',
+                  pack,
+                })
+              }
             >
               <Ionicons name="star" size={20} color={colors.accentYellow} />
               <Text style={styles.unlockBtnText}>Unlock {pack.name}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </SkyScene>
+      </Background>
     );
   }
 
   return (
-    <SkyScene paused={!isFocused}>
+    <Background>
       <StatusBar barStyle="light-content" />
       <LinearGradient
         colors={[accent, `${accent}BB`]}
@@ -128,7 +159,7 @@ export const PackDetailScreen = () => {
                 <Text style={styles.wordSinhala}>{model.sinhalaLabel}</Text>
               ) : null}
               <Text style={styles.wordSyllables}>
-                {model?.syllables.join(" · ") ?? ""}
+                {model?.syllables.join(' · ') ?? ''}
               </Text>
             </View>
           );
@@ -139,9 +170,9 @@ export const PackDetailScreen = () => {
         <PackDetailCTA
           pack={pack}
           accent={accent}
-          onPlay={() => (navigation as any).navigate("PackARPreview", { pack })}
+          onPlay={() => (navigation as any).navigate('PackARPreview', { pack })}
         />
       </View>
-    </SkyScene>
+    </Background>
   );
 };
