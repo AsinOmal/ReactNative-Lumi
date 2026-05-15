@@ -1,24 +1,24 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-} from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors } from "../../constants/colors";
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors } from '../../constants/colors';
 
-const CARD_WIDTH = (Dimensions.get("window").width - 32 - 24) / 3;
+const CARD_WIDTH = (Dimensions.get('window').width - 32 - 24) / 3;
 
 const PACK_META: Record<string, { gradient: string[]; icon: string }> = {
-  fruits: { gradient: ["#FF8A65", "#FF6B6B"], icon: "fruit-watermelon" },
-  vegetables: { gradient: ["#4ECDC4", "#26A69A"], icon: "carrot" },
-  vehicles: { gradient: ["#5C9CE5", "#4A90D9"], icon: "car" },
-  dinosaurs: { gradient: ["#FFC107", "#F59E0B"], icon: "dinosaur" },
-  space: { gradient: ["#B553E8", "#7C3AED"], icon: "rocket-launch" },
+  fruits: { gradient: ['#FF8A65', '#FF6B6B'], icon: 'fruit-watermelon' },
+  vegetables: { gradient: ['#4ECDC4', '#26A69A'], icon: 'carrot' },
+  vehicles: { gradient: ['#5C9CE5', '#4A90D9'], icon: 'car' },
+  dinosaurs: { gradient: ['#FFC107', '#F59E0B'], icon: 'dinosaur' },
+  space: { gradient: ['#B553E8', '#7C3AED'], icon: 'rocket-launch' },
 };
 
 interface PackCardProps {
@@ -43,7 +43,7 @@ export const PackCard = ({
   const isLocked = isPremium && !isUnlocked;
   const meta = PACK_META[id] ?? {
     gradient: [colors.primary, colors.primaryDark],
-    icon: "cube-outline",
+    icon: 'cube-outline',
   };
 
   return (
@@ -73,9 +73,9 @@ export const PackCard = ({
           ]}
         >
           <Ionicons
-            name={isLocked ? "star" : "checkmark"}
+            name={isLocked ? 'star' : 'checkmark'}
             size={10}
-            color={isLocked ? "#92400E" : "#166534"}
+            color={isLocked ? '#92400E' : '#166534'}
           />
           <Text
             style={[
@@ -83,14 +83,14 @@ export const PackCard = ({
               isLocked ? styles.badgeTextPremium : styles.badgeTextFree,
             ]}
           >
-            {isLocked ? "Premium" : "Free"}
+            {isLocked ? 'Premium' : 'Free'}
           </Text>
         </View>
         <Text style={styles.packName} numberOfLines={1}>
           {name}
         </Text>
         <Text style={styles.progressText}>
-          {isLocked ? "Preview" : `${progress}/${total}`}
+          {isLocked ? 'Preview' : `${progress}/${total}`}
         </Text>
       </View>
     </TouchableOpacity>
@@ -101,10 +101,10 @@ const styles = StyleSheet.create({
   touchable: {
     width: CARD_WIDTH,
     margin: 4,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    overflow: "hidden",
-    shadowColor: "#000",
+    overflow: 'hidden',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -113,45 +113,45 @@ const styles = StyleSheet.create({
   cardLocked: { opacity: 0.85 },
   header: {
     height: 70,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   lockBadge: {
-    position: "absolute",
+    position: 'absolute',
     top: 6,
     right: 6,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderRadius: 10,
     padding: 3,
   },
   body: {
     padding: 8,
-    alignItems: "center",
+    alignItems: 'center',
     gap: 3,
   },
   badge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 3,
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  badgeFree: { backgroundColor: "#DCFCE7" },
-  badgePremium: { backgroundColor: "#FEF3C7" },
-  badgeText: { fontFamily: "Fredoka-SemiBold", fontSize: 9 },
-  badgeTextFree: { color: "#166534" },
-  badgeTextPremium: { color: "#92400E" },
+  badgeFree: { backgroundColor: '#DCFCE7' },
+  badgePremium: { backgroundColor: '#FEF3C7' },
+  badgeText: { fontFamily: 'Fredoka-SemiBold', fontSize: 9 },
+  badgeTextFree: { color: '#166534' },
+  badgeTextPremium: { color: '#92400E' },
   packName: {
-    fontFamily: "Fredoka-Bold",
+    fontFamily: 'Fredoka-Bold',
     fontSize: 13,
     color: colors.textDark,
-    textAlign: "center",
+    textAlign: 'center',
   },
   progressText: {
-    fontFamily: "Fredoka-Regular",
+    fontFamily: 'Fredoka-Regular',
     fontSize: 11,
     color: colors.textMid,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });

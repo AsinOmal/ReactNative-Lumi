@@ -48,7 +48,8 @@ export const stringsSi = {
   pinLockedTitle: 'උත්සාහයන් ඉක්මවා ගියා',
   pinLockedBody: (secs: number) => `තත්පර ${secs}කින් නැවත උත්සාහ කරන්න`,
   pinContactSupport: 'අමතක වුණාද? සහාය සොයාගන්න',
-  pinSupportMessage: (email: string) => `ආයුබෝවන්, දෙමාපිය PIN එක අමතක වී ඇත. reset කිරීමට සහාය අවශ්‍යයි.\nගිණුම: ${email}`,
+  pinSupportMessage: (email: string) =>
+    `ආයුබෝවන්, දෙමාපිය PIN එක අමතක වී ඇත. reset කිරීමට සහාය අවශ්‍යයි.\nගිණුම: ${email}`,
   // PIN reset banner
   pinResetBannerMessage: 'ඔබේ PIN reset කර ඇත — නව PIN එකක් සකසන්න.',
   pinResetBannerDismiss: 'ඉවත් කරන්න',
@@ -59,6 +60,8 @@ export const stringsSi = {
   childProfileNext: 'ඊළඟ',
   childProfileSkip: 'මඟ හරින්න',
   childProfileFinish: 'නිම කරන්න',
+  childProfileAgeWarning:
+    'Lumi වයස 4–6 දරුවන් සඳහා සැලසුම් කර ඇත. සමහර විශේෂාංග වැඩිහිටි දරුවන්ට ගැලපෙනු නොලැබේ.',
 
   // Parent Dashboard
   dashboardTitle: 'දෙමාපිය උපකරණ පුවරුව',
@@ -68,11 +71,13 @@ export const stringsSi = {
   dashboardTabFlagged: 'සලකුණු කළ',
   dashboardTabBlocklist: 'අවහිර ලැයිස්තුව',
   dashboardAuthTitle: 'දෙමාපිය ප්‍රදේශය',
-  dashboardAuthSubtitle: 'දෙමාපිය පාලනයන් වෙත ප්‍රවේශ වීමට ඔබේ අනන්‍යතාවය තහවුරු කරන්න.',
+  dashboardAuthSubtitle:
+    'දෙමාපිය පාලනයන් වෙත ප්‍රවේශ වීමට ඔබේ අනන්‍යතාවය තහවුරු කරන්න.',
   dashboardAuthBtn: 'අනන්‍යතාවය තහවුරු කරන්න',
   screenTimeNoLimit: 'දෛනික සීමාවක් නැත',
   screenTimeLimitFmt: (min: number) => `${min} මිනිත්තු / දිනකට`,
-  screenTimeUsedFmt: (min: number) => `අද ${Math.round(min)} මිනිත්තු භාවිතා කළා`,
+  screenTimeUsedFmt: (min: number) =>
+    `අද ${Math.round(min)} මිනිත්තු භාවිතා කළා`,
   screenTimeTimedModeLabel: 'කාල නියමිත ප්‍රකාරය',
   screenTimeTimedModeSub: 'Scan & Count වටවලට ගණනය කිරීමේ කාලරාමුවක් එකතු කරයි',
   activityLogEmpty: 'තවම කිසිදු ක්‍රියාකාරකමක් සටහන් කර නැත.',
@@ -83,7 +88,8 @@ export const stringsSi = {
 
   // Safety Layer
   hazardAlertTitle: 'ඉවසන්න! නවතින්න!',
-  hazardAlertBody: 'ආසන්නයේ ඇතැම් ආරක්ෂිත නොවන දෙයක් ඇති බව පෙනේ. ඉවත් වී වැඩිහිටියෙකු සොයා ගන්න.',
+  hazardAlertBody:
+    'ආසන්නයේ ඇතැම් ආරක්ෂිත නොවන දෙයක් ඇති බව පෙනේ. ඉවත් වී වැඩිහිටියෙකු සොයා ගන්න.',
   hazardAlertButton: 'මමත් ආරක්ෂිතයි',
 
   // Maintenance Mode
@@ -118,9 +124,11 @@ export const stringsSi = {
   onboardingSlide0Title: 'Lumi වෙත සාදරයෙන් පිළිගනිමු!',
   onboardingSlide0Desc: 'AR භාවිතා කර ලෝකය ගවේෂණය කරමින් නව වචන ඉගෙන ගන්න.',
   onboardingSlide1Title: 'ස්කෑන් කර ඉගෙන ගන්න',
-  onboardingSlide1Desc: 'ඕනෑම මුද්‍රිත වචනයකට ඔබේ කැමරාව යොමු කරන්න. Lumi ඔබට 3D ආකෘතියක් දෙකයිය ඉගෙනීමට උදව් කරයි.',
+  onboardingSlide1Desc:
+    'ඕනෑම මුද්‍රිත වචනයකට ඔබේ කැමරාව යොමු කරන්න. Lumi ඔබට 3D ආකෘතියක් දෙකයිය ඉගෙනීමට උදව් කරයි.',
   onboardingSlide2Title: 'ක්‍රීඩා කර එකතු කරන්න',
-  onboardingSlide2Desc: 'AR ක්‍රීඩා ක්‍රීඩා කරන්න, ප්‍රියතම වචන සුරකින්න, ගවේෂණය කරන ගමන් ජයග්‍රහණ ඉපයා ගන්න!',
+  onboardingSlide2Desc:
+    'AR ක්‍රීඩා ක්‍රීඩා කරන්න, ප්‍රියතම වචන සුරකින්න, ගවේෂණය කරන ගමන් ජයග්‍රහණ ඉපයා ගන්න!',
   onboardingNext: 'ඊළඟ',
   onboardingGetStarted: 'ආරම්භ කරන්න',
 
@@ -131,21 +139,26 @@ export const stringsSi = {
   INTRO_NEXT: 'ඊළඟ',
   INTRO_LETS_GO: 'යමු!',
   INTRO_SCAN_TITLE: 'Point & Discover',
-  INTRO_SCAN_BODY: 'Tap the big Scan button in the center. Hold your camera up to any printed word and watch it come to life!',
+  INTRO_SCAN_BODY:
+    'Tap the big Scan button in the center. Hold your camera up to any printed word and watch it come to life!',
   INTRO_PLAYGROUND_TITLE: 'Play AR Games',
-  INTRO_PLAYGROUND_BODY: 'Head to Playground to find words in AR, cook a virtual meal, or count objects as they appear!',
+  INTRO_PLAYGROUND_BODY:
+    'Head to Playground to find words in AR, cook a virtual meal, or count objects as they appear!',
   INTRO_PARENT_TITLE: 'Made for Families',
-  INTRO_PARENT_BODY: 'Parents: press and hold the profile icon on Settings to set screen time limits and keep an eye on activity.',
+  INTRO_PARENT_BODY:
+    'Parents: press and hold the profile icon on Settings to set screen time limits and keep an eye on activity.',
   INTRO_LANG_TITLE: 'ඔබේ භාෂාව තෝරන්න',
   INTRO_LANG_BODY: 'යෙදුමේ භාෂාව කුමක් වේවිද?',
   INTRO_LANG_ENGLISH: 'English',
   INTRO_LANG_SINHALA: 'සිංහල',
-  INTRO_LANG_DISCLAIMER: 'අපගේ ස්කෑනරය English වචන කියවයි — ස්කෑන් කිරීම English ලෙසම පවතී! Sinhala ලේබල් ඉගෙනීම සඳහා සමඟ දිස්වේ.',
+  INTRO_LANG_DISCLAIMER:
+    'අපගේ ස්කෑනරය English වචන කියවයි — ස්කෑන් කිරීම English ලෙසම පවතී! Sinhala ලේබල් ඉගෙනීම සඳහා සමඟ දිස්වේ.',
 
   // Premium Pack Gate
   PREMIUM_GATE_FOUND: (word: string) => `ඔබ "${word}" සොයා ගත්තා!`,
   PREMIUM_GATE_SUBHEADING: (packName: string) => `${packName} අගුළු ඇරීමට`,
-  PREMIUM_GATE_BODY: (count: number) => `ආශ්චර්යමත් ආකෘති ${count}ක් ඔබේ ලෝකයට ජීව් කෙරේ`,
+  PREMIUM_GATE_BODY: (count: number) =>
+    `ආශ්චර්යමත් ආකෘති ${count}ක් ඔබේ ලෝකයට ජීව් කෙරේ`,
   PREMIUM_GATE_CTA: (price: string) => `අගුළු ඇරීමට — ${price}`,
   PREMIUM_GATE_DISMISS: 'සමහරවිට පසුව',
   PACK_PRICE: '$2.99',
@@ -160,7 +173,8 @@ export const stringsSi = {
   CHECKOUT_SUCCESS: 'ඇසුරුම අගුළු ඇරිණා!',
   CHECKOUT_ERROR: 'ගෙවීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.',
   CHECKOUT_SIMULATED_NOTICE: 'සිමුලේෂන් ගෙවීමක් — සැබෑ ගාස්තුවක් නොමැත.',
-  CHECKOUT_UNLOCK_BENEFIT: (count: number) => `${count} 3D වචන අගුළු ඇරීමෙන් ස්කෑන් කළ හැකිය.`,
+  CHECKOUT_UNLOCK_BENEFIT: (count: number) =>
+    `${count} 3D වචන අගුළු ඇරීමෙන් ස්කෑන් කළ හැකිය.`,
 
   // Settings
   SETTINGS_SECTION_PROFILE: 'පරිශීලක තතු',
@@ -180,6 +194,7 @@ export const stringsSi = {
   AR_PLACEMENT_PLACED: 'ආකෘතිය ස්ථාපිත කළා!',
   AR_PLACEMENT_REPLACE: 'නැවත ස්ථාපිත කරන්න',
   AR_PLACEMENT_TIMEOUT: 'ස්ථිර මතුපිටක් හමු නොවීය',
-  AR_PLACEMENT_TIMEOUT_SUB: 'මතුපිට හොඳින් ආලෝකමත් බවත් ඉතා දුරින් නොවන බවත් සහතික කරන්න.',
+  AR_PLACEMENT_TIMEOUT_SUB:
+    'මතුපිට හොඳින් ආලෝකමත් බවත් ඉතා දුරින් නොවන බවත් සහතික කරන්න.',
   AR_PLACEMENT_TRY_AGAIN: 'නැවත උත්සාහ කරන්න',
 };

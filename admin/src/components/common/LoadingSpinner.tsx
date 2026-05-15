@@ -6,7 +6,10 @@ interface LoadingSpinnerProps {
   fullPage?: boolean;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 32, fullPage = false }) => (
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  size = 32,
+  fullPage = false,
+}) => (
   <div className={`spinner-wrap ${fullPage ? 'spinner-wrap--full' : ''}`}>
     <div className="spinner" style={{ width: size, height: size }} />
   </div>

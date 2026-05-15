@@ -1,17 +1,27 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { ACHIEVEMENTS, Achievement } from "../utils/achievementRegistry";
-import { getProgress, EarnedAchievement } from "../utils/achievementStore";
-import { AchievementShareModal } from "../components/AchievementShareModal";
-import { AchievementCard } from "../components/achievements/AchievementCard";
-import { SkyScene } from "../components/scenes/SkyScene";
-import { colors } from "../constants/colors";
-import { styles } from "./AchievementsScreenStyles";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  useNavigation,
+  useFocusEffect,
+  useIsFocused,
+} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ACHIEVEMENTS, Achievement } from '../utils/achievementRegistry';
+import { getProgress, EarnedAchievement } from '../utils/achievementStore';
+import { AchievementShareModal } from '../components/AchievementShareModal';
+import { AchievementCard } from '../components/achievements/AchievementCard';
+import { SkyScene } from '../components/scenes/SkyScene';
+import { colors } from '../constants/colors';
+import { styles } from './AchievementsScreenStyles';
 
 export const AchievementsScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +40,8 @@ export const AchievementsScreen = () => {
   );
 
   const unlockedCount = earned.length;
-  const progress = ACHIEVEMENTS.length > 0 ? unlockedCount / ACHIEVEMENTS.length : 0;
+  const progress =
+    ACHIEVEMENTS.length > 0 ? unlockedCount / ACHIEVEMENTS.length : 0;
 
   return (
     <SkyScene paused={!isFocused}>
@@ -69,22 +80,35 @@ export const AchievementsScreen = () => {
 
       <ScrollView
         style={styles.body}
-        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingBottom: insets.bottom + 100 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.progressBar}>
-          <MaterialCommunityIcons name="trophy-outline" size={22} color="#F59E0B" />
+          <MaterialCommunityIcons
+            name="trophy-outline"
+            size={22}
+            color="#F59E0B"
+          />
           <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+            <View
+              style={[styles.progressFill, { width: `${progress * 100}%` }]}
+            />
           </View>
-          <Text style={styles.progressLabel}>{unlockedCount}/{ACHIEVEMENTS.length}</Text>
+          <Text style={styles.progressLabel}>
+            {unlockedCount}/{ACHIEVEMENTS.length}
+          </Text>
         </View>
 
         <View style={styles.grid}>
           {ACHIEVEMENTS.map((a) => {
             const earnedData = earned.find((e) => e.id === a.id);
             const isUnlocked = !!earnedData;
-            const card = <AchievementCard achievement={a} isUnlocked={isUnlocked} />;
+            const card = (
+              <AchievementCard achievement={a} isUnlocked={isUnlocked} />
+            );
 
             return isUnlocked && earnedData ? (
               <TouchableOpacity
@@ -98,7 +122,9 @@ export const AchievementsScreen = () => {
                 {card}
               </TouchableOpacity>
             ) : (
-              <View key={a.id} style={styles.cell}>{card}</View>
+              <View key={a.id} style={styles.cell}>
+                {card}
+              </View>
             );
           })}
         </View>

@@ -8,16 +8,21 @@
 // (e.g. during stack screen transitions). It is harmless but fills the log.
 const _origWarn = console.warn.bind(console);
 console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('onAnimatedValueUpdate')) return;
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('onAnimatedValueUpdate')
+  ) {
+    return;
+  }
   _origWarn(...args);
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
-import {AppRegistry} from 'react-native';
-import {enableScreens} from 'react-native-screens';
-import {ViroAnimations} from '@reactvision/react-viro';
+import { AppRegistry } from 'react-native';
+import { enableScreens } from 'react-native-screens';
+import { ViroAnimations } from '@reactvision/react-viro';
 import App from './App';
-import {name as appName} from './app.json';
+import { name as appName } from './app.json';
 
 // Register AR animations once at startup — before any AR scene mounts
 ViroAnimations.registerAnimations({

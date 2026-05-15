@@ -1,7 +1,13 @@
 import React from 'react';
 import './Badge.css';
 
-type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'purple';
+type BadgeVariant =
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'neutral'
+  | 'purple';
 
 interface BadgeProps {
   label: string;

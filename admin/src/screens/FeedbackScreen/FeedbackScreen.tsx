@@ -10,7 +10,11 @@ import type { FeedbackItem } from '../../types';
 import './FeedbackScreen.css';
 
 const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
 export const FeedbackScreen: React.FC = () => {
   const { items, unreadCount, loading, markRead } = useFeedback();
@@ -20,7 +24,11 @@ export const FeedbackScreen: React.FC = () => {
     <div className="feedback">
       <PageHeader
         title="Feedback"
-        subtitle={unreadCount > 0 ? `${unreadCount} unread message${unreadCount !== 1 ? 's' : ''}` : 'All caught up'}
+        subtitle={
+          unreadCount > 0
+            ? `${unreadCount} unread message${unreadCount !== 1 ? 's' : ''}`
+            : 'All caught up'
+        }
       />
 
       {loading ? (
@@ -33,12 +41,14 @@ export const FeedbackScreen: React.FC = () => {
         />
       ) : (
         <div className="feedback__list">
-          {items.map(item => (
+          {items.map((item) => (
             <FeedbackRow
               key={item.id}
               item={item}
               isExpanded={expanded === item.id}
-              onToggle={() => setExpanded(prev => prev === item.id ? null : item.id)}
+              onToggle={() =>
+                setExpanded((prev) => (prev === item.id ? null : item.id))
+              }
               onMarkRead={markRead}
             />
           ))}
@@ -55,19 +65,34 @@ interface FeedbackRowProps {
   onMarkRead: (id: string) => Promise<void>;
 }
 
-const FeedbackRow: React.FC<FeedbackRowProps> = ({ item, isExpanded, onToggle, onMarkRead }) => {
+const FeedbackRow: React.FC<FeedbackRowProps> = ({
+  item,
+  isExpanded,
+  onToggle,
+  onMarkRead,
+}) => {
   const [marking, setMarking] = useState(false);
 
   const handleMarkRead = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setMarking(true);
-    try { await onMarkRead(item.id); }
-    finally { setMarking(false); }
+    try {
+      await onMarkRead(item.id);
+    } finally {
+      setMarking(false);
+    }
   };
 
   return (
-    <div className={`feedback__row ${!item.isRead ? 'feedback__row--unread' : ''}`}>
-      <div className="feedback__row-header" onClick={onToggle} role="button" tabIndex={0}>
+    <div
+      className={`feedback__row ${!item.isRead ? 'feedback__row--unread' : ''}`}
+    >
+      <div
+        className="feedback__row-header"
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+      >
         <div className="feedback__row-meta">
           <Mail size={14} className="feedback__mail-icon" />
           <span className="feedback__email">{item.email}</span>
@@ -77,7 +102,12 @@ const FeedbackRow: React.FC<FeedbackRowProps> = ({ item, isExpanded, onToggle, o
         <div className="feedback__row-right">
           <span className="feedback__date">{fmt(item.submittedAt)}</span>
           {!item.isRead && (
-            <Button variant="ghost" size="sm" loading={marking} onClick={handleMarkRead}>
+            <Button
+              variant="ghost"
+              size="sm"
+              loading={marking}
+              onClick={handleMarkRead}
+            >
               Mark Read
             </Button>
           )}
@@ -93,7 +123,8 @@ const FeedbackRow: React.FC<FeedbackRowProps> = ({ item, isExpanded, onToggle, o
 
       {!isExpanded && (
         <p className="feedback__preview" onClick={onToggle}>
-          {item.message.slice(0, 120)}{item.message.length > 120 ? '…' : ''}
+          {item.message.slice(0, 120)}
+          {item.message.length > 120 ? '…' : ''}
         </p>
       )}
     </div>

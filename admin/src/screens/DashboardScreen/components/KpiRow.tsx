@@ -28,7 +28,10 @@ export const KpiRow: React.FC<KpiRowProps> = ({ stats }) => (
       icon={<BookOpen size={22} />}
       accentColor={colors.accentGreen}
       accentBg={colors.accentGreenBg}
-      trend={{ value: `+${stats.wordsSavedThisWeek} This Week`, positive: true }}
+      trend={{
+        value: `+${stats.wordsSavedThisWeek} This Week`,
+        positive: true,
+      }}
     />
     <StatCard
       title="Active Today"
@@ -61,7 +64,11 @@ export const KpiRow: React.FC<KpiRowProps> = ({ stats }) => (
       icon={<ShieldAlert size={22} />}
       accentColor={colors.accentRed}
       accentBg={colors.accentRedBg}
-      trend={stats.flaggedEvents > 0 ? { value: 'Needs review', positive: false } : undefined}
+      trend={
+        stats.flaggedEvents > 0
+          ? { value: 'Needs review', positive: false }
+          : undefined
+      }
     />
   </div>
 );

@@ -6,12 +6,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import type { Achievement } from '../utils/achievementRegistry';
 
@@ -27,7 +22,9 @@ export const AchievementToast: React.FC<Props> = ({ queue, onDismissed }) => {
   const lottieRef = useRef<LottieView>(null);
 
   useEffect(() => {
-    if (queue.length === 0) return;
+    if (queue.length === 0) {
+      return;
+    }
     setCurrent(queue[0]);
     lottieRef.current?.reset();
     lottieRef.current?.play();
@@ -71,7 +68,9 @@ export const AchievementToast: React.FC<Props> = ({ queue, onDismissed }) => {
     return () => clearTimeout(timer);
   }, [queue]);
 
-  if (!current) return null;
+  if (!current) {
+    return null;
+  }
 
   return (
     <Animated.View

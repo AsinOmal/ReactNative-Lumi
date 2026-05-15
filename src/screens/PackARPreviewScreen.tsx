@@ -8,8 +8,12 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  View, Text, SafeAreaView, StatusBar,
-  TouchableOpacity, ActivityIndicator,
+  View,
+  Text,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -34,7 +38,9 @@ export const PackARPreviewScreen = () => {
 
   // Double-ref stable callback — ViroNode reads viroAppProps once at mount
   const onLoadedRef = useRef<() => void>(() => {});
-  useEffect(() => { onLoadedRef.current = () => setModelLoaded(true); }, []);
+  useEffect(() => {
+    onLoadedRef.current = () => setModelLoaded(true);
+  }, []);
   const stableOnLoaded = useRef(() => onLoadedRef.current()).current;
 
   const safeGoBack = useCallback(() => {
@@ -45,7 +51,7 @@ export const PackARPreviewScreen = () => {
   const goTo = useCallback((idx: number) => {
     setCurrentIndex(idx);
     setModelLoaded(false);
-    setSceneKey(k => k + 1);
+    setSceneKey((k) => k + 1);
   }, []);
 
   const canPrev = currentIndex > 0;
@@ -67,10 +73,18 @@ export const PackARPreviewScreen = () => {
       </View>
 
       {/* Overlay */}
-      <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
+      <SafeAreaView
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        pointerEvents="box-none"
+      >
         {/* Header */}
         <View style={styles.header} pointerEvents="box-none">
-          <TouchableOpacity style={styles.closeBtn} onPress={safeGoBack} accessibilityLabel="Close AR preview" accessibilityRole="button">
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={safeGoBack}
+            accessibilityLabel="Close AR preview"
+            accessibilityRole="button"
+          >
             <Ionicons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{pack.name}</Text>
@@ -103,7 +117,9 @@ export const PackARPreviewScreen = () => {
             >
               <Ionicons name="chevron-back" size={22} color="#5B2DC0" />
             </TouchableOpacity>
-            <Text style={styles.navCounter}>{currentIndex + 1} of {pack.words.length}</Text>
+            <Text style={styles.navCounter}>
+              {currentIndex + 1} of {pack.words.length}
+            </Text>
             <TouchableOpacity
               style={[styles.navBtn, !canNext && styles.navBtnDisabled]}
               onPress={() => canNext && goTo(currentIndex + 1)}

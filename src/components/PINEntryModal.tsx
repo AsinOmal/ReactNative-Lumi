@@ -30,20 +30,29 @@ interface PINEntryModalProps {
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
 
 export const PINEntryModal: React.FC<PINEntryModalProps> = ({
-  visible, mode, onSubmit, onCancel, hasError = false,
-  titleOverride, subtitleOverride,
+  visible,
+  mode,
+  onSubmit,
+  onCancel,
+  hasError = false,
+  titleOverride,
+  subtitleOverride,
 }) => {
   const strings = useStrings();
   const [pin, setPin] = useState('');
 
   const handleKey = (key: string) => {
     if (key === '⌫') {
-      setPin(p => p.slice(0, -1));
+      setPin((p) => p.slice(0, -1));
       return;
     }
-    if (key === '') return;
+    if (key === '') {
+      return;
+    }
     const next = pin + key;
-    if (next.length > config.PARENT_PIN_LENGTH) return;
+    if (next.length > config.PARENT_PIN_LENGTH) {
+      return;
+    }
     setPin(next);
     if (next.length === config.PARENT_PIN_LENGTH) {
       onSubmit(next);
@@ -52,14 +61,23 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>
-            {titleOverride ?? (mode === 'set' ? strings.pinSetTitle : strings.pinVerifyTitle)}
+            {titleOverride ??
+              (mode === 'set' ? strings.pinSetTitle : strings.pinVerifyTitle)}
           </Text>
           <Text style={styles.subtitle}>
-            {subtitleOverride ?? (mode === 'set' ? strings.pinSetSubtitle : strings.pinVerifySubtitle)}
+            {subtitleOverride ??
+              (mode === 'set'
+                ? strings.pinSetSubtitle
+                : strings.pinVerifySubtitle)}
           </Text>
 
           {/* Dot indicators */}
@@ -67,7 +85,11 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
             {Array.from({ length: config.PARENT_PIN_LENGTH }).map((_, i) => (
               <View
                 key={i}
-                style={[styles.dot, i < pin.length && styles.dotFilled, hasError && styles.dotError]}
+                style={[
+                  styles.dot,
+                  i < pin.length && styles.dotFilled,
+                  hasError && styles.dotError,
+                ]}
               />
             ))}
           </View>
@@ -82,7 +104,9 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
                 style={[styles.key, key === '' && styles.keyEmpty]}
                 onPress={() => handleKey(key)}
                 disabled={key === ''}
-                accessibilityLabel={key === '⌫' ? 'Backspace' : key === '' ? undefined : key}
+                accessibilityLabel={
+                  key === '⌫' ? 'Backspace' : key === '' ? undefined : key
+                }
                 accessibilityRole="button"
               >
                 <Text style={styles.keyText}>{key}</Text>
@@ -90,7 +114,12 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
             ))}
           </View>
 
-          <TouchableOpacity onPress={onCancel} style={styles.cancelBtn} accessibilityLabel="Cancel PIN entry" accessibilityRole="button">
+          <TouchableOpacity
+            onPress={onCancel}
+            style={styles.cancelBtn}
+            accessibilityLabel="Cancel PIN entry"
+            accessibilityRole="button"
+          >
             <Text style={styles.cancelText}>{strings.cancel}</Text>
           </TouchableOpacity>
         </View>

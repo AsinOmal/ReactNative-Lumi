@@ -10,19 +10,19 @@
 // Watch out: callers should treat status transitions as the source of truth —
 // progress fields are only meaningful while status === 'downloading'.
 
-import { useCallback } from "react";
-import { Pack } from "../types/pack";
-import { DownloadStatus } from "../types/download";
-import { usePackDownloadStore } from "../store/usePackDownloadStore";
-import { useRemoteContentStore } from "../store/useRemoteContentStore";
+import { useCallback } from 'react';
+import { Pack } from '../types/pack';
+import { DownloadStatus } from '../types/download';
+import { usePackDownloadStore } from '../store/usePackDownloadStore';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import {
   CancelledError,
   NoSpaceError,
   cancelPackDownload,
   downloadPack,
-} from "../services/packDownloadService";
-import { useStrings } from "./useStrings";
-import { invalidateModelCache } from "../utils/modelRegistry";
+} from '../services/packDownloadService';
+import { useStrings } from './useStrings';
+import { invalidateModelCache } from '../utils/modelRegistry';
 
 interface UsePackDownloadReturn {
   status: DownloadStatus;
@@ -46,10 +46,10 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
   const remoteModels = useRemoteContentStore((s) => s.remoteModels);
 
   // Legacy Firestore docs without `packType` default to bundled (see src/types/pack.ts).
-  const isBundled = (pack.packType ?? "bundled") === "bundled";
+  const isBundled = (pack.packType ?? 'bundled') === 'bundled';
   const status: DownloadStatus = isBundled
-    ? "downloaded"
-    : state?.status ?? "idle";
+    ? 'downloaded'
+    : state?.status ?? 'idle';
   const progress = isBundled ? 1 : state?.progress ?? 0;
   const downloadedFiles = isBundled ? 0 : state?.downloadedFiles ?? 0;
   const totalFiles = isBundled ? 0 : state?.totalFiles ?? 0;
@@ -59,7 +59,7 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
     if (isBundled) {
       return;
     }
-    const assetVersion = pack.assetVersion ?? "1.0.0";
+    const assetVersion = pack.assetVersion ?? '1.0.0';
     const totalEstimate = pack.words.filter((w) => remoteModels[w]).length * 2;
     startDownload(pack.id, totalEstimate);
     try {
@@ -111,7 +111,7 @@ export function usePackDownload(pack: Pack): UsePackDownloadReturn {
     try {
       await deleteDownload(pack.id);
     } catch (e) {
-      console.error("[usePackDownload] remove:", e);
+      console.error('[usePackDownload] remove:', e);
     } finally {
       // Always invalidate so a partial cleanup still forces re-resolution.
       invalidateModelCache(pack.words);

@@ -6,7 +6,11 @@
 
 import React, { useEffect } from 'react';
 import {
-  View, Text, TouchableOpacity, ImageBackground, StatusBar,
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -30,14 +34,18 @@ export const PremiumPackGateScreen = () => {
   const icon = getPackIcon(pack.id);
 
   useEffect(() => {
-    if (isPurchased) navigation.goBack();
+    if (isPurchased) {
+      navigation.goBack();
+    }
   }, [isPurchased, navigation]);
 
   const handleUnlock = () => {
     (navigation as any).navigate('Checkout', { pack });
   };
 
-  if (isPurchased) return null;
+  if (isPurchased) {
+    return null;
+  }
 
   const content = (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -59,8 +67,12 @@ export const PremiumPackGateScreen = () => {
         <View style={styles.iconBubble}>
           <MaterialCommunityIcons name={icon} size={64} color="#fff" />
         </View>
-        <Text style={styles.foundLabel}>{strings.PREMIUM_GATE_FOUND(word)}</Text>
-        <Text style={styles.packName}>{strings.PREMIUM_GATE_SUBHEADING(pack.name)}</Text>
+        <Text style={styles.foundLabel}>
+          {strings.PREMIUM_GATE_FOUND(word)}
+        </Text>
+        <Text style={styles.packName}>
+          {strings.PREMIUM_GATE_SUBHEADING(pack.name)}
+        </Text>
         <Text style={styles.bodyText}>
           {strings.PREMIUM_GATE_BODY(pack.wordCount)}
         </Text>
@@ -90,7 +102,11 @@ export const PremiumPackGateScreen = () => {
 
   if (pack.gateImageUrl) {
     return (
-      <ImageBackground source={{ uri: pack.gateImageUrl }} style={styles.bg} resizeMode="cover">
+      <ImageBackground
+        source={{ uri: pack.gateImageUrl }}
+        style={styles.bg}
+        resizeMode="cover"
+      >
         {content}
       </ImageBackground>
     );

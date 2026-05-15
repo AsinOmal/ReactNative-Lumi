@@ -1,5 +1,12 @@
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from '@react-native-firebase/firestore';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 export const USERNAME_MAX_LENGTH = 30;
@@ -50,29 +57,45 @@ export const createUserIfNew = async (user: FirebaseAuthTypes.User) => {
 // surface an error toast — silent failure here would leave the user thinking their edit took.
 export const updateUsername = async (uid: string, username: string) => {
   const trimmed = username.trim().slice(0, USERNAME_MAX_LENGTH);
-  if (!trimmed) throw new Error('Username cannot be empty.');
+  if (!trimmed) {
+    throw new Error('Username cannot be empty.');
+  }
   try {
-    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, { username: trimmed });
+    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, {
+      username: trimmed,
+    });
   } catch (e) {
     console.error('[userService] updateUsername:', e);
     throw e;
   }
 };
 
-export const updateChildProfile = async (uid: string, childName: string | null, childAge: number | null): Promise<void> => {
+export const updateChildProfile = async (
+  uid: string,
+  childName: string | null,
+  childAge: number | null
+): Promise<void> => {
   try {
-    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, { childName, childAge });
+    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, {
+      childName,
+      childAge,
+    });
   } catch (e) {
     console.error('[userService] updateChildProfile:', e);
     throw e;
   }
 };
 
-export const loadChildProfile = async (uid: string): Promise<{ childName: string | null; childAge: number | null }> => {
+export const loadChildProfile = async (
+  uid: string
+): Promise<{ childName: string | null; childAge: number | null }> => {
   try {
     const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
     const data = snap.data() as any;
-    return { childName: data?.childName ?? null, childAge: data?.childAge ?? null };
+    return {
+      childName: data?.childName ?? null,
+      childAge: data?.childAge ?? null,
+    };
   } catch {
     return { childName: null, childAge: null };
   }
@@ -81,7 +104,6 @@ export const loadChildProfile = async (uid: string): Promise<{ childName: string
 // Fails open — a network failure must not block a legitimate user.
 export const isUserSuspended = async (uid: string): Promise<boolean> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
     return (snap.data() as any)?.suspended === true;
   } catch {

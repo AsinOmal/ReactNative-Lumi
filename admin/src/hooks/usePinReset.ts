@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { db } from '../firebase';
 
 interface FoundUser {
@@ -27,19 +34,28 @@ export const usePinReset = (): UsePinResetResult => {
   const [resetSuccess, setResetSuccess] = useState(false);
 
   const searchUserByEmail = async (email: string) => {
-    if (!email.trim()) return;
+    if (!email.trim()) {
+      return;
+    }
     setSearching(true);
     setFoundUser(null);
     setSearchError(null);
     setResetSuccess(false);
     try {
-      const q = query(collection(db, 'users'), where('email', '==', email.trim().toLowerCase()));
+      const q = query(
+        collection(db, 'users'),
+        where('email', '==', email.trim().toLowerCase())
+      );
       const snap = await getDocs(q);
       if (snap.empty) {
         setSearchError('No user found with that email address.');
       } else {
         const data = snap.docs[0].data();
-        setFoundUser({ uid: snap.docs[0].id, displayName: data.displayName ?? '(no name)', email: data.email });
+        setFoundUser({
+          uid: snap.docs[0].id,
+          displayName: data.displayName ?? '(no name)',
+          email: data.email,
+        });
       }
     } catch (e) {
       console.error('[usePinReset] searchUserByEmail:', e);
@@ -53,7 +69,11 @@ export const usePinReset = (): UsePinResetResult => {
     setResetting(true);
     try {
       const ref = doc(db, 'users', uid, 'parentSettings', 'settings');
-      await setDoc(ref, { pinHash: null, pinResetPending: true }, { merge: true });
+      await setDoc(
+        ref,
+        { pinHash: null, pinResetPending: true },
+        { merge: true }
+      );
       setResetSuccess(true);
     } catch (e) {
       console.error('[usePinReset] resetUserPin:', e);
@@ -68,5 +88,14 @@ export const usePinReset = (): UsePinResetResult => {
     setResetSuccess(false);
   };
 
-  return { searching, resetting, foundUser, searchError, resetSuccess, searchUserByEmail, resetUserPin, clearResult };
+  return {
+    searching,
+    resetting,
+    foundUser,
+    searchError,
+    resetSuccess,
+    searchUserByEmail,
+    resetUserPin,
+    clearResult,
+  };
 };

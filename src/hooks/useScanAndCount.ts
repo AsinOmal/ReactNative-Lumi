@@ -6,7 +6,12 @@
 // animation plays, keeping the timing entirely in the orchestrator.
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { getFirestore, doc, getDoc, setDoc } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+} from '@react-native-firebase/firestore';
 import { getApp } from '@react-native-firebase/app';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { config } from '../constants/config';
@@ -19,8 +24,7 @@ const pickWords = (n: number): string[] =>
   [...ALL_WORDS].sort(() => Math.random() - 0.5).slice(0, n);
 
 const pickDistractors = (exclude: string): string[] =>
-  ALL_WORDS
-    .filter(w => w !== exclude)
+  ALL_WORDS.filter((w) => w !== exclude)
     .sort(() => Math.random() - 0.5)
     .slice(0, config.SCAN_AND_COUNT_DISTRACTOR_COUNT);
 
@@ -31,7 +35,12 @@ interface Props {
   onDistractorTap: () => void;
 }
 
-export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDistractorTap }: Props) => {
+export const useScanAndCount = ({
+  uid,
+  onRoundComplete,
+  onSessionComplete,
+  onDistractorTap,
+}: Props) => {
   const [loading, setLoading] = useState(true);
   const [startingNumber, setStartingNumber] = useState(1);
   const [currentRound, setCurrentRound] = useState(0);
@@ -49,9 +58,15 @@ export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDis
   const onTargetRef = useRef<(i: number) => void>(() => {});
   const onLoadedRef = useRef<(isTarget: boolean) => void>(() => {});
 
-  useEffect(() => { onRoundRef.current = onRoundComplete; }, [onRoundComplete]);
-  useEffect(() => { onSessionRef.current = onSessionComplete; }, [onSessionComplete]);
-  useEffect(() => { onDistractorRef.current = onDistractorTap; }, [onDistractorTap]);
+  useEffect(() => {
+    onRoundRef.current = onRoundComplete;
+  }, [onRoundComplete]);
+  useEffect(() => {
+    onSessionRef.current = onSessionComplete;
+  }, [onSessionComplete]);
+  useEffect(() => {
+    onDistractorRef.current = onDistractorTap;
+  }, [onDistractorTap]);
 
   const initSession = useCallback((start: number) => {
     startingRef.current = start;
@@ -69,11 +84,27 @@ export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDis
   useEffect(() => {
     const load = async () => {
       try {
-        if (!uid) { initSession(1); return; }
-        const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid, 'gameProgress', 'scanAndCount'));
+        if (!uid) {
+          initSession(1);
+          return;
+        }
+        const snap = await getDoc(
+          doc(
+            getFirestore(getApp()),
+            'users',
+            uid,
+            'gameProgress',
+            'scanAndCount'
+          )
+        );
         if (snap.exists()) {
-          const { startingNumber: sn, lastPlayedAt } = snap.data() as { startingNumber: number; lastPlayedAt: number };
-          const expired = (Date.now() - lastPlayedAt) / 86400000 > config.SCAN_AND_COUNT_RESET_DAYS;
+          const { startingNumber: sn, lastPlayedAt } = snap.data() as {
+            startingNumber: number;
+            lastPlayedAt: number;
+          };
+          const expired =
+            (Date.now() - lastPlayedAt) / 86400000 >
+            config.SCAN_AND_COUNT_RESET_DAYS;
           initSession(expired ? 1 : sn);
         } else {
           initSession(1);
@@ -87,12 +118,24 @@ export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDis
   }, [uid, initSession]);
 
   const saveProgress = useCallback(async () => {
-    if (!uid) return;
+    if (!uid) {
+      return;
+    }
     try {
-      await setDoc(doc(getFirestore(getApp()), 'users', uid, 'gameProgress', 'scanAndCount'), {
-        startingNumber: startingRef.current + config.SCAN_AND_COUNT_PROGRESSION_STEP,
-        lastPlayedAt: Date.now(),
-      });
+      await setDoc(
+        doc(
+          getFirestore(getApp()),
+          'users',
+          uid,
+          'gameProgress',
+          'scanAndCount'
+        ),
+        {
+          startingNumber:
+            startingRef.current + config.SCAN_AND_COUNT_PROGRESSION_STEP,
+          lastPlayedAt: Date.now(),
+        }
+      );
     } catch (e) {
       console.error('[useScanAndCount] save:', e);
     }
@@ -104,19 +147,27 @@ export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDis
 
   useEffect(() => {
     onTargetRef.current = (index: number) => {
-      if (foundRef.current.includes(index)) return;
+      if (foundRef.current.includes(index)) {
+        return;
+      }
       const next = [...foundRef.current, index];
       foundRef.current = next;
       setFoundIndices(next);
       const needed = Math.min(startingRef.current + roundRef.current, MAX);
       if (next.length >= needed) {
-        if (roundRef.current + 1 >= TOTAL) { saveProgress(); onSessionRef.current(); }
-        else { onRoundRef.current(); }
+        if (roundRef.current + 1 >= TOTAL) {
+          saveProgress();
+          onSessionRef.current();
+        } else {
+          onRoundRef.current();
+        }
       }
     };
     onLoadedRef.current = (isTarget: boolean) => {
-      setModelLoadedCount(c => c + 1);
-      if (isTarget) setTargetLoadedCount(c => c + 1);
+      setModelLoadedCount((c) => c + 1);
+      if (isTarget) {
+        setTargetLoadedCount((c) => c + 1);
+      }
     };
   });
 
@@ -130,14 +181,27 @@ export const useScanAndCount = ({ uid, onRoundComplete, onSessionComplete, onDis
     setTargetLoadedCount(0);
   }, [currentRound]);
 
-  const stableOnTargetTap     = useRef((i: number) => onTargetRef.current(i)).current;
+  const stableOnTargetTap = useRef((i: number) =>
+    onTargetRef.current(i)
+  ).current;
   const stableOnDistractorTap = useRef(() => onDistractorRef.current()).current;
-  const stableOnModelLoaded   = useRef((isTarget: boolean) => onLoadedRef.current(isTarget)).current;
+  const stableOnModelLoaded = useRef((isTarget: boolean) =>
+    onLoadedRef.current(isTarget)
+  ).current;
 
   return {
-    loading, currentRound, totalRounds: TOTAL,
-    targetWord, targetCount, distractors,
-    foundIndices, modelLoadedCount, targetLoadedCount, advanceRound,
-    stableOnTargetTap, stableOnDistractorTap, stableOnModelLoaded,
+    loading,
+    currentRound,
+    totalRounds: TOTAL,
+    targetWord,
+    targetCount,
+    distractors,
+    foundIndices,
+    modelLoadedCount,
+    targetLoadedCount,
+    advanceRound,
+    stableOnTargetTap,
+    stableOnDistractorTap,
+    stableOnModelLoaded,
   };
 };

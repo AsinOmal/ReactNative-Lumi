@@ -12,11 +12,14 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 
 interface Props {
-  scannedAs: string;  // the misspelled word the camera read
-  correct: string;    // the canonical correct word
+  scannedAs: string; // the misspelled word the camera read
+  correct: string; // the canonical correct word
 }
 
-export const SpellCorrectionBadge: React.FC<Props> = ({ scannedAs, correct }) => {
+export const SpellCorrectionBadge: React.FC<Props> = ({
+  scannedAs,
+  correct,
+}) => {
   const slideAnim = useRef(new Animated.Value(-20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -46,14 +49,10 @@ export const SpellCorrectionBadge: React.FC<Props> = ({ scannedAs, correct }) =>
       <Text style={styles.label}>Spelling Tip</Text>
       <View style={styles.row}>
         {/* Wrong spelling — red + strikethrough */}
-        <Text style={styles.wrong}>
-          {scannedAs.toUpperCase()}
-        </Text>
+        <Text style={styles.wrong}>{scannedAs.toUpperCase()}</Text>
         <Text style={styles.arrow}> → </Text>
         {/* Correct spelling — green */}
-        <Text style={styles.correct}>
-          {correct.toUpperCase()}
-        </Text>
+        <Text style={styles.correct}>{correct.toUpperCase()}</Text>
         <Text style={styles.tick}> ✓</Text>
       </View>
     </Animated.View>

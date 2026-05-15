@@ -39,22 +39,36 @@ export const GameOverModal = ({
   }, [gameOver]);
 
   return (
-    <Modal transparent visible={gameOver} animationType="fade" onRequestClose={() => {}}>
+    <Modal
+      transparent
+      visible={gameOver}
+      animationType="fade"
+      onRequestClose={() => {}}
+    >
       <View style={styles.gameOverBg}>
         <View style={styles.gameOverCard}>
           <View style={styles.gameOverEmoji}>
-            {timedOut
-              ? <Ionicons name="hourglass-outline" size={64} color={colors.primaryLight} />
-              : <LottieView
-                  ref={lottieRef}
-                  source={require('../../assets/lottie/mascot_celebration.json')}
-                  loop={false}
-                  style={{ width: 120, height: 120 }}
-                />
-            }
+            {timedOut ? (
+              <Ionicons
+                name="hourglass-outline"
+                size={64}
+                color={colors.primaryLight}
+              />
+            ) : (
+              <LottieView
+                ref={lottieRef}
+                source={require('../../assets/lottie/mascot_celebration.json')}
+                loop={false}
+                style={{ width: 120, height: 120 }}
+              />
+            )}
           </View>
           <Text style={styles.gameOverTitle}>
-            {timedOut ? "Time's Up!" : wrongCount === 0 ? 'Perfect Score!' : 'All Found!'}
+            {timedOut
+              ? "Time's Up!"
+              : wrongCount === 0
+              ? 'Perfect Score!'
+              : 'All Found!'}
           </Text>
           {timedOut && (
             <Text style={styles.timedOutSub}>
@@ -77,7 +91,9 @@ export const GameOverModal = ({
             accessibilityLabel="Play again"
             accessibilityRole="button"
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+            >
               <Ionicons name="refresh" size={18} color="#FFF" />
               <Text style={styles.playAgainText}>Play Again</Text>
             </View>

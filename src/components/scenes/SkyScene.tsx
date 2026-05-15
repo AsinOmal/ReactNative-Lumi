@@ -7,11 +7,11 @@
 // effect when the `paused` prop flips. This keeps the off-screen scene cheap
 // without unmounting (which would re-fetch animations and cause flicker).
 
-import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View, ViewStyle } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import LottieView from "lottie-react-native";
-import { colors } from "../../constants/colors";
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
+import { colors } from '../../constants/colors';
 
 interface SkySceneProps {
   paused?: boolean;
@@ -60,18 +60,21 @@ export const SkyScene: React.FC<SkySceneProps> = ({
       />
 
       <Animated.View
-        style={[StyleSheet.absoluteFill, { transform: [{ translateY: skyDrift }] }]}
+        style={[
+          StyleSheet.absoluteFill,
+          { transform: [{ translateY: skyDrift }] },
+        ]}
       >
         <LottieView
           ref={balloonRef}
-          source={require("../../assets/lottie/hotairballoon.json")}
+          source={require('../../assets/lottie/hotairballoon.json')}
           autoPlay
           loop
           style={styles.balloon}
         />
         <LottieView
           ref={cloudRef}
-          source={require("../../assets/lottie/cloud-drift.json")}
+          source={require('../../assets/lottie/cloud-drift.json')}
           autoPlay
           loop
           speed={0.6}
@@ -79,7 +82,7 @@ export const SkyScene: React.FC<SkySceneProps> = ({
         />
         <LottieView
           ref={sunRef}
-          source={require("../../assets/lottie/sun.json")}
+          source={require('../../assets/lottie/sun.json')}
           autoPlay
           loop
           style={styles.sun}
@@ -98,23 +101,23 @@ export const SkyScene: React.FC<SkySceneProps> = ({
 // by the right-side cards. Cloud is narrowed (width: 155) so the Lottie only
 // shows one puff at a time — avoids the "two clouds overlapping" look.
 const styles = StyleSheet.create({
-  root: { flex: 1, overflow: "hidden" },
+  root: { flex: 1, overflow: 'hidden' },
   sun: {
-    position: "absolute",
+    position: 'absolute',
     top: 20,
     right: 4,
     width: 105,
     height: 105,
   },
   cloud: {
-    position: "absolute",
+    position: 'absolute',
     top: 68,
     left: -40,
     width: 155,
     height: 60,
   },
   balloon: {
-    position: "absolute",
+    position: 'absolute',
     top: 35,
     left: -60,
     width: 155,

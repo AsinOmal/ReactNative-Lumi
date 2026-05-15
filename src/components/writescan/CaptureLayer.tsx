@@ -5,7 +5,13 @@
 // while the kid is positioning their paper.
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -28,14 +34,20 @@ export const CaptureLayer = ({ targetWord, onCaptured, onCancel }: Props) => {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!hasPermission) requestPermission();
+    if (!hasPermission) {
+      requestPermission();
+    }
   }, [hasPermission, requestPermission]);
 
   const handleCapture = async () => {
-    if (!cameraRef.current || busy) return;
+    if (!cameraRef.current || busy) {
+      return;
+    }
     setBusy(true);
     try {
-      const snap = await cameraRef.current.takePhoto({ enableShutterSound: false });
+      const snap = await cameraRef.current.takePhoto({
+        enableShutterSound: false,
+      });
       const text = await recognizeTextInImage(snap.path);
       onCaptured(text || null);
     } catch (e) {
@@ -58,7 +70,11 @@ export const CaptureLayer = ({ targetWord, onCaptured, onCancel }: Props) => {
         />
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.capNoCam]}>
-          <Ionicons name="camera-off-outline" size={42} color="rgba(255,255,255,0.5)" />
+          <Ionicons
+            name="camera-off-outline"
+            size={42}
+            color="rgba(255,255,255,0.5)"
+          />
           <Text style={styles.capNoCamText}>Camera permission needed</Text>
         </View>
       )}

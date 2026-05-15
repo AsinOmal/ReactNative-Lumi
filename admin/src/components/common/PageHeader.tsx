@@ -7,7 +7,11 @@ interface PageHeaderProps {
   actions?: React.ReactNode;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions }) => (
+export const PageHeader: React.FC<PageHeaderProps> = ({
+  title,
+  subtitle,
+  actions,
+}) => (
   <div className="page-header">
     <div className="page-header__text">
       <h1 className="page-header__title">{title}</h1>

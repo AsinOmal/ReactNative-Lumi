@@ -49,6 +49,7 @@ yarn-error.log
 
 # Cloud Functions build output
 functions/lib/
+functions/firebase-debug.log
 
 # fastlane
 #
@@ -96,4 +97,5 @@ admin/**/*-firebase-adminsdk-*.json
 # Temp scripts and logs
 ios/add_firebase_plist.rb
 ios/pod_install_err.log
+ios/File.txt
 

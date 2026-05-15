@@ -7,22 +7,24 @@
 // Why dev-only: onSnapshot bills per change × subscribed users. Production
 // keeps the cold-boot fetch to avoid that.
 
-import { useEffect } from "react";
-import { subscribeRemoteModels } from "../services/remoteContentService";
-import { useRemoteContentStore } from "../store/useRemoteContentStore";
-import { invalidateModelCache } from "../utils/modelRegistry";
+import { useEffect } from 'react';
+import { subscribeRemoteModels } from '../services/remoteContentService';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import { invalidateModelCache } from '../utils/modelRegistry';
 
 export const useDevRemoteModelsSync = (): void => {
   useEffect(() => {
-    if (!__DEV__) return;
+    if (!__DEV__) {
+      return;
+    }
     const unsub = subscribeRemoteModels((models) => {
-      if (models.length === 0) return;
+      if (models.length === 0) {
+        return;
+      }
       const map = Object.fromEntries(models.map((m) => [m.word, m]));
       useRemoteContentStore.setState({ remoteModels: map });
       invalidateModelCache(models.map((m) => m.word));
-      console.log(
-        `[dev] remoteModels live update — ${models.length} entries`,
-      );
+      console.log(`[dev] remoteModels live update — ${models.length} entries`);
     });
     return () => unsub();
   }, []);

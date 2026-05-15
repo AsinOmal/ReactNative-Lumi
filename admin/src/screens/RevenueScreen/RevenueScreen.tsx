@@ -3,25 +3,41 @@ import { DollarSign } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { EmptyState } from '../../components/common/EmptyState';
-import { useRevenue, PRODUCT_LABELS, PRODUCT_PRICES } from '../../hooks/useRevenue';
+import {
+  useRevenue,
+  PRODUCT_LABELS,
+  PRODUCT_PRICES,
+} from '../../hooks/useRevenue';
 import './RevenueScreen.css';
 
-const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
 const formatRevenue = (productId: string, count: number): string => {
   const price = PRODUCT_PRICES[productId];
-  if (!price) return '—';
+  if (!price) {
+    return '—';
+  }
   return `$${(price * count).toFixed(2)}`;
 };
 
 export const RevenueScreen: React.FC = () => {
   const { stats, loading } = useRevenue();
 
-  const totalRevenue = Object.entries(stats.byProduct).reduce((sum, [id, count]) => {
-    return sum + (PRODUCT_PRICES[id] ?? 0) * count;
-  }, 0);
+  const totalRevenue = Object.entries(stats.byProduct).reduce(
+    (sum, [id, count]) => {
+      return sum + (PRODUCT_PRICES[id] ?? 0) * count;
+    },
+    0
+  );
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="revenue">
@@ -48,12 +64,19 @@ export const RevenueScreen: React.FC = () => {
         ) : (
           <table className="revenue__table">
             <thead>
-              <tr><th>Product</th><th>Purchases</th><th>Price</th><th>Revenue</th></tr>
+              <tr>
+                <th>Product</th>
+                <th>Purchases</th>
+                <th>Price</th>
+                <th>Revenue</th>
+              </tr>
             </thead>
             <tbody>
               {Object.entries(stats.byProduct).map(([id, count]) => (
                 <tr key={id} className="revenue__row">
-                  <td className="revenue__product">{PRODUCT_LABELS[id] ?? id}</td>
+                  <td className="revenue__product">
+                    {PRODUCT_LABELS[id] ?? id}
+                  </td>
                   <td>{count}</td>
                   <td>${(PRODUCT_PRICES[id] ?? 0).toFixed(2)}</td>
                   <td className="revenue__total">{formatRevenue(id, count)}</td>
@@ -75,7 +98,12 @@ export const RevenueScreen: React.FC = () => {
         ) : (
           <table className="revenue__table">
             <thead>
-              <tr><th>Product</th><th>User UID</th><th>Date</th><th>Type</th></tr>
+              <tr>
+                <th>Product</th>
+                <th>User UID</th>
+                <th>Date</th>
+                <th>Type</th>
+              </tr>
             </thead>
             <tbody>
               {stats.recentPurchases.map((p, i) => (
@@ -83,7 +111,13 @@ export const RevenueScreen: React.FC = () => {
                   <td>{PRODUCT_LABELS[p.productId] ?? p.productId}</td>
                   <td className="revenue__uid">{p.uid}</td>
                   <td>{fmt(p.purchasedAt)}</td>
-                  <td>{p.simulated ? <span className="revenue__badge">Simulated</span> : 'Real'}</td>
+                  <td>
+                    {p.simulated ? (
+                      <span className="revenue__badge">Simulated</span>
+                    ) : (
+                      'Real'
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

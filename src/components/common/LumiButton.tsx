@@ -1,13 +1,13 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   buttonGradientColors,
   woodBorderContent,
   woodBorderInner,
   woodBorderOuter,
-} from "../../constants/skeuomorphicTokens";
+} from '../../constants/skeuomorphicTokens';
 
 interface LumiButtonProps {
   onPress: () => void;
@@ -57,9 +57,9 @@ export const LumiButton = ({ onPress, title, icon }: LumiButtonProps) => (
 
 const styles = StyleSheet.create({
   content: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 18,
     paddingHorizontal: 32,
   },
@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   label: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: 1.5,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });

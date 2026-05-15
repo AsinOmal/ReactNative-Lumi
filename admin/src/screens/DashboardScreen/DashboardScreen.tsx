@@ -9,22 +9,28 @@ import type { DashboardStats } from '../../types';
 import './DashboardScreen.css';
 
 const EMPTY_STATS: DashboardStats = {
-  totalUsers: 0, newUsersToday: 0, activeToday: 0,
-  wordsSaved: 0, wordsSavedThisWeek: 0,
-  gamesPlayed: 0, achievementsUnlocked: 0, flaggedEvents: 0,
+  totalUsers: 0,
+  newUsersToday: 0,
+  activeToday: 0,
+  wordsSaved: 0,
+  wordsSavedThisWeek: 0,
+  gamesPlayed: 0,
+  achievementsUnlocked: 0,
+  flaggedEvents: 0,
 };
 
-const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+const TODAY = new Date().toLocaleDateString('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+});
 
 export const DashboardScreen: React.FC = () => {
   const { stats, recentActivity, topWords, loading } = useDashboard();
 
   return (
     <div className="dashboard">
-      <PageHeader
-        title="Dashboard"
-        subtitle={TODAY}
-      />
+      <PageHeader title="Dashboard" subtitle={TODAY} />
 
       {loading ? (
         <p className="dashboard__loading">Loading metrics…</p>

@@ -16,7 +16,9 @@ export async function simulatePurchase(packId: string): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, SIMULATED_DELAY_MS));
 
   const uid = getAuth(getApp()).currentUser?.uid;
-  if (!uid) throw new PaymentError('Not authenticated');
+  if (!uid) {
+    throw new PaymentError('Not authenticated');
+  }
 
   try {
     const db = getFirestore(getApp());

@@ -1,23 +1,29 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useIsFocused } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { useAuthStore } from "../store/useAuthStore";
-import { useUserProfile } from "../hooks/useUserProfile";
-import { getApp } from "@react-native-firebase/app";
-import { getAuth, signOut } from "@react-native-firebase/auth";
-import { useParentAuth } from "../hooks/useParentAuth";
-import { useParentalControlsStore } from "../store/useParentalControlsStore";
-import { LumiMascot } from "../components/common/LumiMascot";
-import { PINEntryModal } from "../components/PINEntryModal";
-import { SkyScene } from "../components/scenes/SkyScene";
-import { styles } from "./ProfileScreenStyles";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useAuthStore } from '../store/useAuthStore';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { getApp } from '@react-native-firebase/app';
+import { getAuth, signOut } from '@react-native-firebase/auth';
+import { useParentAuth } from '../hooks/useParentAuth';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
+import { LumiMascot } from '../components/common/LumiMascot';
+import { PINEntryModal } from '../components/PINEntryModal';
+import { SkyScene } from '../components/scenes/SkyScene';
+import { styles } from './ProfileScreenStyles';
 
 const STATS = [
-  { label: "Words Found", value: 0 },
-  { label: "Packs Unlocked", value: 1 },
-  { label: "Days Active", value: 0 },
+  { label: 'Words Found', value: 0 },
+  { label: 'Packs Unlocked', value: 1 },
+  { label: 'Days Active', value: 0 },
 ];
 
 export const ProfileScreen = () => {
@@ -32,14 +38,14 @@ export const ProfileScreen = () => {
   const [pinError, setPinError] = useState(false);
 
   const headerName =
-    profile.username || profile.displayName || user?.displayName || "Seeker";
+    profile.username || profile.displayName || user?.displayName || 'Seeker';
 
   const handleSignOut = async () => {
     try {
       const auth = getAuth(getApp());
       await signOut(auth);
     } catch (e) {
-      console.error("Sign out error:", e);
+      console.error('Sign out error:', e);
     }
   };
 
@@ -48,9 +54,9 @@ export const ProfileScreen = () => {
   };
 
   React.useEffect(() => {
-    if (authStep === "success") {
-      (navigation as any).navigate("ParentDashboard");
-    } else if (authStep === "pin") {
+    if (authStep === 'success') {
+      (navigation as any).navigate('ParentDashboard');
+    } else if (authStep === 'pin') {
       setShowPin(true);
     }
   }, [authStep, navigation]);
@@ -59,7 +65,7 @@ export const ProfileScreen = () => {
     const ok = verifyPin(pin);
     if (ok) {
       setShowPin(false);
-      (navigation as any).navigate("ParentDashboard");
+      (navigation as any).navigate('ParentDashboard');
     } else {
       setPinError(true);
       setTimeout(() => setPinError(false), 1500);
@@ -94,19 +100,35 @@ export const ProfileScreen = () => {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.parentDashBtn} onPress={handleParentDashboard} activeOpacity={0.8} accessibilityLabel="Open parent dashboard" accessibilityRole="button">
-          <Ionicons name="lock-closed" size={18} color={styles.parentDashText.color as string} />
+        <TouchableOpacity
+          style={styles.parentDashBtn}
+          onPress={handleParentDashboard}
+          activeOpacity={0.8}
+          accessibilityLabel="Open parent dashboard"
+          accessibilityRole="button"
+        >
+          <Ionicons
+            name="lock-closed"
+            size={18}
+            color={styles.parentDashText.color as string}
+          />
           <Text style={styles.parentDashText}>Parent Dashboard</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8} accessibilityLabel="Sign out" accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.signOutBtn}
+          onPress={handleSignOut}
+          activeOpacity={0.8}
+          accessibilityLabel="Sign out"
+          accessibilityRole="button"
+        >
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </ScrollView>
 
       <PINEntryModal
         visible={showPin}
-        mode={settings.pinHash ? "verify" : "set"}
+        mode={settings.pinHash ? 'verify' : 'set'}
         onSubmit={handlePinSubmit}
         onCancel={() => setShowPin(false)}
         hasError={pinError}

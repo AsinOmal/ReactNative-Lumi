@@ -3,31 +3,38 @@
 // full wood-bevel + cream face treatment; locked cards are grayed + lock icon.
 // Extracted from AchievementsScreen so the screen stays under 150 lines.
 
-import React from "react";
-import { View, Text } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import type { Achievement } from "../../utils/achievementRegistry";
-import { styles } from "../../screens/AchievementsScreenStyles";
+import React from 'react';
+import { View, Text } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import type { Achievement } from '../../utils/achievementRegistry';
+import { styles } from '../../screens/AchievementsScreenStyles';
 
 interface Props {
   achievement: Achievement;
   isUnlocked: boolean;
 }
 
-export const AchievementCard: React.FC<Props> = ({ achievement: a, isUnlocked }) => {
+export const AchievementCard: React.FC<Props> = ({
+  achievement: a,
+  isUnlocked,
+}) => {
   const content = (
     <>
       <View
         style={[
           styles.iconCircle,
           isUnlocked
-            ? { backgroundColor: a.iconColor + "22" }
+            ? { backgroundColor: a.iconColor + '22' }
             : styles.iconCircleLocked,
         ]}
       >
         {isUnlocked ? (
-          <MaterialCommunityIcons name={a.iconName} size={30} color={a.iconColor} />
+          <MaterialCommunityIcons
+            name={a.iconName}
+            size={30}
+            color={a.iconColor}
+          />
         ) : (
           <Ionicons name="lock-closed" size={22} color="#CBD5E1" />
         )}
@@ -36,7 +43,7 @@ export const AchievementCard: React.FC<Props> = ({ achievement: a, isUnlocked })
         style={[styles.cardTitle, !isUnlocked && styles.cardTitleLocked]}
         numberOfLines={1}
       >
-        {isUnlocked ? a.title : "???"}
+        {isUnlocked ? a.title : '???'}
       </Text>
       <Text style={styles.cardDesc} numberOfLines={2}>
         {a.description}

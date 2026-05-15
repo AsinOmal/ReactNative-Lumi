@@ -16,31 +16,53 @@ const dismissKey = (msg: string, exp: Date) =>
   `@banner_dismissed_${msg.slice(0, 40)}_${exp.getTime()}`;
 
 export const BannerAnnouncement: React.FC = () => {
-  const banner = useRemoteContentStore(s => s.activeBanner);
+  const banner = useRemoteContentStore((s) => s.activeBanner);
   const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
-    if (!banner) { setDismissed(true); return; }
+    if (!banner) {
+      setDismissed(true);
+      return;
+    }
     let mounted = true;
     const key = dismissKey(banner.message, banner.expiresAt);
     AsyncStorage.getItem(key)
-      .then(val => { if (mounted) setDismissed(val === 'true'); })
-      .catch(() => { if (mounted) setDismissed(false); });
-    return () => { mounted = false; };
+      .then((val) => {
+        if (mounted) {
+          setDismissed(val === 'true');
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setDismissed(false);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
   }, [banner]);
 
   const handleDismiss = async () => {
-    if (!banner) return;
+    if (!banner) {
+      return;
+    }
     try {
-      await AsyncStorage.setItem(dismissKey(banner.message, banner.expiresAt), 'true');
+      await AsyncStorage.setItem(
+        dismissKey(banner.message, banner.expiresAt),
+        'true'
+      );
     } catch {}
     setDismissed(true);
   };
 
-  if (!banner || dismissed) return null;
+  if (!banner || dismissed) {
+    return null;
+  }
 
   return (
-    <View style={[styles.container, { backgroundColor: banner.accentColor + '22' }]}>
+    <View
+      style={[styles.container, { backgroundColor: banner.accentColor + '22' }]}
+    >
       <View style={[styles.accent, { backgroundColor: banner.accentColor }]} />
       <Text
         style={[styles.message, { color: banner.accentColor }]}
@@ -70,7 +92,7 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10,
   },
-  accent:  { width: 3, alignSelf: 'stretch', borderRadius: 2 },
+  accent: { width: 3, alignSelf: 'stretch', borderRadius: 2 },
   message: { flex: 1, fontFamily: 'Fredoka-SemiBold', fontSize: 14 },
   dismiss: { padding: 4 },
 });

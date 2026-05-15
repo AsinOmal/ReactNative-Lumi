@@ -4,7 +4,7 @@
  * without subscribing.
  */
 
-import { Pack } from "../types/pack";
+import { Pack } from '../types/pack';
 
 /**
  * Find the pack that owns this word. Case-insensitive match against `pack.words`.
@@ -14,13 +14,15 @@ import { Pack } from "../types/pack";
 export function getPackForWord(word: string, packs: Pack[]): Pack | null {
   const key = word.toLowerCase();
   for (const pack of packs) {
-    if (pack.words.some((w) => w.toLowerCase() === key)) return pack;
+    if (pack.words.some((w) => w.toLowerCase() === key)) {
+      return pack;
+    }
   }
   return null;
 }
 
 export interface PackGateDecision {
-  status: "available" | "gated";
+  status: 'available' | 'gated';
   pack: Pack | null;
 }
 
@@ -31,15 +33,15 @@ export interface PackGateDecision {
 export function decidePackGate(
   word: string,
   packs: Pack[],
-  isDownloaded: (packId: string, assetVersion: string) => boolean,
+  isDownloaded: (packId: string, assetVersion: string) => boolean
 ): PackGateDecision {
   const pack = getPackForWord(word, packs);
   // Legacy Firestore docs that pre-date Phase 10 have no `packType`. Treat the
   // missing case as 'bundled' (the safe fallback documented in src/types/pack.ts).
-  const packType = pack?.packType ?? "bundled";
-  if (!pack || packType === "bundled") {
-    return { status: "available", pack };
+  const packType = pack?.packType ?? 'bundled';
+  if (!pack || packType === 'bundled') {
+    return { status: 'available', pack };
   }
-  const ok = isDownloaded(pack.id, pack.assetVersion ?? "1.0.0");
-  return { status: ok ? "available" : "gated", pack };
+  const ok = isDownloaded(pack.id, pack.assetVersion ?? '1.0.0');
+  return { status: ok ? 'available' : 'gated', pack };
 }

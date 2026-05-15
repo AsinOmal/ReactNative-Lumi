@@ -22,7 +22,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Camera } from 'react-native-vision-camera';
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, collection, addDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+} from '@react-native-firebase/firestore';
 import { classifyFrameForHazards } from '../utils/visionOCR';
 import { config } from '../constants/config';
 import { useAuthStore } from '../store/useAuthStore';
@@ -47,18 +52,24 @@ export const useHazardDetection = ({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const runClassification = useCallback(async () => {
-    if (!cameraRef.current || isClassifying.current) return;
-    if (Date.now() < cooldownUntilRef.current) return; // in cooldown
+    if (!cameraRef.current || isClassifying.current) {
+      return;
+    }
+    if (Date.now() < cooldownUntilRef.current) {
+      return;
+    } // in cooldown
 
     isClassifying.current = true;
     try {
-      const snapshot = await cameraRef.current.takePhoto({ enableShutterSound: false });
+      const snapshot = await cameraRef.current.takePhoto({
+        enableShutterSound: false,
+      });
       const labels = await classifyFrameForHazards(snapshot.path);
 
-      const matched = labels.find(label =>
-        config.HAZARD_KEYWORDS.some(keyword =>
-          label.toLowerCase().includes(keyword.toLowerCase()),
-        ),
+      const matched = labels.find((label) =>
+        config.HAZARD_KEYWORDS.some((keyword) =>
+          label.toLowerCase().includes(keyword.toLowerCase())
+        )
       );
 
       if (matched) {
@@ -67,12 +78,19 @@ export const useHazardDetection = ({
         cooldownUntilRef.current = Date.now() + config.HAZARD_COOLDOWN_MS;
         const uid = useAuthStore.getState().user?.uid;
         if (uid) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          addDoc(collection(getFirestore(getApp()), 'users', uid, 'hazardEvents') as any, {
-            label: matched,
-            detectedAt: serverTimestamp(),
-            dismissed: false,
-          }).catch(() => {});
+          addDoc(
+            collection(
+              getFirestore(getApp()),
+              'users',
+              uid,
+              'hazardEvents'
+            ) as any,
+            {
+              label: matched,
+              detectedAt: serverTimestamp(),
+              dismissed: false,
+            }
+          ).catch(() => {});
         }
       }
     } catch {
@@ -91,7 +109,10 @@ export const useHazardDetection = ({
       return;
     }
 
-    intervalRef.current = setInterval(runClassification, config.HAZARD_CHECK_INTERVAL_MS);
+    intervalRef.current = setInterval(
+      runClassification,
+      config.HAZARD_CHECK_INTERVAL_MS
+    );
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

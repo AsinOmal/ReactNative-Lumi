@@ -8,7 +8,12 @@ interface ToggleProps {
   disabled?: boolean;
 }
 
-export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label, disabled }) => (
+export const Toggle: React.FC<ToggleProps> = ({
+  checked,
+  onChange,
+  label,
+  disabled,
+}) => (
   <label className={`toggle ${disabled ? 'toggle--disabled' : ''}`}>
     <input
       type="checkbox"

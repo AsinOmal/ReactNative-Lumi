@@ -19,12 +19,18 @@
 function levenshtein(a: string, b: string): number {
   const m = a.length;
   const n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-  if (Math.abs(m - n) > 3) return 99; // can't be ≤ 2 if length diff > 3
+  if (m === 0) {
+    return n;
+  }
+  if (n === 0) {
+    return m;
+  }
+  if (Math.abs(m - n) > 3) {
+    return 99;
+  } // can't be ≤ 2 if length diff > 3
 
   const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
-    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
   );
 
   for (let i = 1; i <= m; i++) {
@@ -40,8 +46,8 @@ function levenshtein(a: string, b: string): number {
 
 /** Result returned from matchWord */
 export interface MatchResult {
-  word: string;          // canonical matched word, e.g. "apple"
-  scannedAs: string;     // what OCR actually read, e.g. "aple"
+  word: string; // canonical matched word, e.g. "apple"
+  scannedAs: string; // what OCR actually read, e.g. "aple"
   isCorrection: boolean; // true when distance === 2 (human misspelling)
 }
 
@@ -54,15 +60,17 @@ export interface MatchResult {
  */
 export function matchWord(
   ocrText: string,
-  packWords: string[],
+  packWords: string[]
 ): MatchResult | null {
-  if (!ocrText?.trim()) return null;
+  if (!ocrText?.trim()) {
+    return null;
+  }
 
   const tokens = ocrText
     .toLowerCase()
     .split(/[\s\n,.!?;:()\[\]{}"']+/)
-    .map(t => t.replace(/[^a-z]/g, ''))
-    .filter(t => t.length >= 3);
+    .map((t) => t.replace(/[^a-z]/g, ''))
+    .filter((t) => t.length >= 3);
 
   // ── Pass 1: Exact match across ALL tokens ─────────────────────────────────
   for (const token of tokens) {
@@ -104,24 +112,28 @@ export function matchWord(
  */
 export function detectUnknownWord(
   ocrText: string,
-  packWords: string[],
+  packWords: string[]
 ): string | null {
-  if (!ocrText?.trim()) return null;
+  if (!ocrText?.trim()) {
+    return null;
+  }
 
   const tokens = ocrText
     .toLowerCase()
     .split(/[\s\n,.!?;:()\[\]{}"']+/)
-    .map(t => t.replace(/[^a-z]/g, ''))
-    .filter(t => t.length >= 4 && t.length <= 18)
+    .map((t) => t.replace(/[^a-z]/g, ''))
+    .filter((t) => t.length >= 4 && t.length <= 18)
     // Must look like a real word: no more than 2 consonants in a row at start
-    .filter(t => /^[a-z]/.test(t));
+    .filter((t) => /^[a-z]/.test(t));
 
   // Filter out anything too close to a pack word
-  const strangers = tokens.filter(token =>
-    packWords.every(w => levenshtein(token, w) > 2),
+  const strangers = tokens.filter((token) =>
+    packWords.every((w) => levenshtein(token, w) > 2)
   );
 
-  if (strangers.length === 0) return null;
+  if (strangers.length === 0) {
+    return null;
+  }
 
   // Return longest token (most likely the intentional word)
   return strangers.reduce((a, b) => (a.length >= b.length ? a : b));

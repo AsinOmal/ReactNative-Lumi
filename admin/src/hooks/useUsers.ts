@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import {
-  collection, onSnapshot, doc, updateDoc,
-  type QuerySnapshot, type DocumentData,
+  collection,
+  onSnapshot,
+  doc,
+  updateDoc,
+  type QuerySnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { AppUser } from '../types';
@@ -34,19 +38,22 @@ export const useUsers = (): UseUsersResult => {
     const unsub = onSnapshot(
       collection(db, 'users'),
       (snap: QuerySnapshot) => {
-        setUsers(snap.docs.map(d => docToUser(d.id, d.data())));
+        setUsers(snap.docs.map((d) => docToUser(d.id, d.data())));
         setLoading(false);
       },
       (err) => {
         console.error('[useUsers] onSnapshot error:', err);
         setError('Failed to load users.');
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);
 
-  const suspendUser = async (uid: string, suspended: boolean): Promise<void> => {
+  const suspendUser = async (
+    uid: string,
+    suspended: boolean
+  ): Promise<void> => {
     try {
       await updateDoc(doc(db, 'users', uid), { suspended });
     } catch (e) {

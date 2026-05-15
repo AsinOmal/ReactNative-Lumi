@@ -25,8 +25,15 @@ jest.mock('react-native-blob-util', () => ({
 
 import { emptyState, patchPack } from '../src/store/packDownloadStore.helpers';
 import { usePackDownloadStore } from '../src/store/usePackDownloadStore';
-import { downloadPack, cancelPackDownload } from '../src/services/packDownloadService';
-import { buildAssetTasks, getLocalModelPath, getLocalAudioPath } from '../src/utils/packStorage';
+import {
+  downloadPack,
+  cancelPackDownload,
+} from '../src/services/packDownloadService';
+import {
+  buildAssetTasks,
+  getLocalModelPath,
+  getLocalAudioPath,
+} from '../src/utils/packStorage';
 import { config } from '../src/constants/config';
 import type { RemoteModelEntry } from '../src/types/remoteContent';
 
@@ -34,22 +41,50 @@ const blob = (): ReturnType<typeof jest.requireMock> =>
   jest.requireMock('react-native-blob-util').default;
 
 const makeHandle = (status = 200) =>
-  Object.assign(Promise.resolve({ respInfo: { status } }), { cancel: jest.fn() });
+  Object.assign(Promise.resolve({ respInfo: { status } }), {
+    cancel: jest.fn(),
+  });
 
 const makeRemoteModels = (words: string[]): Record<string, RemoteModelEntry> =>
-  Object.fromEntries(words.map(w => [w, {
-    word: w, syllables: [w], audioUrl: `https://cdn/${w}.mp3`, modelUrl: `https://cdn/${w}.glb`,
-    audioRef: `audio/${w}.mp3`, modelRef: `models/${w}.glb`,
-    scale: 0.01, positionY: 0, packId: 'fruits', isCalibrated: true,
-  }]));
+  Object.fromEntries(
+    words.map((w) => [
+      w,
+      {
+        word: w,
+        syllables: [w],
+        audioUrl: `https://cdn/${w}.mp3`,
+        modelUrl: `https://cdn/${w}.glb`,
+        audioRef: `audio/${w}.mp3`,
+        modelRef: `models/${w}.glb`,
+        scale: 0.01,
+        positionY: 0,
+        packId: 'fruits',
+        isCalibrated: true,
+      },
+    ])
+  );
 
 // Model-only (no audioUrl) so buildAssetTasks generates a single task — used for retry tests
-const makeModelOnlyRemoteModels = (words: string[]): Record<string, RemoteModelEntry> =>
-  Object.fromEntries(words.map(w => [w, {
-    word: w, syllables: [w], audioUrl: '', modelUrl: `https://cdn/${w}.glb`,
-    audioRef: '', modelRef: `models/${w}.glb`,
-    scale: 0.01, positionY: 0, packId: 'fruits', isCalibrated: true,
-  }]));
+const makeModelOnlyRemoteModels = (
+  words: string[]
+): Record<string, RemoteModelEntry> =>
+  Object.fromEntries(
+    words.map((w) => [
+      w,
+      {
+        word: w,
+        syllables: [w],
+        audioUrl: '',
+        modelUrl: `https://cdn/${w}.glb`,
+        audioRef: '',
+        modelRef: `models/${w}.glb`,
+        scale: 0.01,
+        positionY: 0,
+        packId: 'fruits',
+        isCalibrated: true,
+      },
+    ])
+  );
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -83,14 +118,20 @@ describe('packDownloadStore.helpers — emptyState', () => {
 describe('packDownloadStore.helpers — patchPack', () => {
   it('merges partial state into an existing pack', () => {
     const base = { pack1: emptyState('pack1', 4) };
-    const result = patchPack(base, 'pack1', { status: 'downloading', downloadedFiles: 2 });
+    const result = patchPack(base, 'pack1', {
+      status: 'downloading',
+      downloadedFiles: 2,
+    });
     expect(result.pack1.status).toBe('downloading');
     expect(result.pack1.downloadedFiles).toBe(2);
     expect(result.pack1.totalFiles).toBe(4); // original value preserved
   });
 
   it('creates a new entry if the pack did not exist', () => {
-    const result = patchPack({}, 'newPack', { status: 'error', errorMessage: 'oops' });
+    const result = patchPack({}, 'newPack', {
+      status: 'error',
+      errorMessage: 'oops',
+    });
     expect(result.newPack.status).toBe('error');
     expect(result.newPack.errorMessage).toBe('oops');
   });
@@ -100,23 +141,41 @@ describe('packDownloadStore.helpers — patchPack', () => {
 
 describe('usePackDownloadStore — isDownloaded', () => {
   it('returns false for an unknown pack', () => {
-    expect(usePackDownloadStore.getState().isDownloaded('unknown', 'v1')).toBe(false);
+    expect(usePackDownloadStore.getState().isDownloaded('unknown', 'v1')).toBe(
+      false
+    );
   });
 
   it('returns false when status is downloading', () => {
     usePackDownloadStore.getState().startDownload('p1', 2);
-    expect(usePackDownloadStore.getState().isDownloaded('p1', 'v1')).toBe(false);
+    expect(usePackDownloadStore.getState().isDownloaded('p1', 'v1')).toBe(
+      false
+    );
   });
 
   it('returns true after completeDownload with matching version', () => {
     usePackDownloadStore.getState().startDownload('p1', 2);
-    usePackDownloadStore.getState().completeDownload('p1', { localModelPaths: {}, localAudioPaths: {} }, 'v1');
+    usePackDownloadStore
+      .getState()
+      .completeDownload(
+        'p1',
+        { localModelPaths: {}, localAudioPaths: {} },
+        'v1'
+      );
     expect(usePackDownloadStore.getState().isDownloaded('p1', 'v1')).toBe(true);
   });
 
   it('returns false when version mismatches', () => {
-    usePackDownloadStore.getState().completeDownload('p1', { localModelPaths: {}, localAudioPaths: {} }, 'v1');
-    expect(usePackDownloadStore.getState().isDownloaded('p1', 'v2')).toBe(false);
+    usePackDownloadStore
+      .getState()
+      .completeDownload(
+        'p1',
+        { localModelPaths: {}, localAudioPaths: {} },
+        'v1'
+      );
+    expect(usePackDownloadStore.getState().isDownloaded('p1', 'v2')).toBe(
+      false
+    );
   });
 });
 
@@ -126,7 +185,10 @@ describe('usePackDownloadStore — getLocalPaths', () => {
   });
 
   it('returns model and audio paths after completeDownload', () => {
-    const result = { localModelPaths: { apple: '/a.glb' }, localAudioPaths: { apple: '/a.mp3' } };
+    const result = {
+      localModelPaths: { apple: '/a.glb' },
+      localAudioPaths: { apple: '/a.mp3' },
+    };
     usePackDownloadStore.getState().completeDownload('p1', result, 'v1');
     const paths = usePackDownloadStore.getState().getLocalPaths('p1');
     expect(paths?.models.apple).toBe('/a.glb');
@@ -134,7 +196,13 @@ describe('usePackDownloadStore — getLocalPaths', () => {
   });
 
   it('returns null after deleteDownload', async () => {
-    usePackDownloadStore.getState().completeDownload('p1', { localModelPaths: {}, localAudioPaths: {} }, 'v1');
+    usePackDownloadStore
+      .getState()
+      .completeDownload(
+        'p1',
+        { localModelPaths: {}, localAudioPaths: {} },
+        'v1'
+      );
     await usePackDownloadStore.getState().deleteDownload('p1');
     expect(usePackDownloadStore.getState().getLocalPaths('p1')).toBeNull();
   });
@@ -144,7 +212,7 @@ describe('usePackDownloadStore — updateProgress', () => {
   it('computes progress as downloaded / total', () => {
     usePackDownloadStore.getState().startDownload('p1', 4);
     usePackDownloadStore.getState().updateProgress('p1', 2);
-    expect(usePackDownloadStore.getState().packs['p1'].progress).toBeCloseTo(0.5);
+    expect(usePackDownloadStore.getState().packs.p1.progress).toBeCloseTo(0.5);
   });
 });
 
@@ -153,7 +221,12 @@ describe('usePackDownloadStore — updateProgress', () => {
 describe('packDownloadService — downloadPack', () => {
   it('resolves with localModelPaths and localAudioPaths', async () => {
     const words = ['apple'];
-    const result = await downloadPack('pack1', words, makeRemoteModels(words), jest.fn());
+    const result = await downloadPack(
+      'pack1',
+      words,
+      makeRemoteModels(words),
+      jest.fn()
+    );
     expect(result.localModelPaths).toHaveProperty('apple');
     expect(result.localAudioPaths).toHaveProperty('apple');
   });
@@ -173,11 +246,16 @@ describe('packDownloadService — downloadPack', () => {
       fetch: jest.fn(() => {
         active++;
         peak = Math.max(peak, active);
-        const p = new Promise<object>(res => setImmediate(() => { active--; res({ respInfo: { status: 200 } }); }));
+        const p = new Promise<object>((res) =>
+          setImmediate(() => {
+            active--;
+            res({ respInfo: { status: 200 } });
+          })
+        );
         return Object.assign(p, { cancel: jest.fn() });
       }),
     }));
-    const words = ['apple','banana','cherry','grape','lemon'];
+    const words = ['apple', 'banana', 'cherry', 'grape', 'lemon'];
     await downloadPack('pack1', words, makeRemoteModels(words), jest.fn());
     expect(peak).toBeLessThanOrEqual(config.DOWNLOAD_CONCURRENCY);
     expect(peak).toBeGreaterThan(1);
@@ -198,7 +276,9 @@ describe('packDownloadService — downloadPack', () => {
     }));
     // Model-only entry → single task → exactly 2 fetch calls (1 fail + 1 retry)
     const words = ['apple'];
-    await expect(downloadPack('pack1', words, makeModelOnlyRemoteModels(words), jest.fn())).resolves.toBeDefined();
+    await expect(
+      downloadPack('pack1', words, makeModelOnlyRemoteModels(words), jest.fn())
+    ).resolves.toBeDefined();
     expect(calls).toBe(2);
   });
 
@@ -210,12 +290,16 @@ describe('packDownloadService — downloadPack', () => {
         return Object.assign(p, { cancel: jest.fn() });
       }),
     }));
-    await expect(downloadPack('pack1', ['apple'], makeRemoteModels(['apple']), jest.fn())).rejects.toThrow();
+    await expect(
+      downloadPack('pack1', ['apple'], makeRemoteModels(['apple']), jest.fn())
+    ).rejects.toThrow();
   });
 
   it('throws NoSpaceError when free disk space is below threshold', async () => {
     blob().fs.df.mockResolvedValue({ free: 1024 }); // 1 KB — well below 50 MB threshold
-    await expect(downloadPack('pack1', ['apple'], makeRemoteModels(['apple']), jest.fn())).rejects.toThrow('Not enough free space');
+    await expect(
+      downloadPack('pack1', ['apple'], makeRemoteModels(['apple']), jest.fn())
+    ).rejects.toThrow('Not enough free space');
   });
 });
 
@@ -233,8 +317,12 @@ describe('packStorage — pure path helpers', () => {
   it('buildAssetTasks generates one model and one audio task per word', () => {
     const tasks = buildAssetTasks(['apple'], makeRemoteModels(['apple']));
     expect(tasks).toHaveLength(2);
-    expect(tasks.find(t => t.kind === 'model')?.url).toBe('https://cdn/apple.glb');
-    expect(tasks.find(t => t.kind === 'audio')?.url).toBe('https://cdn/apple.mp3');
+    expect(tasks.find((t) => t.kind === 'model')?.url).toBe(
+      'https://cdn/apple.glb'
+    );
+    expect(tasks.find((t) => t.kind === 'audio')?.url).toBe(
+      'https://cdn/apple.mp3'
+    );
   });
 
   it('buildAssetTasks skips words that have no remote entry', () => {

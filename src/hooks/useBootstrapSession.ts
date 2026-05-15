@@ -14,30 +14,34 @@
  *   on a cold start with a slow connection. Each fetch returns a safe empty on failure.
  */
 
-import { useState, useEffect } from "react";
-import { getApp } from "@react-native-firebase/app";
+import { useState, useEffect } from 'react';
+import { getApp } from '@react-native-firebase/app';
 import {
   getAuth,
   onAuthStateChanged,
   signOut,
-} from "@react-native-firebase/auth";
-import { useAuthStore } from "../store/useAuthStore";
-import { useParentalControlsStore } from "../store/useParentalControlsStore";
-import { useRemoteContentStore } from "../store/useRemoteContentStore";
-import { usePackDownloadStore } from "../store/usePackDownloadStore";
-import { createUserIfNew, isUserSuspended, loadChildProfile } from "../services/userService";
+} from '@react-native-firebase/auth';
+import { useAuthStore } from '../store/useAuthStore';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import { usePackDownloadStore } from '../store/usePackDownloadStore';
+import {
+  createUserIfNew,
+  isUserSuspended,
+  loadChildProfile,
+} from '../services/userService';
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
   fetchActiveBanner,
-} from "../services/remoteContentService";
-import { useLanguageStore } from "../store/useLanguageStore";
-import { usePurchaseStore } from "../store/usePurchaseStore";
-import { fetchPacks } from "../services/packService";
+} from '../services/remoteContentService';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { usePurchaseStore } from '../store/usePurchaseStore';
+import { fetchPacks } from '../services/packService';
 import {
   registerFcmToken,
   setupTokenRefresh,
-} from "../services/notificationService";
+} from '../services/notificationService';
 
 interface BootstrapResult {
   initializing: boolean;
@@ -45,8 +49,10 @@ interface BootstrapResult {
 }
 
 export const useBootstrapSession = (): BootstrapResult => {
-  const { initializing, setUser, setInitializing, setChildProfile } = useAuthStore();
-  const { loadSettings, unloadSettings, mergeGlobalBlocklist } = useParentalControlsStore();
+  const { initializing, setUser, setInitializing, setChildProfile } =
+    useAuthStore();
+  const { loadSettings, unloadSettings, mergeGlobalBlocklist } =
+    useParentalControlsStore();
   const { loadRemoteModels, setRemoteContent } = useRemoteContentStore();
   const [suspendedError, setSuspendedError] = useState(false);
 
@@ -74,18 +80,28 @@ export const useBootstrapSession = (): BootstrapResult => {
 
       // Load language + intro preference and purchase history before anything
       // else so the first screen renders with the correct state.
-      useLanguageStore.getState().loadFromStorage().catch(() => {});
-      usePurchaseStore.getState().loadFromStorage().catch(() => {});
+      useLanguageStore
+        .getState()
+        .loadFromStorage()
+        .catch(() => {});
+      usePurchaseStore
+        .getState()
+        .loadFromStorage()
+        .catch(() => {});
 
       try {
         await createUserIfNew(userState);
       } catch (e) {
-        console.warn("[useBootstrapSession] createUserIfNew:", e);
+        console.warn('[useBootstrapSession] createUserIfNew:', e);
       }
-      if (sessionUid !== activeUid) return;
+      if (sessionUid !== activeUid) {
+        return;
+      }
 
       const suspended = await isUserSuspended(userState.uid);
-      if (sessionUid !== activeUid) return;
+      if (sessionUid !== activeUid) {
+        return;
+      }
       if (suspended) {
         setSuspendedError(true);
         await signOut(authInstance).catch(() => {});
@@ -101,7 +117,9 @@ export const useBootstrapSession = (): BootstrapResult => {
       loadChildProfile(userState.uid)
         .then(({ childName, childAge }) => setChildProfile(childName, childAge))
         .catch(() => {});
-      if (sessionUid !== activeUid) return;
+      if (sessionUid !== activeUid) {
+        return;
+      }
 
       loadRemoteModels().catch(() => {});
 
@@ -111,11 +129,17 @@ export const useBootstrapSession = (): BootstrapResult => {
           fetchGlobalBlocklist(),
           fetchActiveBanner(),
         ]);
-        if (sessionUid !== activeUid) return;
-        setRemoteContent({ remotePacks, globalBlocklist: blocklist, activeBanner });
+        if (sessionUid !== activeUid) {
+          return;
+        }
+        setRemoteContent({
+          remotePacks,
+          globalBlocklist: blocklist,
+          activeBanner,
+        });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
-        console.warn("[useBootstrapSession] remote content fetch:", e);
+        console.warn('[useBootstrapSession] remote content fetch:', e);
       }
 
       // Boot-time stuck-download recovery: if the app was killed mid-download,
@@ -125,10 +149,12 @@ export const useBootstrapSession = (): BootstrapResult => {
       // we know each pack's word list (= which files to clean).
       try {
         const packs = await fetchPacks();
-        if (sessionUid !== activeUid) return;
+        if (sessionUid !== activeUid) {
+          return;
+        }
         await usePackDownloadStore.getState().resetStuckDownloads(packs);
       } catch (e) {
-        console.warn("[useBootstrapSession] resetStuckDownloads:", e);
+        console.warn('[useBootstrapSession] resetStuckDownloads:', e);
       }
     });
     return () => {

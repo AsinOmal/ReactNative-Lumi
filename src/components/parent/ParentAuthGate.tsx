@@ -3,12 +3,21 @@
 // Extracted from ParentDashboardScreen so that screen stays under 150 lines.
 // Intentionally uses its own inline styles — no cross-file style dep.
 
-import React from "react";
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { useStrings } from "../../hooks/useStrings";
-import { colors } from "../../constants/colors";
-import { woodBorderOuter, woodBorderInner } from "../../constants/skeuomorphicTokens";
+import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StyleSheet,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useStrings } from '../../hooks/useStrings';
+import { colors } from '../../constants/colors';
+import {
+  woodBorderOuter,
+  woodBorderInner,
+} from '../../constants/skeuomorphicTokens';
 
 interface Props {
   onAuthenticate: () => void;
@@ -42,24 +51,41 @@ export const ParentAuthGate: React.FC<Props> = ({ onAuthenticate }) => {
 };
 
 const styles = StyleSheet.create({
-  gate: { flex: 1, alignItems: "center", justifyContent: "center", padding: 40, gap: 12 },
+  gate: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 12,
+  },
   iconWrap: {
-    width: 96, height: 96, borderRadius: 48,
-    backgroundColor: "rgba(255,154,46,0.12)",
-    alignItems: "center", justifyContent: "center",
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(255,154,46,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
   title: {
-    fontFamily: "Fredoka-Bold", fontSize: 30,
-    color: colors.textDark, textAlign: "center",
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 30,
+    color: colors.textDark,
+    textAlign: 'center',
   },
   subtitle: {
-    fontFamily: "Fredoka-Regular", fontSize: 18,
-    color: colors.textMid, textAlign: "center", lineHeight: 26, marginBottom: 16,
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 18,
+    color: colors.textMid,
+    textAlign: 'center',
+    lineHeight: 26,
+    marginBottom: 16,
   },
   btn: {
-    backgroundColor: colors.primary, borderRadius: 14,
-    paddingVertical: 16, paddingHorizontal: 44,
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 44,
   },
-  btnText: { fontFamily: "Fredoka-Bold", fontSize: 20, color: "#FFF" },
+  btnText: { fontFamily: 'Fredoka-Bold', fontSize: 20, color: '#FFF' },
 });

@@ -1,8 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { useCameraDevice, useCameraPermission, Camera } from 'react-native-vision-camera';
+import {
+  useCameraDevice,
+  useCameraPermission,
+  Camera,
+} from 'react-native-vision-camera';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { MatchResult, matchWord, detectUnknownWord } from '../utils/wordMatcher';
+import {
+  MatchResult,
+  matchWord,
+  detectUnknownWord,
+} from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { config } from '../constants/config';
 import { ScanMode } from '../types';
@@ -17,7 +25,7 @@ interface UseScanOCRProps {
 
 // 📖 What this does:
 // This hook encapsulates all the heavy camera logic and OCR scanning loops.
-// It manages permissions, camera references, App state (backgrounding), 
+// It manages permissions, camera references, App state (backgrounding),
 // and the debounce logic to ensure words have to be matched across multiple consecutive frames.
 export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
   const device = useCameraDevice('back');
@@ -29,10 +37,12 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
 
   const isScanning = useRef(false);
   const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [isAppActive, setIsAppActive] = useState(AppState.currentState === 'active');
+  const [isAppActive, setIsAppActive] = useState(
+    AppState.currentState === 'active'
+  );
   const [isScreenFocused, setIsScreenFocused] = useState(true);
   const isFocused = useIsFocused(); // True native navigation focus state
-  
+
   // Debouncing refs
   const lastCandidateRef = useRef<string | null>(null);
   const consecutiveCountRef = useRef(0);
@@ -62,28 +72,44 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
 
   // Stop camera when locked / backgrounded
   useEffect(() => {
-    const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {
-      const active = nextState === 'active';
-      setIsAppActive(active);
-      if (!active && scanTimerRef.current) {
-        clearInterval(scanTimerRef.current);
-        scanTimerRef.current = null;
-        isScanning.current = false;
+    const sub = AppState.addEventListener(
+      'change',
+      (nextState: AppStateStatus) => {
+        const active = nextState === 'active';
+        setIsAppActive(active);
+        if (!active && scanTimerRef.current) {
+          clearInterval(scanTimerRef.current);
+          scanTimerRef.current = null;
+          isScanning.current = false;
+        }
       }
-    });
+    );
     return () => sub.remove();
   }, []);
 
   useEffect(() => {
-    if (!hasPermission) requestPermission();
+    if (!hasPermission) {
+      requestPermission();
+    }
   }, [hasPermission, requestPermission]);
 
   const runOCR = useCallback(async () => {
-    if (!cameraRef.current || mode !== 'scan' || isScanning.current || !isAppActive || !isScreenFocused || !isFocused) return;
-    
+    if (
+      !cameraRef.current ||
+      mode !== 'scan' ||
+      isScanning.current ||
+      !isAppActive ||
+      !isScreenFocused ||
+      !isFocused
+    ) {
+      return;
+    }
+
     isScanning.current = true;
     try {
-      const snapshot = await cameraRef.current.takePhoto({ enableShutterSound: false });
+      const snapshot = await cameraRef.current.takePhoto({
+        enableShutterSound: false,
+      });
       const text = await recognizeTextInImage(snapshot.path);
       const matched = matchWord(text, allSupportedWords);
 
@@ -95,7 +121,10 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
         firstCandidateResultRef.current = matched;
       }
 
-      if (matched && consecutiveCountRef.current >= config.REQUIRED_CONSECUTIVE_FRAMES) {
+      if (
+        matched &&
+        consecutiveCountRef.current >= config.REQUIRED_CONSECUTIVE_FRAMES
+      ) {
         // ── Blocklist check — before surfacing to child UI ────────────────────
         // Log every confirmed match for parent activity log (flagged or not).
         // Blocked words: log silently, show nothing to the child.
@@ -129,7 +158,10 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
           unknownConsecutiveRef.current = unknown ? 1 : 0;
         }
 
-        if (unknown && unknownConsecutiveRef.current >= config.REQUIRED_UNKNOWN_CONSECUTIVE) {
+        if (
+          unknown &&
+          unknownConsecutiveRef.current >= config.REQUIRED_UNKNOWN_CONSECUTIVE
+        ) {
           setUnknownWord(unknown);
         } else if (!unknown) {
           setUnknownWord(null);
@@ -140,7 +172,15 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
     } finally {
       isScanning.current = false;
     }
-  }, [mode, isAppActive, isScreenFocused, isFocused, allSupportedWords, mergedBlocklist, user]);
+  }, [
+    mode,
+    isAppActive,
+    isScreenFocused,
+    isFocused,
+    allSupportedWords,
+    mergedBlocklist,
+    user,
+  ]);
 
   useEffect(() => {
     if (mode === 'scan' && isAppActive && isScreenFocused && isFocused) {
@@ -159,5 +199,15 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
     };
   }, [mode, isAppActive, isScreenFocused, isFocused, runOCR]);
 
-  return { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord };
+  return {
+    cameraRef,
+    device,
+    hasPermission,
+    isAppActive,
+    isFocused,
+    matchResult,
+    unknownWord,
+    setMatchResult,
+    setUnknownWord,
+  };
 };

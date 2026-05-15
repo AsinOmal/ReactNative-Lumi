@@ -9,8 +9,10 @@
 import { STATIC_BLOCKLIST } from '../src/data/blocklist';
 
 // Pure helper extracted from the store for testability.
-const buildMergedBlocklist = (custom: string[], global: string[]): Set<string> =>
-  new Set([...STATIC_BLOCKLIST, ...custom, ...global]);
+const buildMergedBlocklist = (
+  custom: string[],
+  global: string[]
+): Set<string> => new Set([...STATIC_BLOCKLIST, ...custom, ...global]);
 
 describe('blocklist — static list', () => {
   it('contains core profanity terms', () => {
@@ -67,7 +69,7 @@ describe('blocklist — merge behaviour', () => {
     const global = ['adminblock1'];
     const set = buildMergedBlocklist(custom, global);
 
-    [...STATIC_BLOCKLIST, ...custom, ...global].forEach(word => {
+    [...STATIC_BLOCKLIST, ...custom, ...global].forEach((word) => {
       expect(set.has(word)).toBe(true);
     });
   });
@@ -83,6 +85,6 @@ describe('blocklist — OCR integration path', () => {
   it('does not block safe words regardless of list configuration', () => {
     const set = buildMergedBlocklist(['extra', 'words'], ['more', 'words']);
     const safeWords = ['apple', 'cat', 'sun', 'tree', 'bird'];
-    safeWords.forEach(word => expect(set.has(word)).toBe(false));
+    safeWords.forEach((word) => expect(set.has(word)).toBe(false));
   });
 });

@@ -9,49 +9,49 @@
  * A transparent scanSpacer inside the pill reserves the visual gap.
  */
 
-import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import React from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
 import {
   createBottomTabNavigator,
   BottomTabBarProps,
-} from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { HomeScreen } from "../screens/HomeScreen";
-import { LibraryScreen } from "../screens/LibraryScreen";
-import { PlaygroundScreen } from "../screens/PlaygroundScreen";
-import { SettingsScreen } from "../screens/SettingsScreen";
-import { colors } from "../constants/colors";
-import { ScanButton } from "./ScanButton";
-import { styles } from "./MainTabNavigatorStyles";
+} from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { HomeScreen } from '../screens/HomeScreen';
+import { LibraryScreen } from '../screens/LibraryScreen';
+import { PlaygroundScreen } from '../screens/PlaygroundScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { colors } from '../constants/colors';
+import { ScanButton } from './ScanButton';
+import { styles } from './MainTabNavigatorStyles';
 
 const LEFT_TABS = [
   {
-    name: "Home",
-    iconActive: "home",
-    iconInactive: "home-outline",
-    label: "Home",
+    name: 'Home',
+    iconActive: 'home',
+    iconInactive: 'home-outline',
+    label: 'Home',
   },
   {
-    name: "Library",
-    iconActive: "library",
-    iconInactive: "library-outline",
-    label: "Library",
+    name: 'Library',
+    iconActive: 'library',
+    iconInactive: 'library-outline',
+    label: 'Library',
   },
 ];
 
 const RIGHT_TABS = [
   {
-    name: "Playground",
-    iconActive: "game-controller",
-    iconInactive: "game-controller-outline",
-    label: "Play",
+    name: 'Playground',
+    iconActive: 'game-controller',
+    iconInactive: 'game-controller-outline',
+    label: 'Play',
   },
   {
-    name: "Settings",
-    iconActive: "settings",
-    iconInactive: "settings-outline",
-    label: "Settings",
+    name: 'Settings',
+    iconActive: 'settings',
+    iconInactive: 'settings-outline',
+    label: 'Settings',
   },
 ];
 
@@ -60,19 +60,22 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
 
   const renderTab = (tabDef: (typeof LEFT_TABS)[0]) => {
     const route = state.routes.find((r) => r.name === tabDef.name);
-    if (!route) return null;
+    if (!route) {
+      return null;
+    }
     const index = state.routes.indexOf(route);
     const isFocused = state.index === index;
     const iconColor = isFocused ? colors.primary : colors.tabInactive;
 
     const onPress = () => {
       const event = navigation.emit({
-        type: "tabPress",
+        type: 'tabPress',
         target: route.key,
         canPreventDefault: true,
       });
-      if (!isFocused && !event.defaultPrevented)
+      if (!isFocused && !event.defaultPrevented) {
         navigation.navigate(tabDef.name);
+      }
     };
 
     return (

@@ -10,7 +10,10 @@ interface FileUploaderProps {
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
-  accept, label, currentUrl, onUpload,
+  accept,
+  label,
+  currentUrl,
+  onUpload,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -41,12 +44,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
+    if (file) {
+      handleFile(file);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleFile(file);
+    if (file) {
+      handleFile(file);
+    }
   };
 
   const reset = () => {
@@ -54,7 +61,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     setProgress(null);
     setDone(false);
     setError(null);
-    if (inputRef.current) inputRef.current.value = '';
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   return (
@@ -69,9 +78,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
       {!fileName ? (
         <div
-          className={`file-uploader__drop ${dragging ? 'file-uploader__drop--active' : ''}`}
+          className={`file-uploader__drop ${
+            dragging ? 'file-uploader__drop--active' : ''
+          }`}
           onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
         >
@@ -81,23 +95,49 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
           </p>
           <p className="file-uploader__hint">{label}</p>
           {currentUrl && (
-            <p className="file-uploader__current">Current file already uploaded</p>
+            <p className="file-uploader__current">
+              Current file already uploaded
+            </p>
           )}
         </div>
       ) : (
-        <div className={`file-uploader__progress-wrap ${done ? 'file-uploader__progress-wrap--done' : ''} ${error ? 'file-uploader__progress-wrap--error' : ''}`}>
+        <div
+          className={`file-uploader__progress-wrap ${
+            done ? 'file-uploader__progress-wrap--done' : ''
+          } ${error ? 'file-uploader__progress-wrap--error' : ''}`}
+        >
           <div className="file-uploader__file-row">
-            {done && <CheckCircle size={16} className="file-uploader__status-icon file-uploader__status-icon--done" />}
-            {error && <AlertCircle size={16} className="file-uploader__status-icon file-uploader__status-icon--error" />}
-            {!done && !error && <Upload size={16} className="file-uploader__status-icon" />}
+            {done && (
+              <CheckCircle
+                size={16}
+                className="file-uploader__status-icon file-uploader__status-icon--done"
+              />
+            )}
+            {error && (
+              <AlertCircle
+                size={16}
+                className="file-uploader__status-icon file-uploader__status-icon--error"
+              />
+            )}
+            {!done && !error && (
+              <Upload size={16} className="file-uploader__status-icon" />
+            )}
             <span className="file-uploader__filename">{fileName}</span>
-            <button type="button" className="file-uploader__clear" onClick={reset} title="Remove">
+            <button
+              type="button"
+              className="file-uploader__clear"
+              onClick={reset}
+              title="Remove"
+            >
               <X size={14} />
             </button>
           </div>
           {progress !== null && !done && (
             <div className="file-uploader__bar-wrap">
-              <div className="file-uploader__bar" style={{ width: `${progress}%` }} />
+              <div
+                className="file-uploader__bar"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           )}
           {error && <p className="file-uploader__error">{error}</p>}

@@ -11,7 +11,13 @@ interface RoundChallengeProps {
   onDismiss: () => void;
 }
 
-export const RoundChallenge = ({ targetWord, targetCount, currentRound, totalRounds, onDismiss }: RoundChallengeProps) => {
+export const RoundChallenge = ({
+  targetWord,
+  targetCount,
+  currentRound,
+  totalRounds,
+  onDismiss,
+}: RoundChallengeProps) => {
   const display = targetWord.charAt(0).toUpperCase() + targetWord.slice(1);
 
   useEffect(() => {
@@ -20,13 +26,29 @@ export const RoundChallenge = ({ targetWord, targetCount, currentRound, totalRou
   }, [onDismiss]);
 
   return (
-    <TouchableOpacity style={styles.overlay} onPress={onDismiss} activeOpacity={1} accessibilityLabel="Start round early" accessibilityRole="button">
+    <TouchableOpacity
+      style={styles.overlay}
+      onPress={onDismiss}
+      activeOpacity={1}
+      accessibilityLabel="Start round early"
+      accessibilityRole="button"
+    >
       <View style={styles.card}>
-        <Text style={styles.round}>Round {currentRound + 1} of {totalRounds}</Text>
-        <MaterialCommunityIcons name="cube-outline" size={64} color={colors.primaryLight} style={styles.icon} />
+        <Text style={styles.round}>
+          Round {currentRound + 1} of {totalRounds}
+        </Text>
+        <MaterialCommunityIcons
+          name="cube-outline"
+          size={64}
+          color={colors.primaryLight}
+          style={styles.icon}
+        />
         <Text style={styles.instruction}>Find</Text>
         <Text style={styles.count}>{targetCount}</Text>
-        <Text style={styles.word}>{display}{targetCount > 1 ? 's' : ''}!</Text>
+        <Text style={styles.word}>
+          {display}
+          {targetCount > 1 ? 's' : ''}!
+        </Text>
         <Text style={styles.hint}>Tap to start early</Text>
       </View>
     </TouchableOpacity>
@@ -37,19 +59,44 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(10,5,40,0.88)',
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   card: {
-    backgroundColor: colors.primaryDark, borderRadius: 28,
-    paddingHorizontal: 44, paddingVertical: 36,
-    alignItems: 'center', gap: 4,
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.45, shadowRadius: 20,
+    backgroundColor: colors.primaryDark,
+    borderRadius: 28,
+    paddingHorizontal: 44,
+    paddingVertical: 36,
+    alignItems: 'center',
+    gap: 4,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 20,
   },
-  round: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: '#9B87CC', marginBottom: 8 },
+  round: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 14,
+    color: '#9B87CC',
+    marginBottom: 8,
+  },
   icon: { marginBottom: 4 },
-  instruction: { fontFamily: 'Fredoka-Regular', fontSize: 22, color: '#C4B5FD' },
-  count: { fontFamily: 'Fredoka-Bold', fontSize: 80, color: '#FFFFFF', lineHeight: 88 },
-  word: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: colors.primaryLight, marginBottom: 20 },
+  instruction: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 22,
+    color: '#C4B5FD',
+  },
+  count: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 80,
+    color: '#FFFFFF',
+    lineHeight: 88,
+  },
+  word: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 28,
+    color: colors.primaryLight,
+    marginBottom: 20,
+  },
   hint: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: '#7B6EA6' },
 });

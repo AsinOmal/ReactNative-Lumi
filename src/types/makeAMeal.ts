@@ -1,5 +1,5 @@
 export interface Ingredient {
-  word: string;    // must match a MODEL_REGISTRY key
+  word: string; // must match a MODEL_REGISTRY key
   quantity: number;
 }
 
@@ -8,7 +8,7 @@ export interface Recipe {
   name: string;
   emoji: string;
   description: string;
-  requiredPackIds: string[];  // packs the child needs to have unlocked
+  requiredPackIds: string[]; // packs the child needs to have unlocked
   ingredients: Ingredient[];
 }
 

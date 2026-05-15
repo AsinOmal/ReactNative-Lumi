@@ -16,8 +16,10 @@ export const ModelsScreen: React.FC = () => {
   const { packs } = usePacks();
   const [filterPack, setFilterPack] = useState('');
 
-  const packMap = Object.fromEntries(packs.map(p => [p.id, p.name]));
-  const filtered = filterPack ? models.filter(m => m.packId === filterPack) : models;
+  const packMap = Object.fromEntries(packs.map((p) => [p.id, p.name]));
+  const filtered = filterPack
+    ? models.filter((m) => m.packId === filterPack)
+    : models;
 
   return (
     <div className="models">
@@ -35,11 +37,13 @@ export const ModelsScreen: React.FC = () => {
         <select
           className="form-select models__filter-select"
           value={filterPack}
-          onChange={e => setFilterPack(e.target.value)}
+          onChange={(e) => setFilterPack(e.target.value)}
         >
           <option value="">All packs</option>
-          {packs.map(p => (
-            <option key={p.id} value={p.id}>{p.name}</option>
+          {packs.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
           ))}
         </select>
         <span className="models__count">{filtered.length} models</span>
@@ -74,24 +78,39 @@ export const ModelsScreen: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(m => (
+              {filtered.map((m) => (
                 <tr key={m.word} className="models__row">
-                  <td><strong>{m.word}</strong></td>
-                  <td className="models__syllables">{m.syllables.join(' · ') || '—'}</td>
+                  <td>
+                    <strong>{m.word}</strong>
+                  </td>
+                  <td className="models__syllables">
+                    {m.syllables.join(' · ') || '—'}
+                  </td>
                   <td>{packMap[m.packId] ?? m.packId}</td>
                   <td className="models__mono">{m.scale}</td>
                   <td>
-                    <Badge label={m.modelUrl ? 'Uploaded' : 'Missing'} variant={m.modelUrl ? 'success' : 'danger'} />
+                    <Badge
+                      label={m.modelUrl ? 'Uploaded' : 'Missing'}
+                      variant={m.modelUrl ? 'success' : 'danger'}
+                    />
                   </td>
                   <td>
-                    <Badge label={m.audioUrl ? 'Uploaded' : 'Missing'} variant={m.audioUrl ? 'success' : 'danger'} />
+                    <Badge
+                      label={m.audioUrl ? 'Uploaded' : 'Missing'}
+                      variant={m.audioUrl ? 'success' : 'danger'}
+                    />
                   </td>
                   <td>
-                    <Badge label={m.isCalibrated ? 'Yes' : 'No'} variant={m.isCalibrated ? 'info' : 'neutral'} />
+                    <Badge
+                      label={m.isCalibrated ? 'Yes' : 'No'}
+                      variant={m.isCalibrated ? 'info' : 'neutral'}
+                    />
                   </td>
                   <td>
                     <Link to={ROUTES.MODEL_EDIT.replace(':wordKey', m.word)}>
-                      <Button variant="ghost" size="sm">Edit</Button>
+                      <Button variant="ghost" size="sm">
+                        Edit
+                      </Button>
                     </Link>
                   </td>
                 </tr>

@@ -14,7 +14,13 @@ export const PackGrid: React.FC<Props> = ({ packs, loading }) => {
   const navigation = useNavigation();
 
   if (loading) {
-    return <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 16 }} />;
+    return (
+      <ActivityIndicator
+        size="small"
+        color={colors.primary}
+        style={{ marginVertical: 16 }}
+      />
+    );
   }
 
   const rows: Pack[][] = [];
@@ -26,11 +32,13 @@ export const PackGrid: React.FC<Props> = ({ packs, loading }) => {
     <View style={styles.container}>
       {rows.map((row, ri) => (
         <View key={ri} style={styles.row}>
-          {row.map(pack => (
+          {row.map((pack) => (
             <View key={pack.id} style={styles.cell}>
               <ColorPackCard
                 pack={pack}
-                onPress={() => (navigation as any).navigate('PackDetail', { pack })}
+                onPress={() =>
+                  (navigation as any).navigate('PackDetail', { pack })
+                }
               />
             </View>
           ))}

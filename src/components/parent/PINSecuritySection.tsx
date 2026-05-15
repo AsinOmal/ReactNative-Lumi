@@ -54,7 +54,11 @@ export const PINSecuritySection: React.FC = () => {
       <Text style={styles.sectionLabel}>{strings.pinSecuritySectionLabel}</Text>
 
       <View style={styles.card}>
-        <TouchableOpacity style={styles.row} onPress={() => setFlow('verify_current')} accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.row}
+          onPress={() => setFlow('verify_current')}
+          accessibilityRole="button"
+        >
           <View style={styles.iconWrap}>
             <Ionicons name="lock-closed-outline" size={20} color="#FF9A2E" />
           </View>
@@ -67,7 +71,11 @@ export const PINSecuritySection: React.FC = () => {
 
         <View style={styles.divider} />
 
-        <TouchableOpacity style={styles.row} onPress={() => setFlow('set_new')} accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.row}
+          onPress={() => setFlow('set_new')}
+          accessibilityRole="button"
+        >
           <View style={styles.iconWrap}>
             <Ionicons name="key-outline" size={20} color="#FF9A2E" />
           </View>

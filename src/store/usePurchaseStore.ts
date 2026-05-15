@@ -29,7 +29,9 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
   loadFromStorage: async () => {
     try {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
-      if (raw) set({ purchasedPackIds: JSON.parse(raw) });
+      if (raw) {
+        set({ purchasedPackIds: JSON.parse(raw) });
+      }
     } catch {
       // Fail silently — user will re-purchase if storage is corrupt
     }

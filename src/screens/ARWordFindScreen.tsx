@@ -1,5 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Animated, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Animated,
+  Alert,
+} from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,12 +28,20 @@ import { styles } from './ARWordFindScreenStyles';
 const ALL_WORDS = Object.keys(MODEL_REGISTRY);
 
 const POSITIONS: [number, number, number][] = [
-  [-2.2, 0.6, -1.6], [-1.8, -0.5, -2.2], [-0.8, 0.4, -1.2], [0.0, 0.8, -2.0],
-  [-0.4, -0.5, -1.7], [0.7, 0.5, -1.3], [1.3, -0.4, -2.3], [1.9, 0.3, -1.5],
-  [2.4, -0.5, -1.9], [0.4, 0.1, -2.6],
+  [-2.2, 0.6, -1.6],
+  [-1.8, -0.5, -2.2],
+  [-0.8, 0.4, -1.2],
+  [0.0, 0.8, -2.0],
+  [-0.4, -0.5, -1.7],
+  [0.7, 0.5, -1.3],
+  [1.3, -0.4, -2.3],
+  [1.9, 0.3, -1.5],
+  [2.4, -0.5, -1.9],
+  [0.4, 0.1, -2.6],
 ];
 
-const fmt = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+const fmt = (s: number) =>
+  `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
 // 📖 Orchestrates the AR Word Hunt game. Delegates timer/score to useARGameLoop.
 export const ARWordFindScreen = () => {
@@ -38,14 +55,25 @@ export const ARWordFindScreen = () => {
   const [isLeaving, setIsLeaving] = useState(false);
 
   const {
-    currentIdx, targetWord, foundWords, score, wrongCount,
-    gameOver, timedOut, gameStarted, setGameStarted,
-    timeLeft, feedback, feedbackAnim,
-    handleCorrect, handleWrong, stopTimer
+    currentIdx,
+    targetWord,
+    foundWords,
+    score,
+    wrongCount,
+    gameOver,
+    timedOut,
+    gameStarted,
+    setGameStarted,
+    timeLeft,
+    feedback,
+    feedbackAnim,
+    handleCorrect,
+    handleWrong,
+    stopTimer,
   } = useARGameLoop({ wordQueue });
 
   const targetModel = MODEL_REGISTRY[targetWord];
-  const language = useLanguageStore(s => s.language);
+  const language = useLanguageStore((s) => s.language);
 
   useEffect(() => {
     loadGameSounds();
@@ -60,10 +88,14 @@ export const ARWordFindScreen = () => {
   }, [navigation, stopTimer]);
 
   const handleModelLoaded = useCallback((word: string) => {
-    setLoadedWords(prev => {
-      if (prev.includes(word)) return prev;
+    setLoadedWords((prev) => {
+      if (prev.includes(word)) {
+        return prev;
+      }
       const next = [...prev, word];
-      if (next.length >= config.AR_MODELS_TOTAL) setAllLoaded(true);
+      if (next.length >= config.AR_MODELS_TOTAL) {
+        setAllLoaded(true);
+      }
       return next;
     });
   }, []);
@@ -71,12 +103,22 @@ export const ARWordFindScreen = () => {
   const onCorrectRef = useRef<(w: string) => void>(() => {});
   const onWrongRef = useRef<(w: string) => void>(() => {});
   const onModelLoadedRef = useRef<(w: string) => void>(() => {});
-  useEffect(() => { onCorrectRef.current = handleCorrect; }, [handleCorrect]);
-  useEffect(() => { onWrongRef.current = handleWrong; }, [handleWrong]);
-  useEffect(() => { onModelLoadedRef.current = handleModelLoaded; }, [handleModelLoaded]);
-  const stableOnCorrect = useRef((w: string) => onCorrectRef.current(w)).current;
+  useEffect(() => {
+    onCorrectRef.current = handleCorrect;
+  }, [handleCorrect]);
+  useEffect(() => {
+    onWrongRef.current = handleWrong;
+  }, [handleWrong]);
+  useEffect(() => {
+    onModelLoadedRef.current = handleModelLoaded;
+  }, [handleModelLoaded]);
+  const stableOnCorrect = useRef((w: string) =>
+    onCorrectRef.current(w)
+  ).current;
   const stableOnWrong = useRef((w: string) => onWrongRef.current(w)).current;
-  const stableOnModelLoaded = useRef((w: string) => onModelLoadedRef.current(w)).current;
+  const stableOnModelLoaded = useRef((w: string) =>
+    onModelLoadedRef.current(w)
+  ).current;
 
   return (
     <View style={styles.container}>
@@ -98,21 +140,45 @@ export const ARWordFindScreen = () => {
       </View>
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <View style={styles.header} pointerEvents="box-none">
-          <TouchableOpacity style={styles.closeBtn} onPress={() => {
-            Alert.alert('Quit Game?', 'Your progress will be lost.', [
-              { text: 'Keep Playing', style: 'cancel' },
-              { text: 'Quit', style: 'destructive', onPress: safeGoBack },
-            ]);
-          }} accessibilityLabel="Quit game" accessibilityRole="button">
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => {
+              Alert.alert('Quit Game?', 'Your progress will be lost.', [
+                { text: 'Keep Playing', style: 'cancel' },
+                { text: 'Quit', style: 'destructive', onPress: safeGoBack },
+              ]);
+            }}
+            accessibilityLabel="Quit game"
+            accessibilityRole="button"
+          >
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
-          <View style={styles.scorePill} pointerEvents="none"><Text style={styles.scorePillText}>⭐ {score}</Text></View>
+          <View style={styles.scorePill} pointerEvents="none">
+            <Text style={styles.scorePillText}>⭐ {score}</Text>
+          </View>
           {gameStarted && !gameOver && (
-            <View style={[styles.timerPill, (timeLeft <= 10) && styles.timerPillUrgent]} pointerEvents="none">
-              <Text style={[styles.timerText, (timeLeft <= 10) && styles.timerTextUrgent]}>⏱ {fmt(timeLeft)}</Text>
+            <View
+              style={[
+                styles.timerPill,
+                timeLeft <= 10 && styles.timerPillUrgent,
+              ]}
+              pointerEvents="none"
+            >
+              <Text
+                style={[
+                  styles.timerText,
+                  timeLeft <= 10 && styles.timerTextUrgent,
+                ]}
+              >
+                ⏱ {fmt(timeLeft)}
+              </Text>
             </View>
           )}
-          <View style={styles.progressPill} pointerEvents="none"><Text style={styles.progressText}>{foundWords.length}/{wordQueue.length}</Text></View>
+          <View style={styles.progressPill} pointerEvents="none">
+            <Text style={styles.progressText}>
+              {foundWords.length}/{wordQueue.length}
+            </Text>
+          </View>
         </View>
         {gameStarted && !gameOver && (
           <View style={styles.targetCard} pointerEvents="none">
@@ -120,32 +186,63 @@ export const ARWordFindScreen = () => {
             <Text style={styles.targetEmoji}>{targetModel?.emoji ?? '❓'}</Text>
             <Text style={styles.targetWord}>{targetWord.toUpperCase()}</Text>
             {language === 'si' && targetModel?.sinhalaLabel ? (
-              <Text style={styles.targetSinhala}>{targetModel.sinhalaLabel}</Text>
+              <Text style={styles.targetSinhala}>
+                {targetModel.sinhalaLabel}
+              </Text>
             ) : null}
           </View>
         )}
         {feedback !== null && (
-          <Animated.View pointerEvents="none" style={[styles.feedbackBanner, feedback === 'correct' ? styles.feedbackGreen : styles.feedbackRed, { opacity: feedbackAnim }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Ionicons name={feedback === 'correct' ? 'checkmark-circle' : 'close-circle'} size={18} color="#FFF" />
-              <Text style={styles.feedbackText}>{feedback === 'correct' ? 'Correct!  +10' : 'Wrong!  -5'}</Text>
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.feedbackBanner,
+              feedback === 'correct'
+                ? styles.feedbackGreen
+                : styles.feedbackRed,
+              { opacity: feedbackAnim },
+            ]}
+          >
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+            >
+              <Ionicons
+                name={
+                  feedback === 'correct' ? 'checkmark-circle' : 'close-circle'
+                }
+                size={18}
+                color="#FFF"
+              />
+              <Text style={styles.feedbackText}>
+                {feedback === 'correct' ? 'Correct!  +10' : 'Wrong!  -5'}
+              </Text>
             </View>
           </Animated.View>
         )}
       </SafeAreaView>
       {!gameStarted && (
         <GameLoadingOverlay
-          loadFadeAnim={loadFadeAnim} loadedWords={loadedWords}
-          allLoaded={allLoaded} totalModels={config.AR_MODELS_TOTAL}
+          loadFadeAnim={loadFadeAnim}
+          loadedWords={loadedWords}
+          allLoaded={allLoaded}
+          totalModels={config.AR_MODELS_TOTAL}
           allWords={ALL_WORDS}
           onStartPlay={() => {
-            Animated.timing(loadFadeAnim, { toValue: 0, duration: 600, useNativeDriver: true }).start(() => setGameStarted(true));
+            Animated.timing(loadFadeAnim, {
+              toValue: 0,
+              duration: 600,
+              useNativeDriver: true,
+            }).start(() => setGameStarted(true));
           }}
         />
       )}
       <GameOverModal
-        gameOver={gameOver} timedOut={timedOut} wrongCount={wrongCount}
-        score={score} foundCount={foundWords.length} totalCount={wordQueue.length}
+        gameOver={gameOver}
+        timedOut={timedOut}
+        wrongCount={wrongCount}
+        score={score}
+        foundCount={foundWords.length}
+        totalCount={wordQueue.length}
         onPlayAgain={() => (navigation as any).replace('ARWordFind')}
         onDone={safeGoBack}
       />

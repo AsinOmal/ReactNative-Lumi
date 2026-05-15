@@ -32,10 +32,15 @@ export const useGameConstants = (): UseGameConstantsResult => {
         if (snap.exists()) {
           const d = snap.data();
           setConstants({
-            scanIntervalMs: d.scanIntervalMs ?? DEFAULT_CONSTANTS.scanIntervalMs,
-            hazardCheckIntervalMs: d.hazardCheckIntervalMs ?? DEFAULT_CONSTANTS.hazardCheckIntervalMs,
-            hazardCooldownMs: d.hazardCooldownMs ?? DEFAULT_CONSTANTS.hazardCooldownMs,
-            arGameDurationSec: d.arGameDurationSec ?? DEFAULT_CONSTANTS.arGameDurationSec,
+            scanIntervalMs:
+              d.scanIntervalMs ?? DEFAULT_CONSTANTS.scanIntervalMs,
+            hazardCheckIntervalMs:
+              d.hazardCheckIntervalMs ??
+              DEFAULT_CONSTANTS.hazardCheckIntervalMs,
+            hazardCooldownMs:
+              d.hazardCooldownMs ?? DEFAULT_CONSTANTS.hazardCooldownMs,
+            arGameDurationSec:
+              d.arGameDurationSec ?? DEFAULT_CONSTANTS.arGameDurationSec,
             dailyWordList: d.dailyWordList ?? DEFAULT_CONSTANTS.dailyWordList,
           });
         }
@@ -44,15 +49,21 @@ export const useGameConstants = (): UseGameConstantsResult => {
       (err) => {
         console.error('[useGameConstants] onSnapshot:', err);
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);
 
-  const updateConstants = async (updates: Partial<GameConstants>): Promise<void> => {
+  const updateConstants = async (
+    updates: Partial<GameConstants>
+  ): Promise<void> => {
     setSaving(true);
     try {
-      await setDoc(constantsRef(), { ...constants, ...updates }, { merge: true });
+      await setDoc(
+        constantsRef(),
+        { ...constants, ...updates },
+        { merge: true }
+      );
     } catch (e) {
       console.error('[useGameConstants] updateConstants:', e);
       throw e;

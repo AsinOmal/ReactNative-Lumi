@@ -2,7 +2,9 @@ import { config } from '../src/constants/config';
 
 // The label-matching algorithm from useHazardDetection, extracted for unit testing.
 const matchesKeyword = (label: string): boolean =>
-  config.HAZARD_KEYWORDS.some(k => label.toLowerCase().includes(k.toLowerCase()));
+  config.HAZARD_KEYWORDS.some((k) =>
+    label.toLowerCase().includes(k.toLowerCase())
+  );
 
 const firstMatch = (labels: string[]): string | undefined =>
   labels.find(matchesKeyword);
@@ -49,13 +51,15 @@ describe('hazardDetection — keyword matching', () => {
   });
 
   it('safe labels do not match any keyword', () => {
-    ['teddy bear', 'apple', 'book', 'cat', 'flower', 'bicycle'].forEach(label =>
-      expect(matchesKeyword(label)).toBe(false)
+    ['teddy bear', 'apple', 'book', 'cat', 'flower', 'bicycle'].forEach(
+      (label) => expect(matchesKeyword(label)).toBe(false)
     );
   });
 
   it('finds the first hazardous label in a list', () => {
-    expect(firstMatch(['sky', 'teddy bear', 'fireplace', 'tree'])).toBe('fireplace');
+    expect(firstMatch(['sky', 'teddy bear', 'fireplace', 'tree'])).toBe(
+      'fireplace'
+    );
   });
 
   it('returns undefined when no labels match', () => {
@@ -67,6 +71,6 @@ describe('hazardDetection — keyword matching', () => {
     // At exactly cooldownUntil, condition is false → classification runs → can re-trigger
     const cooldownUntil = 1000;
     expect(cooldownUntil < cooldownUntil).toBe(false); // at boundary: does NOT skip
-    expect((cooldownUntil - 1) < cooldownUntil).toBe(true); // just before: skips
+    expect(cooldownUntil - 1 < cooldownUntil).toBe(true); // just before: skips
   });
 });

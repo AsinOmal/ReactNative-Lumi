@@ -21,9 +21,27 @@ interface Option {
 }
 
 const OPTIONS: Option[] = [
-  { key: 'easy',   label: 'Easy',   range: 'Short words (3–5 letters)', iconName: 'leaf-outline',  gradient: ['#86EFAC', '#10B981'] },
-  { key: 'medium', label: 'Medium', range: 'Medium words (6–7 letters)', iconName: 'flame-outline', gradient: ['#FCD34D', '#F59E0B'] },
-  { key: 'hard',   label: 'Hard',   range: 'Long words (8+ letters)',    iconName: 'flash-outline', gradient: ['#FCA5A5', '#EF4444'] },
+  {
+    key: 'easy',
+    label: 'Easy',
+    range: 'Short words (3–5 letters)',
+    iconName: 'leaf-outline',
+    gradient: ['#86EFAC', '#10B981'],
+  },
+  {
+    key: 'medium',
+    label: 'Medium',
+    range: 'Medium words (6–7 letters)',
+    iconName: 'flame-outline',
+    gradient: ['#FCD34D', '#F59E0B'],
+  },
+  {
+    key: 'hard',
+    label: 'Hard',
+    range: 'Long words (8+ letters)',
+    iconName: 'flash-outline',
+    gradient: ['#FCA5A5', '#EF4444'],
+  },
 ];
 
 interface Props {
@@ -49,7 +67,7 @@ export const DifficultyPicker = ({ onPick, onClose }: Props) => (
     <Text style={styles.diffSubtitle}>Pick how hard you want it!</Text>
 
     <View style={styles.diffList}>
-      {OPTIONS.map(opt => (
+      {OPTIONS.map((opt) => (
         <TouchableOpacity
           key={opt.key}
           activeOpacity={0.85}
@@ -69,7 +87,11 @@ export const DifficultyPicker = ({ onPick, onClose }: Props) => (
               <Text style={styles.diffBtnLabel}>{opt.label}</Text>
               <Text style={styles.diffBtnRange}>{opt.range}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.85)" />
+            <Ionicons
+              name="chevron-forward"
+              size={22}
+              color="rgba(255,255,255,0.85)"
+            />
           </LinearGradient>
         </TouchableOpacity>
       ))}

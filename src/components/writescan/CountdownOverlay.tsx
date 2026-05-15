@@ -17,7 +17,7 @@ export const CountdownOverlay = ({ onDone }: Props) => {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setN(prev => {
+      setN((prev) => {
         if (prev <= 1) {
           clearInterval(id);
           setTimeout(onDone, 500);
@@ -42,10 +42,14 @@ export const CountdownOverlay = ({ onDone }: Props) => {
   return (
     <View style={styles.countdownWrap}>
       <Text style={styles.countdownHeading}>Get ready!</Text>
-      <Animated.Text style={[styles.countdownNumber, { transform: [{ scale }] }]}>
+      <Animated.Text
+        style={[styles.countdownNumber, { transform: [{ scale }] }]}
+      >
         {n === 0 ? 'GO!' : n}
       </Animated.Text>
-      <Text style={styles.countdownTip}>Watch carefully — you&apos;ll need to spell it</Text>
+      <Text style={styles.countdownTip}>
+        Watch carefully — you&apos;ll need to spell it
+      </Text>
     </View>
   );
 };

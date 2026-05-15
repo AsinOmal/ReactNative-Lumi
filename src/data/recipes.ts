@@ -19,9 +19,9 @@ export const RECIPES: Recipe[] = [
     description: 'A fresh mix of your favourite fruits!',
     requiredPackIds: ['fruits'],
     ingredients: [
-      { word: 'apple',      quantity: 1 },
-      { word: 'banana',     quantity: 1 },
-      { word: 'grape',      quantity: 1 },
+      { word: 'apple', quantity: 1 },
+      { word: 'banana', quantity: 1 },
+      { word: 'grape', quantity: 1 },
     ],
   },
   {
@@ -31,9 +31,9 @@ export const RECIPES: Recipe[] = [
     description: 'Taste the tropics in every bite!',
     requiredPackIds: ['fruits'],
     ingredients: [
-      { word: 'mango',      quantity: 1 },
-      { word: 'pineapple',  quantity: 1 },
-      { word: 'orange',     quantity: 1 },
+      { word: 'mango', quantity: 1 },
+      { word: 'pineapple', quantity: 1 },
+      { word: 'orange', quantity: 1 },
     ],
   },
   {
@@ -43,9 +43,9 @@ export const RECIPES: Recipe[] = [
     description: 'Sweet berries and citrus in a bowl!',
     requiredPackIds: ['fruits'],
     ingredients: [
-      { word: 'cherry',     quantity: 1 },
+      { word: 'cherry', quantity: 1 },
       { word: 'strawberry', quantity: 1 },
-      { word: 'lemon',      quantity: 1 },
+      { word: 'lemon', quantity: 1 },
     ],
   },
   {
@@ -55,8 +55,8 @@ export const RECIPES: Recipe[] = [
     description: 'Zingy, refreshing and full of vitamin C!',
     requiredPackIds: ['fruits'],
     ingredients: [
-      { word: 'lemon',      quantity: 1 },
-      { word: 'orange',     quantity: 1 },
+      { word: 'lemon', quantity: 1 },
+      { word: 'orange', quantity: 1 },
       { word: 'watermelon', quantity: 1 },
     ],
   },
@@ -69,9 +69,9 @@ export const RECIPES: Recipe[] = [
     description: 'Crunchy veggies cooked in a hot wok!',
     requiredPackIds: ['vegetables'],
     ingredients: [
-      { word: 'broccoli',   quantity: 1 },
-      { word: 'carrot',     quantity: 1 },
-      { word: 'corn',       quantity: 1 },
+      { word: 'broccoli', quantity: 1 },
+      { word: 'carrot', quantity: 1 },
+      { word: 'corn', quantity: 1 },
     ],
   },
   {
@@ -81,9 +81,9 @@ export const RECIPES: Recipe[] = [
     description: 'Fresh from the garden to your plate!',
     requiredPackIds: ['vegetables'],
     ingredients: [
-      { word: 'cucumber',   quantity: 1 },
-      { word: 'tomato',     quantity: 1 },
-      { word: 'onion',      quantity: 1 },
+      { word: 'cucumber', quantity: 1 },
+      { word: 'tomato', quantity: 1 },
+      { word: 'onion', quantity: 1 },
     ],
   },
   {
@@ -93,9 +93,9 @@ export const RECIPES: Recipe[] = [
     description: 'A warm and cosy bowl of veggie soup!',
     requiredPackIds: ['vegetables'],
     ingredients: [
-      { word: 'potato',     quantity: 1 },
-      { word: 'carrot',     quantity: 1 },
-      { word: 'onion',      quantity: 1 },
+      { word: 'potato', quantity: 1 },
+      { word: 'carrot', quantity: 1 },
+      { word: 'onion', quantity: 1 },
     ],
   },
   {
@@ -105,9 +105,9 @@ export const RECIPES: Recipe[] = [
     description: 'For the brave chefs who like it hot!',
     requiredPackIds: ['vegetables'],
     ingredients: [
-      { word: 'chili',      quantity: 1 },
-      { word: 'eggplant',   quantity: 1 },
-      { word: 'tomato',     quantity: 1 },
+      { word: 'chili', quantity: 1 },
+      { word: 'eggplant', quantity: 1 },
+      { word: 'tomato', quantity: 1 },
     ],
   },
 
@@ -119,10 +119,10 @@ export const RECIPES: Recipe[] = [
     description: 'Every colour of the rainbow on one plate!',
     requiredPackIds: ['fruits', 'vegetables'],
     ingredients: [
-      { word: 'carrot',     quantity: 1 },
-      { word: 'corn',       quantity: 1 },
+      { word: 'carrot', quantity: 1 },
+      { word: 'corn', quantity: 1 },
       { word: 'strawberry', quantity: 1 },
-      { word: 'grape',      quantity: 1 },
+      { word: 'grape', quantity: 1 },
     ],
   },
   {
@@ -132,10 +132,10 @@ export const RECIPES: Recipe[] = [
     description: 'The best of the autumn harvest!',
     requiredPackIds: ['fruits', 'vegetables'],
     ingredients: [
-      { word: 'pumpkin',    quantity: 1 },
-      { word: 'apple',      quantity: 1 },
-      { word: 'potato',     quantity: 1 },
-      { word: 'corn',       quantity: 1 },
+      { word: 'pumpkin', quantity: 1 },
+      { word: 'apple', quantity: 1 },
+      { word: 'potato', quantity: 1 },
+      { word: 'corn', quantity: 1 },
     ],
   },
 ];

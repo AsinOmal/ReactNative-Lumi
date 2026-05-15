@@ -35,16 +35,29 @@ export const HazardAlertOverlay: React.FC<HazardAlertOverlayProps> = ({
     // TODO Phase 9: add a soft chime alert sound.
   }, [visible]);
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
-    <Modal visible={visible} transparent={false} animationType="fade" statusBarTranslucent>
+    <Modal
+      visible={visible}
+      transparent={false}
+      animationType="fade"
+      statusBarTranslucent
+    >
       <View style={styles.container}>
         <Text style={styles.icon}>🚨</Text>
         <Text style={styles.title}>{strings.hazardAlertTitle}</Text>
         <Text style={styles.body}>{strings.hazardAlertBody}</Text>
 
-        <TouchableOpacity style={styles.safeBtn} onPress={onDismiss} activeOpacity={0.85} accessibilityLabel="I am safe, dismiss alert" accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.safeBtn}
+          onPress={onDismiss}
+          activeOpacity={0.85}
+          accessibilityLabel="I am safe, dismiss alert"
+          accessibilityRole="button"
+        >
           <Text style={styles.safeBtnText}>{strings.hazardAlertButton}</Text>
         </TouchableOpacity>
       </View>

@@ -23,10 +23,18 @@ interface Props {
 
 function formatDate(ts: number): string {
   const d = new Date(ts);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
-export const AchievementShareModal = ({ achievement, earnedData, onClose }: Props) => {
+export const AchievementShareModal = ({
+  achievement,
+  earnedData,
+  onClose,
+}: Props) => {
   const viewShotRef = useRef<ViewShot>(null);
 
   const handleShare = async () => {
@@ -38,7 +46,10 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
         title: 'Lumi Achievement',
       });
     } catch {
-      Alert.alert('Could not share', 'Something went wrong capturing the card.');
+      Alert.alert(
+        'Could not share',
+        'Something went wrong capturing the card.'
+      );
     }
   };
 
@@ -46,7 +57,6 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
     <Modal transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.container}>
-
           {/* ── Capturable card ── */}
           <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
             <View style={styles.card}>
@@ -57,13 +67,27 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
               </View>
 
               {/* Badge */}
-              <View style={[styles.badgeCircle, { borderColor: achievement.iconColor, backgroundColor: achievement.iconColor + '22' }]}>
-                <MaterialCommunityIcons name={achievement.iconName} size={52} color={achievement.iconColor} />
+              <View
+                style={[
+                  styles.badgeCircle,
+                  {
+                    borderColor: achievement.iconColor,
+                    backgroundColor: achievement.iconColor + '22',
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={achievement.iconName}
+                  size={52}
+                  color={achievement.iconColor}
+                />
               </View>
 
               {/* Text */}
               <Text style={styles.achievementTitle}>{achievement.title}</Text>
-              <Text style={styles.achievementDesc}>{achievement.description}</Text>
+              <Text style={styles.achievementDesc}>
+                {achievement.description}
+              </Text>
 
               {/* Trigger chip */}
               {earnedData.triggerWord !== 'unknown' && (
@@ -72,28 +96,40 @@ export const AchievementShareModal = ({ achievement, earnedData, onClose }: Prop
                   <Text style={styles.chipText}>
                     Unlocked with:{' '}
                     <Text style={styles.chipWord}>
-                      {earnedData.triggerWord.charAt(0).toUpperCase() + earnedData.triggerWord.slice(1)}
+                      {earnedData.triggerWord.charAt(0).toUpperCase() +
+                        earnedData.triggerWord.slice(1)}
                     </Text>
                   </Text>
                 </View>
               )}
 
               {/* Date */}
-              <Text style={styles.dateText}>{formatDate(earnedData.unlockedAt)}</Text>
+              <Text style={styles.dateText}>
+                {formatDate(earnedData.unlockedAt)}
+              </Text>
             </View>
           </ViewShot>
 
           {/* ── Buttons ── */}
           <View style={styles.btnRow}>
-            <TouchableOpacity style={styles.closeBtn} onPress={onClose} accessibilityLabel="Close achievement card" accessibilityRole="button">
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={onClose}
+              accessibilityLabel="Close achievement card"
+              accessibilityRole="button"
+            >
               <Text style={styles.closeBtnText}>Close</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShare} accessibilityLabel="Share achievement" accessibilityRole="button">
+            <TouchableOpacity
+              style={styles.shareBtn}
+              onPress={handleShare}
+              accessibilityLabel="Share achievement"
+              accessibilityRole="button"
+            >
               <Ionicons name="share-outline" size={18} color="#FFF" />
               <Text style={styles.shareBtnText}>Share</Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </View>
     </Modal>

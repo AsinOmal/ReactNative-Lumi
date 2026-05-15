@@ -1,16 +1,19 @@
-import React from "react";
-import { Text, ScrollView, StatusBar, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useFocusEffect } from "@react-navigation/native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { usePackStore } from "../store/usePackStore";
-import { useRemoteContentStore } from "../store/useRemoteContentStore";
-import { PackGrid } from "../components/home/PackGrid";
-import { ImageBackdrop } from "../components/scenes/ImageBackdrop";
-import { colors } from "../constants/colors";
-import { buttonGradientColors, shadowHeader } from "../constants/skeuomorphicTokens";
+import React from 'react';
+import { Text, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { usePackStore } from '../store/usePackStore';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import { PackGrid } from '../components/home/PackGrid';
+import { ImageBackdrop } from '../components/scenes/ImageBackdrop';
+import { colors } from '../constants/colors';
+import {
+  buttonGradientColors,
+  shadowHeader,
+} from '../constants/skeuomorphicTokens';
 
 export const LibraryScreen = () => {
   const insets = useSafeAreaInsets();
@@ -28,7 +31,7 @@ export const LibraryScreen = () => {
 
   return (
     <ImageBackdrop
-      source={require("../assets/backgrounds/library-screen-bg.png")}
+      source={require('../assets/backgrounds/library-screen-bg.png')}
     >
       <StatusBar barStyle="dark-content" />
 
@@ -87,27 +90,32 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    overflow: "hidden",
+    overflow: 'hidden',
     ...shadowHeader,
   },
-  watermark: { position: "absolute", right: -24, bottom: -20 },
-  title: { fontFamily: "Fredoka-Bold", fontSize: 40, color: colors.textDark },
-  countRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 },
+  watermark: { position: 'absolute', right: -24, bottom: -20 },
+  title: { fontFamily: 'Fredoka-Bold', fontSize: 40, color: colors.textDark },
+  countRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
   subtitle: {
-    fontFamily: "Fredoka-Regular",
+    fontFamily: 'Fredoka-Regular',
     fontSize: 16,
     color: colors.textMid,
   },
   body: { flex: 1 },
   scroll: { paddingHorizontal: 16, paddingTop: 24, gap: 12 },
   sectionRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     marginTop: 8,
   },
   sectionLabel: {
-    fontFamily: "Fredoka-Bold",
+    fontFamily: 'Fredoka-Bold',
     fontSize: 22,
     color: colors.textDark,
   },

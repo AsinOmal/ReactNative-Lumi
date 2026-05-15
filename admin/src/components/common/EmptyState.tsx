@@ -8,7 +8,12 @@ interface EmptyStateProps {
   action?: React.ReactNode;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description, action }) => (
+export const EmptyState: React.FC<EmptyStateProps> = ({
+  icon,
+  title,
+  description,
+  action,
+}) => (
   <div className="empty-state">
     <div className="empty-state__icon">{icon}</div>
     <p className="empty-state__title">{title}</p>

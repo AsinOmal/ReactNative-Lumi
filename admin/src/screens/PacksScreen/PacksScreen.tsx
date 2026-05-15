@@ -80,7 +80,9 @@ const PackRow: React.FC<PackRowProps> = ({ pack }) => (
         ) : (
           <div
             className="packs__accent-dot packs__accent-dot--empty"
-            style={{ background: `linear-gradient(135deg, ${pack.accentColor}, ${pack.accentColorTo})` }}
+            style={{
+              background: `linear-gradient(135deg, ${pack.accentColor}, ${pack.accentColorTo})`,
+            }}
             title="No cover art uploaded"
           >
             <ImageOff size={16} className="packs__accent-dot-icon" />
@@ -94,15 +96,23 @@ const PackRow: React.FC<PackRowProps> = ({ pack }) => (
     </td>
     <td>{pack.wordCount}</td>
     <td>
-      <Badge label={pack.isPremium ? 'Premium' : 'Free'} variant={pack.isPremium ? 'purple' : 'success'} />
+      <Badge
+        label={pack.isPremium ? 'Premium' : 'Free'}
+        variant={pack.isPremium ? 'purple' : 'success'}
+      />
     </td>
     <td>
-      <Badge label={pack.isPublished ? 'Published' : 'Draft'} variant={pack.isPublished ? 'info' : 'neutral'} />
+      <Badge
+        label={pack.isPublished ? 'Published' : 'Draft'}
+        variant={pack.isPublished ? 'info' : 'neutral'}
+      />
     </td>
     <td>
       <div className="packs__actions">
         <Link to={ROUTES.PACK_EDIT.replace(':packId', pack.id)}>
-          <Button variant="ghost" size="sm">Edit</Button>
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
         </Link>
       </div>
     </td>

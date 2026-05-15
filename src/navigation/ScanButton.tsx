@@ -5,14 +5,14 @@
 // A usePulseLoop wraps the whole button so it softly breathes — drawing the
 // eye to the primary action without being distracting.
 
-import React from "react";
-import { View, TouchableOpacity, StyleSheet, Animated } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { buttonGradientColors } from "../constants/skeuomorphicTokens";
-import { usePulseLoop } from "../hooks/usePulseLoop";
-import { styles } from "./MainTabNavigatorStyles";
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { buttonGradientColors } from '../constants/skeuomorphicTokens';
+import { usePulseLoop } from '../hooks/usePulseLoop';
+import { styles } from './MainTabNavigatorStyles';
 
 export const ScanButton = () => {
   const navigation = useNavigation();
@@ -20,7 +20,7 @@ export const ScanButton = () => {
   return (
     <Animated.View style={{ transform: [{ scale: pulse }] }}>
       <TouchableOpacity
-        onPress={() => (navigation as any).navigate("Scan")}
+        onPress={() => (navigation as any).navigate('Scan')}
         activeOpacity={0.85}
         style={styles.scanBtnShadow}
         accessibilityLabel="Open scanner"

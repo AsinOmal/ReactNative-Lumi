@@ -11,17 +11,23 @@ import { ROUTES } from '../../constants/routes';
 import type { AppUser } from '../../types';
 import './UsersScreen.css';
 
-const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
 export const UsersScreen: React.FC = () => {
   const { users, loading, error, suspendUser } = useUsers();
   const [search, setSearch] = useState('');
 
   const q = search.toLowerCase();
-  const filtered = users.filter(u =>
-    u.email.toLowerCase().includes(q) ||
-    (u.displayName ?? '').toLowerCase().includes(q) ||
-    (u.username ?? '').toLowerCase().includes(q),
+  const filtered = users.filter(
+    (u) =>
+      u.email.toLowerCase().includes(q) ||
+      (u.displayName ?? '').toLowerCase().includes(q) ||
+      (u.username ?? '').toLowerCase().includes(q)
   );
 
   return (
@@ -38,7 +44,7 @@ export const UsersScreen: React.FC = () => {
             className="users__search-input"
             placeholder="Search by username, name, or email…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
@@ -46,9 +52,17 @@ export const UsersScreen: React.FC = () => {
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
-        <EmptyState icon={<Users size={40} />} title="Failed to load users" description={error} />
+        <EmptyState
+          icon={<Users size={40} />}
+          title="Failed to load users"
+          description={error}
+        />
       ) : filtered.length === 0 ? (
-        <EmptyState icon={<Users size={40} />} title="No users found" description="Try adjusting your search." />
+        <EmptyState
+          icon={<Users size={40} />}
+          title="No users found"
+          description="Try adjusting your search."
+        />
       ) : (
         <div className="users__table-wrap">
           <table className="users__table">
@@ -63,7 +77,7 @@ export const UsersScreen: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(u => (
+              {filtered.map((u) => (
                 <UserRow key={u.uid} user={u} onToggleSuspend={suspendUser} />
               ))}
             </tbody>
@@ -84,8 +98,11 @@ const UserRow: React.FC<UserRowProps> = ({ user, onToggleSuspend }) => {
 
   const toggle = async () => {
     setBusy(true);
-    try { await onToggleSuspend(user.uid, !user.suspended); }
-    finally { setBusy(false); }
+    try {
+      await onToggleSuspend(user.uid, !user.suspended);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const displayLabel = user.username || user.displayName || '—';
@@ -93,7 +110,11 @@ const UserRow: React.FC<UserRowProps> = ({ user, onToggleSuspend }) => {
     <tr className="users__row">
       <td>
         <div className="users__user-cell">
-          <div className="users__avatar">{(displayLabel === '—' ? user.email : displayLabel)[0].toUpperCase()}</div>
+          <div className="users__avatar">
+            {(displayLabel === '—'
+              ? user.email
+              : displayLabel)[0].toUpperCase()}
+          </div>
           <div>
             <p className="users__name">{displayLabel}</p>
             <p className="users__email">{user.email}</p>
@@ -112,7 +133,9 @@ const UserRow: React.FC<UserRowProps> = ({ user, onToggleSuspend }) => {
       <td>
         <div className="users__actions">
           <Link to={ROUTES.USER_DETAIL.replace(':uid', user.uid)}>
-            <Button variant="ghost" size="sm">View</Button>
+            <Button variant="ghost" size="sm">
+              View
+            </Button>
           </Link>
           <Button
             variant={user.suspended ? 'secondary' : 'danger'}

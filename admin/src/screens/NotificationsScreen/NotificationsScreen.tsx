@@ -10,7 +10,12 @@ import { BannerSection } from './BannerSection';
 import './NotificationsScreen.css';
 
 const fmt = (d: Date) =>
-  d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
 export const NotificationsScreen: React.FC = () => {
   const { broadcasts, loading, sending, sendBroadcast } = useNotifications();
@@ -43,7 +48,8 @@ export const NotificationsScreen: React.FC = () => {
       <div className="notifications__compose">
         <h2 className="notifications__section-title">New Broadcast</h2>
         <p className="notifications__section-desc">
-          Broadcasts are queued in Firestore. A Cloud Function dispatches them to the
+          Broadcasts are queued in Firestore. A Cloud Function dispatches them
+          to the
           <code>all-users</code> FCM topic automatically.
         </p>
 
@@ -54,7 +60,7 @@ export const NotificationsScreen: React.FC = () => {
             placeholder="e.g. New Vegetables Pack is live!"
             value={title}
             maxLength={60}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <label className="notifications__label">Message</label>
@@ -64,14 +70,18 @@ export const NotificationsScreen: React.FC = () => {
             value={body}
             rows={3}
             maxLength={180}
-            onChange={e => setBody(e.target.value)}
+            onChange={(e) => setBody(e.target.value)}
           />
 
           {error && <p className="notifications__error">{error}</p>}
 
           <div className="notifications__send-row">
             <span className="notifications__char-count">{body.length}/180</span>
-            <Button icon={<Send size={14} />} loading={sending} onClick={handleSend}>
+            <Button
+              icon={<Send size={14} />}
+              loading={sending}
+              onClick={handleSend}
+            >
               Send to All Users
             </Button>
           </div>
@@ -93,10 +103,16 @@ export const NotificationsScreen: React.FC = () => {
           <div className="notifications__table-wrap">
             <table className="notifications__table">
               <thead>
-                <tr><th>Title</th><th>Message</th><th>Sent</th><th>By</th><th>Status</th></tr>
+                <tr>
+                  <th>Title</th>
+                  <th>Message</th>
+                  <th>Sent</th>
+                  <th>By</th>
+                  <th>Status</th>
+                </tr>
               </thead>
               <tbody>
-                {broadcasts.map(b => (
+                {broadcasts.map((b) => (
                   <tr key={b.id} className="notifications__row">
                     <td className="notifications__title-cell">{b.title}</td>
                     <td className="notifications__body-cell">{b.body}</td>

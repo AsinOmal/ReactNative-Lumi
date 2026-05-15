@@ -1,4 +1,4 @@
-const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 /**
  * Metro configuration
@@ -21,16 +21,16 @@ const config = {
   resolver: {
     assetExts: [
       ...defaultConfig.resolver.assetExts,
-      "obj",
-      "mtl",
-      "JPG",
-      "vrx",
-      "hdr",
-      "gltf",
-      "glb",
-      "bin",
-      "arobject",
-      "gif",
+      'obj',
+      'mtl',
+      'JPG',
+      'vrx',
+      'hdr',
+      'gltf',
+      'glb',
+      'bin',
+      'arobject',
+      'gif',
     ],
   },
 };

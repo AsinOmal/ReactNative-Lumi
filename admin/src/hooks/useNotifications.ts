@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
-  collection, addDoc, onSnapshot, serverTimestamp,
-  orderBy, query, limit, type QuerySnapshot, type DocumentData,
+  collection,
+  addDoc,
+  onSnapshot,
+  serverTimestamp,
+  orderBy,
+  query,
+  limit,
+  type QuerySnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import type { NotificationBroadcast } from '../types';
@@ -14,9 +21,13 @@ interface UseNotificationsResult {
 }
 
 // Path: /adminConfig/notifications/broadcasts
-const broadcastsCol = () => collection(db, 'adminConfig', 'notifications', 'broadcasts');
+const broadcastsCol = () =>
+  collection(db, 'adminConfig', 'notifications', 'broadcasts');
 
-const docToBroadcast = (id: string, data: DocumentData): NotificationBroadcast => ({
+const docToBroadcast = (
+  id: string,
+  data: DocumentData
+): NotificationBroadcast => ({
   id,
   title: data.title ?? '',
   body: data.body ?? '',
@@ -36,13 +47,13 @@ export const useNotifications = (): UseNotificationsResult => {
     const unsub = onSnapshot(
       q,
       (snap: QuerySnapshot) => {
-        setBroadcasts(snap.docs.map(d => docToBroadcast(d.id, d.data())));
+        setBroadcasts(snap.docs.map((d) => docToBroadcast(d.id, d.data())));
         setLoading(false);
       },
       (err) => {
         console.error('[useNotifications] onSnapshot error:', err);
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);

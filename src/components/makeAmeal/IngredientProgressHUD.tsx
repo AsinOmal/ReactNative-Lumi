@@ -19,8 +19,19 @@ export const IngredientProgressHUD = ({ recipe, collected }: Props) => (
       const done = collected.includes(word);
       return (
         <View key={word} style={[styles.chip, done && styles.chipDone]}>
-          <MaterialCommunityIcons name="cube-outline" size={26} color={done ? '#6EE7B7' : 'rgba(255,255,255,0.8)'} />
-          {done && <MaterialCommunityIcons name="check-circle" size={14} color="#6EE7B7" style={styles.tick} />}
+          <MaterialCommunityIcons
+            name="cube-outline"
+            size={26}
+            color={done ? '#6EE7B7' : 'rgba(255,255,255,0.8)'}
+          />
+          {done && (
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={14}
+              color="#6EE7B7"
+              style={styles.tick}
+            />
+          )}
         </View>
       );
     })}
@@ -29,14 +40,20 @@ export const IngredientProgressHUD = ({ recipe, collected }: Props) => (
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row', gap: 10,
-    marginTop: 12, alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+    alignSelf: 'center',
   },
   chip: {
-    width: 54, height: 54, borderRadius: 27,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: 'rgba(0,0,0,0.55)',
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chipDone: {
     backgroundColor: 'rgba(5,150,105,0.85)',

@@ -9,9 +9,9 @@
  * See docs/DEVELOPMENT_PLAN.md → Phase 10 for the full architecture.
  */
 
-export type PackType = "bundled" | "free" | "premium";
+export type PackType = 'bundled' | 'free' | 'premium';
 
-export type DownloadStatus = "idle" | "downloading" | "downloaded" | "error";
+export type DownloadStatus = 'idle' | 'downloading' | 'downloaded' | 'error';
 
 export interface DownloadResult {
   localModelPaths: Record<string, string>;

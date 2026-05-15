@@ -7,28 +7,28 @@
 import RNBlobUtil, {
   StatefulPromise,
   FetchBlobResponse,
-} from "react-native-blob-util";
-import { config } from "../constants/config";
+} from 'react-native-blob-util';
+import { config } from '../constants/config';
 import {
   AssetTask,
   buildAssetTasks,
   ensureCacheDirs,
   unlinkPaths,
-} from "../utils/packStorage";
-import { chunk } from "../utils/arrayUtils";
-import { DownloadResult } from "../types/download";
-import { RemoteModelEntry } from "../types/remoteContent";
+} from '../utils/packStorage';
+import { chunk } from '../utils/arrayUtils';
+import { DownloadResult } from '../types/download';
+import { RemoteModelEntry } from '../types/remoteContent';
 
 export class NoSpaceError extends Error {
   constructor() {
-    super("Not enough free space");
-    this.name = "NoSpaceError";
+    super('Not enough free space');
+    this.name = 'NoSpaceError';
   }
 }
 export class CancelledError extends Error {
   constructor() {
-    super("Download cancelled");
-    this.name = "CancelledError";
+    super('Download cancelled');
+    this.name = 'CancelledError';
   }
 }
 
@@ -45,7 +45,7 @@ async function checkDiskSpace(): Promise<void> {
 
 async function fetchOne(packId: string, task: AssetTask): Promise<void> {
   const handle = RNBlobUtil.config({ path: task.path, fileCache: false }).fetch(
-    "GET",
+    'GET',
     task.url
   );
   const handles = inFlight.get(packId) ?? [];
@@ -96,7 +96,7 @@ export async function downloadPack(
     await ensureCacheDirs();
     await checkDiskSpace();
     if (tasks.length === 0) {
-      throw new Error("No remote assets resolved for pack");
+      throw new Error('No remote assets resolved for pack');
     }
     const total = tasks.length;
     let done = 0;
@@ -115,7 +115,7 @@ export async function downloadPack(
     const localModelPaths: Record<string, string> = {};
     const localAudioPaths: Record<string, string> = {};
     tasks.forEach((t) => {
-      if (t.kind === "model") {
+      if (t.kind === 'model') {
         localModelPaths[t.word] = t.path;
       } else {
         localAudioPaths[t.word] = t.path;
@@ -138,7 +138,7 @@ export function cancelPackDownload(packId: string): void {
     try {
       h.cancel();
     } catch (e) {
-      console.warn("[packDownloadService] cancel:", e);
+      console.warn('[packDownloadService] cancel:', e);
     }
   });
   inFlight.delete(packId);

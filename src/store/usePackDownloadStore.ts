@@ -4,18 +4,18 @@
  * re-download. `resetStuckDownloads` runs at boot to clear app-kill leftovers.
  */
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DownloadResult, PackDownloadState } from "../types/download";
-import { Pack } from "../types/pack";
-import { deleteCachedPack } from "../services/packDownloadService";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DownloadResult, PackDownloadState } from '../types/download';
+import { Pack } from '../types/pack';
+import { deleteCachedPack } from '../services/packDownloadService';
 import {
   getLocalAudioPath,
   getLocalModelPath,
   unlinkPaths,
-} from "../utils/packStorage";
-import { LocalPaths, emptyState, patchPack } from "./packDownloadStore.helpers";
+} from '../utils/packStorage';
+import { LocalPaths, emptyState, patchPack } from './packDownloadStore.helpers';
 
 interface PackDownloadStore {
   packs: Record<string, PackDownloadState>;
@@ -44,7 +44,7 @@ export const usePackDownloadStore = create<PackDownloadStore>()(
             ...s.packs,
             [packId]: {
               ...emptyState(packId, totalFiles),
-              status: "downloading",
+              status: 'downloading',
             },
           },
         })),
@@ -67,7 +67,7 @@ export const usePackDownloadStore = create<PackDownloadStore>()(
       completeDownload: (packId, result, assetVersion) =>
         set((s) => ({
           packs: patchPack(s.packs, packId, {
-            status: "downloaded",
+            status: 'downloaded',
             progress: 1,
             downloadedFiles: s.packs[packId]?.totalFiles ?? 0,
             assetVersion,
@@ -80,7 +80,7 @@ export const usePackDownloadStore = create<PackDownloadStore>()(
       failDownload: (packId, message) =>
         set((s) => ({
           packs: patchPack(s.packs, packId, {
-            status: "error",
+            status: 'error',
             errorMessage: message,
           }),
         })),
@@ -99,7 +99,7 @@ export const usePackDownloadStore = create<PackDownloadStore>()(
 
       resetStuckDownloads: async (allPacks) => {
         const stuck = Object.values(get().packs).filter(
-          (p) => p.status === "downloading"
+          (p) => p.status === 'downloading'
         );
         if (stuck.length === 0) {
           return;
@@ -127,20 +127,20 @@ export const usePackDownloadStore = create<PackDownloadStore>()(
       isDownloaded: (packId, assetVersion) => {
         const p = get().packs[packId];
         return (
-          !!p && p.status === "downloaded" && p.assetVersion === assetVersion
+          !!p && p.status === 'downloaded' && p.assetVersion === assetVersion
         );
       },
 
       getLocalPaths: (packId) => {
         const p = get().packs[packId];
-        if (!p || p.status !== "downloaded") {
+        if (!p || p.status !== 'downloaded') {
           return null;
         }
         return { models: p.localModelPaths, audio: p.localAudioPaths };
       },
     }),
     {
-      name: "@lumi/pack_download_store",
+      name: '@lumi/pack_download_store',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({ packs: state.packs }),
     }

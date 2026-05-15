@@ -11,7 +11,13 @@ interface SettingsRowProps {
   rightElement?: React.ReactNode;
 }
 
-export const SettingsRow: React.FC<SettingsRowProps> = ({ iconName, label, onPress, danger = false, rightElement }) => (
+export const SettingsRow: React.FC<SettingsRowProps> = ({
+  iconName,
+  label,
+  onPress,
+  danger = false,
+  rightElement,
+}) => (
   <TouchableOpacity
     style={styles.row}
     onPress={onPress}
@@ -20,16 +26,33 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({ iconName, label, onPre
     accessibilityRole="button"
   >
     <View style={styles.iconWrap}>
-      <Ionicons name={iconName} size={22} color={danger ? colors.error : colors.primary} />
+      <Ionicons
+        name={iconName}
+        size={22}
+        color={danger ? colors.error : colors.primary}
+      />
     </View>
     <Text style={[styles.label, danger && styles.labelDanger]}>{label}</Text>
-    {rightElement ?? <Ionicons name="chevron-forward" size={20} color={colors.textLight} />}
+    {rightElement ?? (
+      <Ionicons name="chevron-forward" size={20} color={colors.textLight} />
+    )}
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  row:         { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 16, gap: 12 },
-  iconWrap:    { width: 30, alignItems: 'center' },
-  label:       { flex: 1, fontFamily: 'Fredoka-SemiBold', fontSize: 17, color: colors.textDark },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    gap: 12,
+  },
+  iconWrap: { width: 30, alignItems: 'center' },
+  label: {
+    flex: 1,
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 17,
+    color: colors.textDark,
+  },
   labelDanger: { color: colors.error },
 });

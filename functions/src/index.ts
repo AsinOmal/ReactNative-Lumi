@@ -51,36 +51,51 @@ const countRecentBroadcasts = async (excludeId: string): Promise<number> => {
     .where('status', 'in', ['sent', 'pending'])
     .get();
   // Exclude the document that just triggered this function.
-  return snap.docs.filter(d => d.id !== excludeId).length;
+  return snap.docs.filter((d) => d.id !== excludeId).length;
 };
 
 export const dispatchBroadcast = onDocumentCreated(
   'adminConfig/notifications/broadcasts/{broadcastId}',
   async (event) => {
     const snap = event.data;
-    if (!snap) return;
+    if (!snap) {
+      return;
+    }
 
     const data = snap.data() as BroadcastDoc;
 
-    if (data.status && data.status !== 'pending') return;
+    if (data.status && data.status !== 'pending') {
+      return;
+    }
 
     try {
       const recentCount = await countRecentBroadcasts(event.params.broadcastId);
       if (recentCount >= BROADCASTS_PER_HOUR_LIMIT) {
-        await snap.ref.update({ status: 'failed', failureReason: 'rate_limit_exceeded' });
-        logger.warn(`dispatchBroadcast ${event.params.broadcastId}: rate limit exceeded (${recentCount} in last hour)`);
+        await snap.ref.update({
+          status: 'failed',
+          failureReason: 'rate_limit_exceeded',
+        });
+        logger.warn(
+          `dispatchBroadcast ${event.params.broadcastId}: rate limit exceeded (${recentCount} in last hour)`
+        );
         return;
       }
 
       const usersSnap = await db.collection('users').get();
       const tokens: string[] = [];
-      usersSnap.forEach(doc => {
+      usersSnap.forEach((doc) => {
         const token = (doc.data() as { fcmToken?: string }).fcmToken;
-        if (token) tokens.push(token);
+        if (token) {
+          tokens.push(token);
+        }
       });
 
       if (tokens.length === 0) {
-        await snap.ref.update({ status: 'sent', recipientCount: 0, sentAt: admin.firestore.FieldValue.serverTimestamp() });
+        await snap.ref.update({
+          status: 'sent',
+          recipientCount: 0,
+          sentAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
         logger.info(`dispatchBroadcast ${event.params.broadcastId}: no tokens`);
         return;
       }
@@ -104,7 +119,9 @@ export const dispatchBroadcast = onDocumentCreated(
         sentAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      logger.info(`dispatchBroadcast ${event.params.broadcastId}: sent to ${successCount}/${tokens.length} devices`);
+      logger.info(
+        `dispatchBroadcast ${event.params.broadcastId}: sent to ${successCount}/${tokens.length} devices`
+      );
     } catch (err) {
       logger.error('dispatchBroadcast failed:', err);
       await snap.ref.update({ status: 'failed' });

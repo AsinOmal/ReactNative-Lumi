@@ -5,8 +5,8 @@
 // Architecture for ViroReact compatibility, so worklet-based libraries are off
 // the table. Animated runs on the JS thread but is fine for one-shot taps.
 
-import { useRef } from "react";
-import { Animated } from "react-native";
+import { useRef } from 'react';
+import { Animated } from 'react-native';
 
 interface AnimatedTap {
   scale: Animated.Value;

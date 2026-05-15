@@ -4,16 +4,16 @@
 // OnboardingScreen stays under the 150-line rule and so slide composition
 // stays declarative (just pass props per theme).
 
-import React from "react";
-import { Text, Animated } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import LottieView from "lottie-react-native";
-import { LumiMascot, MascotState } from "../common/LumiMascot";
-import { styles } from "../../screens/OnboardingScreenStyles";
+import React from 'react';
+import { Text, Animated } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
+import { LumiMascot, MascotState } from '../common/LumiMascot';
+import { styles } from '../../screens/OnboardingScreenStyles';
 
-const SPARKLE = require("../../assets/lottie/sparkle.json");
-const SUN = require("../../assets/lottie/sun.json");
-const CLOUD = require("../../assets/lottie/cloud-drift.json");
+const SPARKLE = require('../../assets/lottie/sparkle.json');
+const SUN = require('../../assets/lottie/sun.json');
+const CLOUD = require('../../assets/lottie/cloud-drift.json');
 
 interface Props {
   gradient: string[];

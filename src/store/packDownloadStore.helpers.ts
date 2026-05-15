@@ -3,7 +3,7 @@
  * stays under the 150-line cap.
  */
 
-import { PackDownloadState } from "../types/download";
+import { PackDownloadState } from '../types/download';
 
 export type LocalPaths = {
   models: Record<string, string>;
@@ -15,11 +15,11 @@ export const emptyState = (
   totalFiles = 0
 ): PackDownloadState => ({
   packId,
-  status: "idle",
+  status: 'idle',
   progress: 0,
   downloadedFiles: 0,
   totalFiles,
-  assetVersion: "",
+  assetVersion: '',
   localModelPaths: {},
   localAudioPaths: {},
 });

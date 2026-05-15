@@ -44,17 +44,20 @@ export const strings = {
   pinLockedTitle: 'Too Many Attempts',
   pinLockedBody: (secs: number) => `Try again in ${secs}s`,
   pinContactSupport: "Can't remember? Contact support",
-  pinSupportMessage: (email: string) => `Hi, I've forgotten my parent PIN and need help resetting it.\nAccount: ${email}`,
+  pinSupportMessage: (email: string) =>
+    `Hi, I've forgotten my parent PIN and need help resetting it.\nAccount: ${email}`,
   // PIN reset banner
   pinResetBannerMessage: 'Your PIN has been reset — tap here to set a new one.',
   pinResetBannerDismiss: 'Dismiss',
   // Child profile onboarding
   childProfileNameTitle: "What's your child's name?",
   childProfileNamePlaceholder: "Enter child's name",
-  childProfileAgeTitle: "How old is your child?",
+  childProfileAgeTitle: 'How old is your child?',
   childProfileNext: 'Next',
   childProfileSkip: 'Skip',
   childProfileFinish: 'Finish',
+  childProfileAgeWarning:
+    'Lumi is designed for children aged 4–6. Some features may not suit older children.',
 
   // Parent Dashboard
   dashboardTitle: 'Parent Dashboard',
@@ -95,22 +98,22 @@ export const strings = {
   screenTimeLimitUnlock: 'Parent Unlock',
 
   // Pack Downloads (Phase 10)
-  downloadPack: "Download Pack",
-  downloading: "Downloading…",
-  downloaded: "Downloaded",
-  deletePack: "Delete Pack",
+  downloadPack: 'Download Pack',
+  downloading: 'Downloading…',
+  downloaded: 'Downloaded',
+  deletePack: 'Delete Pack',
   downloadSizeFmt: (mb: number) => `${mb} MB`,
   downloadProgressFmt: (done: number, total: number) =>
     `${done} of ${total} files`,
   downloadNoSpace:
-    "Not enough free space on this device to download this pack.",
-  downloadFailed: "Download failed. Please try again.",
-  packLocked: "Pack Locked",
-  packLockedComingSoon: "Premium packs unlock soon.",
-  packGateHeading: "Get this pack",
-  packGateSubtext: "Download it once and play offline anytime.",
-  packGateCta: "Download",
-  packGateDismiss: "Not now",
+    'Not enough free space on this device to download this pack.',
+  downloadFailed: 'Download failed. Please try again.',
+  packLocked: 'Pack Locked',
+  packLockedComingSoon: 'Premium packs unlock soon.',
+  packGateHeading: 'Get this pack',
+  packGateSubtext: 'Download it once and play offline anytime.',
+  packGateCta: 'Download',
+  packGateDismiss: 'Not now',
   packFoundFmt: (word: string) => `You found "${word}"!`,
 
   // Onboarding (Phase C redesign)
@@ -131,21 +134,26 @@ export const strings = {
   INTRO_NEXT: 'Next',
   INTRO_LETS_GO: "Let's Go!",
   INTRO_SCAN_TITLE: 'Point & Discover',
-  INTRO_SCAN_BODY: 'Tap the big Scan button in the center. Hold your camera up to any printed word and watch it come to life!',
+  INTRO_SCAN_BODY:
+    'Tap the big Scan button in the center. Hold your camera up to any printed word and watch it come to life!',
   INTRO_PLAYGROUND_TITLE: 'Play AR Games',
-  INTRO_PLAYGROUND_BODY: 'Head to Playground to find words in AR, cook a virtual meal, or count objects as they appear!',
+  INTRO_PLAYGROUND_BODY:
+    'Head to Playground to find words in AR, cook a virtual meal, or count objects as they appear!',
   INTRO_PARENT_TITLE: 'Made for Families',
-  INTRO_PARENT_BODY: 'Parents: press and hold the profile icon on Settings to set screen time limits and keep an eye on activity.',
+  INTRO_PARENT_BODY:
+    'Parents: press and hold the profile icon on Settings to set screen time limits and keep an eye on activity.',
   INTRO_LANG_TITLE: 'Choose Your Language',
   INTRO_LANG_BODY: 'How should we display word labels in the app?',
   INTRO_LANG_ENGLISH: 'English',
   INTRO_LANG_SINHALA: 'සිංහල',
-  INTRO_LANG_DISCLAIMER: 'Our scanner reads English words — that part stays English! Sinhala labels are shown alongside for learning.',
+  INTRO_LANG_DISCLAIMER:
+    'Our scanner reads English words — that part stays English! Sinhala labels are shown alongside for learning.',
 
   // Premium Pack Gate
   PREMIUM_GATE_FOUND: (word: string) => `You found "${word}"!`,
   PREMIUM_GATE_SUBHEADING: (packName: string) => `Unlock the ${packName}`,
-  PREMIUM_GATE_BODY: (count: number) => `${count} amazing models come to life in your world`,
+  PREMIUM_GATE_BODY: (count: number) =>
+    `${count} amazing models come to life in your world`,
   PREMIUM_GATE_CTA: (price: string) => `Unlock — ${price}`,
   PREMIUM_GATE_DISMISS: 'Maybe Later',
   PACK_PRICE: '$2.99',
@@ -160,7 +168,8 @@ export const strings = {
   CHECKOUT_SUCCESS: 'Pack Unlocked!',
   CHECKOUT_ERROR: 'Payment failed. Please try again.',
   CHECKOUT_SIMULATED_NOTICE: 'Simulated payment — no real charge.',
-  CHECKOUT_UNLOCK_BENEFIT: (count: number) => `${count} 3D words become scannable after unlock.`,
+  CHECKOUT_UNLOCK_BENEFIT: (count: number) =>
+    `${count} 3D words become scannable after unlock.`,
 
   // Settings
   SETTINGS_SECTION_PROFILE: 'Profile',
@@ -180,6 +189,7 @@ export const strings = {
   AR_PLACEMENT_PLACED: 'Model placed!',
   AR_PLACEMENT_REPLACE: 'Place Again',
   AR_PLACEMENT_TIMEOUT: 'No flat surface found',
-  AR_PLACEMENT_TIMEOUT_SUB: 'Make sure the surface is well-lit and not too far away.',
+  AR_PLACEMENT_TIMEOUT_SUB:
+    'Make sure the surface is well-lit and not too far away.',
   AR_PLACEMENT_TRY_AGAIN: 'Try Again',
 };

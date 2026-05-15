@@ -17,12 +17,17 @@ interface Props {
   lockSecondsRemaining: number;
 }
 
-export const PinLockoutModal: React.FC<Props> = ({ visible, lockSecondsRemaining }) => {
+export const PinLockoutModal: React.FC<Props> = ({
+  visible,
+  lockSecondsRemaining,
+}) => {
   const strings = useStrings();
   const { user } = useAuthStore();
   const [showFeedback, setShowFeedback] = useState(false);
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   const prefilledMessage = strings.pinSupportMessage(user?.email ?? '');
 
@@ -35,14 +40,23 @@ export const PinLockoutModal: React.FC<Props> = ({ visible, lockSecondsRemaining
               <Ionicons name="lock-closed" size={36} color="#FF9A2E" />
             </View>
             <Text style={styles.title}>{strings.pinLockedTitle}</Text>
-            <Text style={styles.body}>{strings.pinLockedBody(lockSecondsRemaining)}</Text>
+            <Text style={styles.body}>
+              {strings.pinLockedBody(lockSecondsRemaining)}
+            </Text>
             <TouchableOpacity
               style={styles.supportBtn}
               onPress={() => setShowFeedback(true)}
               accessibilityRole="button"
             >
-              <Ionicons name="chatbubble-ellipses-outline" size={16} color="#fff" style={{ marginRight: 6 }} />
-              <Text style={styles.supportBtnText}>{strings.pinContactSupport}</Text>
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={16}
+                color="#fff"
+                style={{ marginRight: 6 }}
+              />
+              <Text style={styles.supportBtnText}>
+                {strings.pinContactSupport}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

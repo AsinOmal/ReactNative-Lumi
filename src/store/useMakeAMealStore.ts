@@ -27,16 +27,18 @@ export const useMakeAMealStore = create<MakeAMealState>((set) => ({
   gamePhase: 'select',
 
   setActiveRecipe: (recipe) => set({ activeRecipe: recipe }),
-  addCollected: (word) => set((s) => ({
-    collectedIngredients: s.collectedIngredients.includes(word)
-      ? s.collectedIngredients
-      : [...s.collectedIngredients, word],
-  })),
+  addCollected: (word) =>
+    set((s) => ({
+      collectedIngredients: s.collectedIngredients.includes(word)
+        ? s.collectedIngredients
+        : [...s.collectedIngredients, word],
+    })),
   setGamePhase: (phase) => set({ gamePhase: phase }),
 
   // Keep same recipe, clear progress — child wants to replay
   playAgain: () => set({ collectedIngredients: [], gamePhase: 'playing' }),
 
   // Full reset — return to recipe select
-  resetGame: () => set({ activeRecipe: null, collectedIngredients: [], gamePhase: 'select' }),
+  resetGame: () =>
+    set({ activeRecipe: null, collectedIngredients: [], gamePhase: 'select' }),
 }));

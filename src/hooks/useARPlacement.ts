@@ -55,7 +55,7 @@ export function useARPlacement(): UseARPlacementReturn {
   }, []);
 
   const onReplace = useCallback(() => {
-    setSceneKey(k => k + 1);
+    setSceneKey((k) => k + 1);
     setState('searching');
     armTimer();
   }, [armTimer]);

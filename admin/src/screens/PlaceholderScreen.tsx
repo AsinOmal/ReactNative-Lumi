@@ -6,7 +6,9 @@ interface PlaceholderScreenProps {
   title: string;
 }
 
-export const PlaceholderScreen: React.FC<PlaceholderScreenProps> = ({ title }) => (
+export const PlaceholderScreen: React.FC<PlaceholderScreenProps> = ({
+  title,
+}) => (
   <EmptyState
     icon={<Construction size={40} />}
     title={`${title} — Coming in Phase 9b/9c`}

@@ -7,12 +7,18 @@ import { useWishlist } from '../../hooks/useWishlist';
 import './WishlistScreen.css';
 
 const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
 export const WishlistScreen: React.FC = () => {
   const { items, loading } = useWishlist();
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="wishlist">

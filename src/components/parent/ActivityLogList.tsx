@@ -39,7 +39,9 @@ const LogRow: React.FC<{ entry: ActivityLogEntry }> = ({ entry }) => (
   </View>
 );
 
-export const ActivityLogList: React.FC<ActivityLogListProps> = ({ entries }) => {
+export const ActivityLogList: React.FC<ActivityLogListProps> = ({
+  entries,
+}) => {
   const strings = useStrings();
   if (entries.length === 0) {
     return (
@@ -70,11 +72,25 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 8,
   },
-  rowFlagged: { backgroundColor: '#FFF0F0', borderWidth: 1, borderColor: '#FFCCCC' },
+  rowFlagged: {
+    backgroundColor: '#FFF0F0',
+    borderWidth: 1,
+    borderColor: '#FFCCCC',
+  },
   rowLeft: { flex: 1 },
-  word: { fontSize: 16, fontWeight: '700', color: colors.textPrimary, textTransform: 'capitalize' },
+  word: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    textTransform: 'capitalize',
+  },
   timestamp: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-  badge: { backgroundColor: '#FFE4E4', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
+  badge: {
+    backgroundColor: '#FFE4E4',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   badgeText: { fontSize: 12, fontWeight: '600', color: colors.error },
   empty: { padding: 32, alignItems: 'center' },
   emptyText: { fontSize: 15, color: colors.textSecondary, textAlign: 'center' },

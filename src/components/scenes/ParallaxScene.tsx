@@ -47,8 +47,11 @@ export const ParallaxScene: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    if (paused) sunRef.current?.pause();
-    else sunRef.current?.play();
+    if (paused) {
+      sunRef.current?.pause();
+    } else {
+      sunRef.current?.play();
+    }
   }, [paused]);
 
   return (
@@ -84,6 +87,9 @@ const styles = StyleSheet.create({
   root: { flex: 1, overflow: 'hidden' },
   bgWrap: { position: 'absolute', top: 0, left: 0, right: 0, height: BG_H },
   bgImg: { width: W, height: BG_H },
-  veil: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255,255,255,0.17)' },
+  veil: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.17)',
+  },
   sun: { position: 'absolute', top: 20, right: 4, width: 105, height: 105 },
 });

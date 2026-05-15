@@ -17,9 +17,11 @@ interface FlaggedWordsListProps {
   entries: ActivityLogEntry[];
 }
 
-export const FlaggedWordsList: React.FC<FlaggedWordsListProps> = ({ entries }) => {
+export const FlaggedWordsList: React.FC<FlaggedWordsListProps> = ({
+  entries,
+}) => {
   const strings = useStrings();
-  const flagged = entries.filter(e => e.flagged);
+  const flagged = entries.filter((e) => e.flagged);
 
   if (flagged.length === 0) {
     return (
@@ -34,7 +36,17 @@ export const FlaggedWordsList: React.FC<FlaggedWordsListProps> = ({ entries }) =
 };
 
 const styles = StyleSheet.create({
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
   emptyIcon: { fontSize: 48, marginBottom: 16 },
-  emptyText: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24 },
+  emptyText: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
 });

@@ -28,7 +28,7 @@ export const usePinLockout = (): UsePinLockoutResult => {
     setIsLocked(true);
     setLockSecondsRemaining(Math.ceil(ms / 1000));
     countdownRef.current = setInterval(() => {
-      setLockSecondsRemaining(prev => {
+      setLockSecondsRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(countdownRef.current!);
           countdownRef.current = null;
@@ -51,24 +51,36 @@ export const usePinLockout = (): UsePinLockoutResult => {
           AsyncStorage.getItem(LOCKED_UNTIL_KEY),
           AsyncStorage.getItem(ATTEMPTS_KEY),
         ]);
-        if (attemptsStr) setPinAttempts(Number(attemptsStr));
+        if (attemptsStr) {
+          setPinAttempts(Number(attemptsStr));
+        }
         if (lockedUntilStr) {
           const remaining = Number(lockedUntilStr) - Date.now();
-          if (remaining > 0) startCountdown(remaining);
+          if (remaining > 0) {
+            startCountdown(remaining);
+          }
         }
-      } catch { /* non-blocking */ }
+      } catch {
+        /* non-blocking */
+      }
     };
     restore();
-    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
   }, [startCountdown]);
 
   const onFailedAttempt = useCallback(() => {
-    setPinAttempts(prev => {
+    setPinAttempts((prev) => {
       const next = prev + 1;
       AsyncStorage.setItem(ATTEMPTS_KEY, String(next)).catch(() => {});
       if (next >= config.MAX_PIN_ATTEMPTS) {
         const lockedUntil = Date.now() + config.PIN_LOCKOUT_MS;
-        AsyncStorage.setItem(LOCKED_UNTIL_KEY, String(lockedUntil)).catch(() => {});
+        AsyncStorage.setItem(LOCKED_UNTIL_KEY, String(lockedUntil)).catch(
+          () => {}
+        );
         startCountdown(config.PIN_LOCKOUT_MS);
       }
       return next;
@@ -76,12 +88,20 @@ export const usePinLockout = (): UsePinLockoutResult => {
   }, [startCountdown]);
 
   const resetAttempts = useCallback(() => {
-    if (countdownRef.current) clearInterval(countdownRef.current);
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+    }
     setIsLocked(false);
     setLockSecondsRemaining(0);
     setPinAttempts(0);
     AsyncStorage.multiRemove([LOCKED_UNTIL_KEY, ATTEMPTS_KEY]).catch(() => {});
   }, []);
 
-  return { pinAttempts, isLocked, lockSecondsRemaining, onFailedAttempt, resetAttempts };
+  return {
+    pinAttempts,
+    isLocked,
+    lockSecondsRemaining,
+    onFailedAttempt,
+    resetAttempts,
+  };
 };

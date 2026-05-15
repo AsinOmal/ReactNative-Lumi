@@ -11,7 +11,10 @@ import { SavedWord } from './achievementStore';
 /** Today's date as YYYY-MM-DD in local time */
 export function todayISO(): string {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    '0'
+  )}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 /** Deterministic hash from a date string */
@@ -42,5 +45,5 @@ export function isDailyWordFound(savedWords: SavedWord[]): boolean {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayMs = todayStart.getTime();
-  return savedWords.some(w => w.word === target && w.savedAt >= todayMs);
+  return savedWords.some((w) => w.word === target && w.savedAt >= todayMs);
 }

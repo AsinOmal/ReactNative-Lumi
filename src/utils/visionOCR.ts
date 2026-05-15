@@ -19,10 +19,14 @@ let _hazardUnavailableLogged = false;
  * Returns empty string if the module is not available or on Android.
  */
 export async function recognizeTextInImage(imagePath: string): Promise<string> {
-  if (Platform.OS !== 'ios') return '';
+  if (Platform.OS !== 'ios') {
+    return '';
+  }
 
   if (!LumiVisionOCR) {
-    console.warn('[VisionOCR] ❌ Native module LumiVisionOCR not found — rebuild required');
+    console.warn(
+      '[VisionOCR] ❌ Native module LumiVisionOCR not found — rebuild required'
+    );
     return '';
   }
 
@@ -46,13 +50,22 @@ export async function recognizeTextInImage(imagePath: string): Promise<string> {
  * confidence threshold inside the Swift module.
  * Returns empty array if unavailable or on Android.
  */
-export async function classifyFrameForHazards(imagePath: string): Promise<string[]> {
-  if (Platform.OS !== 'ios') return [];
+export async function classifyFrameForHazards(
+  imagePath: string
+): Promise<string[]> {
+  if (Platform.OS !== 'ios') {
+    return [];
+  }
 
-  if (!LumiVisionOCR || typeof LumiVisionOCR.classifyFrameForHazards !== 'function') {
+  if (
+    !LumiVisionOCR ||
+    typeof LumiVisionOCR.classifyFrameForHazards !== 'function'
+  ) {
     if (!_hazardUnavailableLogged) {
       _hazardUnavailableLogged = true;
-      console.log('[VisionOCR] classifyFrameForHazards unavailable — rebuild required');
+      console.log(
+        '[VisionOCR] classifyFrameForHazards unavailable — rebuild required'
+      );
     }
     return [];
   }
@@ -62,7 +75,9 @@ export async function classifyFrameForHazards(imagePath: string): Promise<string
     : imagePath;
 
   try {
-    const labels: string[] = await LumiVisionOCR.classifyFrameForHazards(posixPath);
+    const labels: string[] = await LumiVisionOCR.classifyFrameForHazards(
+      posixPath
+    );
     return labels ?? [];
   } catch (e) {
     console.warn('[VisionOCR] ❌ Classification error:', e);

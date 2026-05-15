@@ -10,7 +10,7 @@ const WORD_FACTS: Record<string, string[]> = {
     'Apples float in water because they are 25% air! 🌊',
     'There are over 7,500 varieties of apples grown worldwide! 🍎',
     'It takes about 4–5 years for an apple tree to produce its first fruit! 🌳',
-    'Apple seeds contain a tiny amount of cyanide — but you\'d need thousands to feel anything! 🌱',
+    "Apple seeds contain a tiny amount of cyanide — but you'd need thousands to feel anything! 🌱",
   ],
   banana: [
     'Bananas are technically berries, but strawberries are not! 🤯',
@@ -71,6 +71,8 @@ const WORD_FACTS: Record<string, string[]> = {
 /** Returns a random fun fact for the given word */
 export function getRandomFact(word: string): string {
   const facts = WORD_FACTS[word.toLowerCase()];
-  if (!facts || facts.length === 0) return 'This is a fun word to discover! ✨';
+  if (!facts || facts.length === 0) {
+    return 'This is a fun word to discover! ✨';
+  }
   return facts[Math.floor(Math.random() * facts.length)];
 }

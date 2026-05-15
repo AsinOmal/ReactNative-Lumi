@@ -51,7 +51,9 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
     }
   };
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <Modal visible={visible} transparent={false} animationType="fade">
@@ -61,7 +63,9 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
         <Text style={styles.body}>
           {strings.screenTimeLimitBody(Math.round(todayMinutes), limitMinutes)}
         </Text>
-        <Text style={styles.parentNote}>{strings.screenTimeLimitParentNote}</Text>
+        <Text style={styles.parentNote}>
+          {strings.screenTimeLimitParentNote}
+        </Text>
 
         <View style={styles.parentButton}>
           <Text
@@ -79,7 +83,10 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
           onCancel={() => setShowPin(false)}
           hasError={pinError}
         />
-        <PinLockoutModal visible={isLocked} lockSecondsRemaining={lockSecondsRemaining} />
+        <PinLockoutModal
+          visible={isLocked}
+          lockSecondsRemaining={lockSecondsRemaining}
+        />
       </View>
     </Modal>
   );

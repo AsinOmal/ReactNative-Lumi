@@ -21,13 +21,16 @@ const ALL_WORDS = Object.keys(MODEL_REGISTRY);
 
 const wordsForDifficulty = (d: Difficulty): string[] => {
   switch (d) {
-    case 'easy':   return ALL_WORDS.filter(w => w.length <= 5);
-    case 'medium': return ALL_WORDS.filter(w => w.length === 6 || w.length === 7);
-    case 'hard':   return ALL_WORDS.filter(w => w.length >= 8);
+    case 'easy':
+      return ALL_WORDS.filter((w) => w.length <= 5);
+    case 'medium':
+      return ALL_WORDS.filter((w) => w.length === 6 || w.length === 7);
+    case 'hard':
+      return ALL_WORDS.filter((w) => w.length >= 8);
   }
 };
 
-const pickRandom = <T,>(list: T[]): T | undefined =>
+const pickRandom = <T>(list: T[]): T | undefined =>
   list.length ? list[Math.floor(Math.random() * list.length)] : undefined;
 
 export const useWriteAndScan = () => {
@@ -50,17 +53,22 @@ export const useWriteAndScan = () => {
   }, []);
 
   const onCountdownDone = useCallback(() => setPhase('reveal'), []);
-  const proceedToScan   = useCallback(() => setPhase('scan'), []);
+  const proceedToScan = useCallback(() => setPhase('scan'), []);
 
-  const submitOcrText = useCallback((ocrText: string | null) => {
-    if (!targetWord) return;
-    const matched = ocrText ? matchWord(ocrText, [targetWord]) : null;
-    setResult({
-      isCorrect: matched?.word === targetWord,
-      ocrText,
-    });
-    setPhase('result');
-  }, [targetWord]);
+  const submitOcrText = useCallback(
+    (ocrText: string | null) => {
+      if (!targetWord) {
+        return;
+      }
+      const matched = ocrText ? matchWord(ocrText, [targetWord]) : null;
+      setResult({
+        isCorrect: matched?.word === targetWord,
+        ocrText,
+      });
+      setPhase('result');
+    },
+    [targetWord]
+  );
 
   const playAgain = useCallback(() => {
     setPhase('difficulty');
@@ -70,7 +78,7 @@ export const useWriteAndScan = () => {
 
   const targetModel = useMemo(
     () => (targetWord ? MODEL_REGISTRY[targetWord] : null),
-    [targetWord],
+    [targetWord]
   );
 
   return {

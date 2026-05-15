@@ -6,17 +6,17 @@
 // moods (excited/happy/sad/celebrate) play once so they read as a beat,
 // not a vibe — caller can re-mount or swap state to replay.
 
-import React from "react";
-import LottieView from "lottie-react-native";
+import React from 'react';
+import LottieView from 'lottie-react-native';
 
 export type MascotState =
-  | "idle"
-  | "wave"
-  | "sleep"
-  | "excited"
-  | "sad"
-  | "happy"
-  | "celebrate";
+  | 'idle'
+  | 'wave'
+  | 'sleep'
+  | 'excited'
+  | 'sad'
+  | 'happy'
+  | 'celebrate';
 
 interface Props {
   state?: MascotState;
@@ -24,18 +24,18 @@ interface Props {
 }
 
 const ANIMATIONS: Record<MascotState, ReturnType<typeof require>> = {
-  idle: require("../../assets/lottie/mascot_idle2.json"),
-  wave: require("../../assets/lottie/mascot_idle2.json"),
-  sleep: require("../../assets/lottie/sleep-mascot.json"),
-  excited: require("../../assets/lottie/excited-mascot.json"),
-  sad: require("../../assets/lottie/sad-mascot.json"),
-  happy: require("../../assets/lottie/happy-mascot.json"),
-  celebrate: require("../../assets/lottie/mascot_celebration.json"),
+  idle: require('../../assets/lottie/mascot_idle2.json'),
+  wave: require('../../assets/lottie/mascot_idle2.json'),
+  sleep: require('../../assets/lottie/sleep-mascot.json'),
+  excited: require('../../assets/lottie/excited-mascot.json'),
+  sad: require('../../assets/lottie/sad-mascot.json'),
+  happy: require('../../assets/lottie/happy-mascot.json'),
+  celebrate: require('../../assets/lottie/mascot_celebration.json'),
 };
 
-const LOOPING_STATES: ReadonlyArray<MascotState> = ["idle", "wave", "sleep"];
+const LOOPING_STATES: ReadonlyArray<MascotState> = ['idle', 'wave', 'sleep'];
 
-export const LumiMascot: React.FC<Props> = ({ state = "idle", size = 80 }) => (
+export const LumiMascot: React.FC<Props> = ({ state = 'idle', size = 80 }) => (
   <LottieView
     source={ANIMATIONS[state]}
     autoPlay

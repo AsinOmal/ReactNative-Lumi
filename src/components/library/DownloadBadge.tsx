@@ -4,16 +4,16 @@
  * directly so adding the badge to other surfaces doesn't need prop wiring.
  */
 
-import React from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface Props {
-  status?: "idle" | "downloading" | "downloaded" | "error";
+  status?: 'idle' | 'downloading' | 'downloaded' | 'error';
 }
 
 export const DownloadBadge: React.FC<Props> = ({ status }) => {
-  if (status === "downloading") {
+  if (status === 'downloading') {
     return (
       <View style={styles.badge}>
         <ActivityIndicator size="small" color="#FFF" />
@@ -21,11 +21,11 @@ export const DownloadBadge: React.FC<Props> = ({ status }) => {
     );
   }
   const name =
-    status === "downloaded"
-      ? "checkmark-circle"
-      : status === "error"
-      ? "warning-outline"
-      : "cloud-download-outline";
+    status === 'downloaded'
+      ? 'checkmark-circle'
+      : status === 'error'
+      ? 'warning-outline'
+      : 'cloud-download-outline';
   return (
     <View style={styles.badge}>
       <Ionicons name={name} size={16} color="#FFF" />
@@ -35,14 +35,14 @@ export const DownloadBadge: React.FC<Props> = ({ status }) => {
 
 const styles = StyleSheet.create({
   badge: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 10,
     right: 10,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: 'rgba(0,0,0,0.45)',
     borderRadius: 14,
     width: 28,
     height: 28,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

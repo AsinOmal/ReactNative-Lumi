@@ -6,26 +6,26 @@
  * lock return — never reaches this component.
  */
 
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import type { Pack } from "../../types/pack";
-import { usePackDownload } from "../../hooks/usePackDownload";
-import { useStrings } from "../../hooks/useStrings";
-import { colors } from "../../constants/colors";
-import { styles } from "./PackDetailCTAStyles";
+} from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import type { Pack } from '../../types/pack';
+import { usePackDownload } from '../../hooks/usePackDownload';
+import { useStrings } from '../../hooks/useStrings';
+import { colors } from '../../constants/colors';
+import { styles } from './PackDetailCTAStyles';
 
 const confirmDelete = (packName: string, onConfirm: () => void) => {
-  Alert.alert(`Delete ${packName}?`, "You can re-download it anytime.", [
-    { text: "Cancel", style: "cancel" },
-    { text: "Delete", style: "destructive", onPress: onConfirm },
+  Alert.alert(`Delete ${packName}?`, 'You can re-download it anytime.', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Delete', style: 'destructive', onPress: onConfirm },
   ]);
 };
 
@@ -48,7 +48,7 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
     remove,
   } = usePackDownload(pack);
 
-  if (status === "downloaded") {
+  if (status === 'downloaded') {
     return (
       <View style={styles.row}>
         <TouchableOpacity
@@ -60,7 +60,7 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
           <MaterialCommunityIcons name="target" size={22} color="#FFF" />
           <Text style={styles.primaryText}>View in AR</Text>
         </TouchableOpacity>
-        {pack.packType && pack.packType !== "bundled" && (
+        {pack.packType && pack.packType !== 'bundled' && (
           <TouchableOpacity
             style={styles.secondary}
             onPress={() => confirmDelete(pack.name, remove)}
@@ -73,7 +73,7 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
     );
   }
 
-  if (status === "downloading") {
+  if (status === 'downloading') {
     return (
       <View style={styles.progressBlock}>
         <View style={styles.barTrack}>
@@ -102,7 +102,7 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
     );
   }
 
-  if (status === "error") {
+  if (status === 'error') {
     return (
       <View style={styles.errorBlock}>
         <Text style={styles.errorText}>{errorMessage ?? strings.error}</Text>
@@ -133,7 +133,7 @@ export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
           {strings.downloadPack}
           {pack.estimatedSizeMB
             ? ` (${strings.downloadSizeFmt(pack.estimatedSizeMB)})`
-            : ""}
+            : ''}
         </Text>
       </TouchableOpacity>
     </View>

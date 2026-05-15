@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
-  collection, onSnapshot, doc, setDoc, deleteDoc,
-  type QuerySnapshot, type DocumentData,
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  deleteDoc,
+  type QuerySnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
-import {
-  ref, uploadBytesResumable, getDownloadURL,
-} from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import type { ModelEntry } from '../types';
 
@@ -23,7 +26,7 @@ interface UseModelsResult {
   uploadFile: (
     file: File,
     storagePath: string,
-    onProgress: (pct: number) => void,
+    onProgress: (pct: number) => void
   ) => Promise<UploadResult>;
 }
 
@@ -50,33 +53,37 @@ export const useModels = (): UseModelsResult => {
     const unsub = onSnapshot(
       collection(db, 'adminModels'),
       (snap: QuerySnapshot) => {
-        setModels(snap.docs.map(d => docToModel(d.id, d.data())));
+        setModels(snap.docs.map((d) => docToModel(d.id, d.data())));
         setLoading(false);
       },
       (err) => {
         console.error('[useModels] onSnapshot error:', err);
         setError('Failed to load models.');
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);
 
   const saveModel = async (model: ModelEntry): Promise<void> => {
     try {
-      await setDoc(doc(db, 'adminModels', model.word), {
-        word: model.word,
-        syllables: model.syllables,
-        audioUrl: model.audioUrl,
-        modelUrl: model.modelUrl,
-        audioRef: model.audioRef,
-        modelRef: model.modelRef,
-        scale: model.scale,
-        positionY: model.positionY,
-        positionZ: model.positionZ ?? -1.0,
-        packId: model.packId,
-        isCalibrated: model.isCalibrated,
-      }, { merge: true });
+      await setDoc(
+        doc(db, 'adminModels', model.word),
+        {
+          word: model.word,
+          syllables: model.syllables,
+          audioUrl: model.audioUrl,
+          modelUrl: model.modelUrl,
+          audioRef: model.audioRef,
+          modelRef: model.modelRef,
+          scale: model.scale,
+          positionY: model.positionY,
+          positionZ: model.positionZ ?? -1.0,
+          packId: model.packId,
+          isCalibrated: model.isCalibrated,
+        },
+        { merge: true }
+      );
     } catch (e) {
       console.error('[useModels] saveModel failed:', e);
       throw e;
@@ -95,7 +102,7 @@ export const useModels = (): UseModelsResult => {
   const uploadFile = (
     file: File,
     storagePath: string,
-    onProgress: (pct: number) => void,
+    onProgress: (pct: number) => void
   ): Promise<UploadResult> =>
     new Promise((resolve, reject) => {
       const storageRef = ref(storage, storagePath);
@@ -104,7 +111,9 @@ export const useModels = (): UseModelsResult => {
       task.on(
         'state_changed',
         (snap) => {
-          onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+          onProgress(
+            Math.round((snap.bytesTransferred / snap.totalBytes) * 100)
+          );
         },
         (err) => {
           console.error('[useModels] uploadFile failed:', err);
@@ -117,7 +126,7 @@ export const useModels = (): UseModelsResult => {
           } catch (e) {
             reject(e);
           }
-        },
+        }
       );
     });
 

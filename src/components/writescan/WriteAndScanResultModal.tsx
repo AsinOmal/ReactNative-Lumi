@@ -19,16 +19,27 @@ interface Props {
 }
 
 export const WriteAndScanResultModal = ({
-  visible, result, targetWord, onPlayAgain, onDone,
+  visible,
+  result,
+  targetWord,
+  onPlayAgain,
+  onDone,
 }: Props) => {
-  if (!result || !targetWord) return null;
+  if (!result || !targetWord) {
+    return null;
+  }
   const correct = result.isCorrect;
   const shown = (result.ocrText ?? '').trim().toUpperCase() || '—';
 
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.resultBg}>
-        <View style={[styles.resultCard, correct ? styles.resultCardOk : styles.resultCardBad]}>
+        <View
+          style={[
+            styles.resultCard,
+            correct ? styles.resultCardOk : styles.resultCardBad,
+          ]}
+        >
           <View style={styles.resultMascot}>
             <LumiMascot state={correct ? 'celebrate' : 'sad'} size={120} />
           </View>
@@ -37,13 +48,20 @@ export const WriteAndScanResultModal = ({
             {correct ? 'Spelled it!' : 'Not quite!'}
           </Text>
           <Text style={styles.resultSubtitle}>
-            {correct ? 'You wrote it perfectly.' : 'Look at the correct spelling below.'}
+            {correct
+              ? 'You wrote it perfectly.'
+              : 'Look at the correct spelling below.'}
           </Text>
 
           <View style={styles.resultRow}>
             <View style={styles.resultBlock}>
               <Text style={styles.resultBlockLabel}>YOU WROTE</Text>
-              <Text style={[styles.resultBlockWord, !correct && styles.resultBlockWordWrong]}>
+              <Text
+                style={[
+                  styles.resultBlockWord,
+                  !correct && styles.resultBlockWordWrong,
+                ]}
+              >
                 {shown}
               </Text>
             </View>
@@ -54,14 +72,19 @@ export const WriteAndScanResultModal = ({
             />
             <View style={styles.resultBlock}>
               <Text style={styles.resultBlockLabel}>ANSWER</Text>
-              <Text style={[styles.resultBlockWord, styles.resultBlockWordTarget]}>
+              <Text
+                style={[styles.resultBlockWord, styles.resultBlockWordTarget]}
+              >
                 {targetWord.toUpperCase()}
               </Text>
             </View>
           </View>
 
           <TouchableOpacity
-            style={[styles.resultBtn, correct ? styles.resultBtnOk : styles.resultBtnBad]}
+            style={[
+              styles.resultBtn,
+              correct ? styles.resultBtnOk : styles.resultBtnBad,
+            ]}
             activeOpacity={0.85}
             onPress={onPlayAgain}
             accessibilityLabel="Play another round"

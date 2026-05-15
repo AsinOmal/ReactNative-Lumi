@@ -16,7 +16,9 @@ import { triggerHaptic } from '../../hooks/useHaptic';
 
 function getPackLabel(word: string): string {
   for (const [pack, words] of Object.entries(PACK_WORDS)) {
-    if (words.includes(word)) return pack.charAt(0).toUpperCase() + pack.slice(1) + ' Pack';
+    if (words.includes(word)) {
+      return pack.charAt(0).toUpperCase() + pack.slice(1) + ' Pack';
+    }
   }
   return '';
 }
@@ -48,7 +50,7 @@ export const ScanOverlayLayer = ({
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
-  const language = useLanguageStore(s => s.language);
+  const language = useLanguageStore((s) => s.language);
   const sinhalaLabel = getModel(activeWord)?.sinhalaLabel;
 
   useEffect(() => {
@@ -57,7 +59,9 @@ export const ScanOverlayLayer = ({
   }, [activeWord]);
 
   return (
-    <Animated.View style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}>
+    <Animated.View
+      style={[styles.resultCard, { transform: [{ translateY: cardAnim }] }]}
+    >
       {showConfetti && (
         <LottieView
           source={require('../../assets/lottie/confetti.json')}
@@ -76,13 +80,15 @@ export const ScanOverlayLayer = ({
           {language === 'si' && sinhalaLabel ? (
             <Text style={styles.sinhalaLabel}>{sinhalaLabel}</Text>
           ) : null}
-          {packLabel ? <Text style={styles.resultPack}>{packLabel}</Text> : null}
+          {packLabel ? (
+            <Text style={styles.resultPack}>{packLabel}</Text>
+          ) : null}
         </View>
       </View>
-      
+
       {/* Pronunciation + syllable chips */}
       <SyllablePlayer entry={getModel(activeWord)} />
-      
+
       {/* Spell correction badge — only shows on Levenshtein distance=2 matches */}
       {matchResult?.isCorrection && (
         <SpellCorrectionBadge
@@ -90,13 +96,18 @@ export const ScanOverlayLayer = ({
           correct={matchResult.word}
         />
       )}
-      
+
       <View style={styles.factBox}>
         <Text style={styles.factText}>{fact}</Text>
       </View>
-      
+
       <View style={styles.cardActions}>
-        <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.dismissBtn}
+          onPress={onDismiss}
+          accessibilityLabel="Dismiss word card"
+          accessibilityRole="button"
+        >
           <Ionicons name="close" size={20} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity
@@ -113,11 +124,22 @@ export const ScanOverlayLayer = ({
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}
           onPress={onSave}
           activeOpacity={0.8}
-          accessibilityLabel={isWordSaved ? 'Word already saved' : `Save ${activeWord}`}
+          accessibilityLabel={
+            isWordSaved ? 'Word already saved' : `Save ${activeWord}`
+          }
           accessibilityRole="button"
         >
-          <Ionicons name="star" size={18} color={isWordSaved ? '#A78BFA' : '#fff'} />
-          <Text style={[styles.saveBtnText, isWordSaved && styles.saveBtnTextDisabled]}>
+          <Ionicons
+            name="star"
+            size={18}
+            color={isWordSaved ? '#A78BFA' : '#fff'}
+          />
+          <Text
+            style={[
+              styles.saveBtnText,
+              isWordSaved && styles.saveBtnTextDisabled,
+            ]}
+          >
             {isWordSaved ? strings.wordSaved : strings.saveWord}
           </Text>
         </TouchableOpacity>

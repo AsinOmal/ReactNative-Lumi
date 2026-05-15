@@ -9,7 +9,13 @@ interface FormFieldProps {
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ label, hint, error, required, children }) => (
+export const FormField: React.FC<FormFieldProps> = ({
+  label,
+  hint,
+  error,
+  required,
+  children,
+}) => (
   <div className="form-field">
     <label className="form-field__label">
       {label}

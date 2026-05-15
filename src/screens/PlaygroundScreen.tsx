@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,17 @@ import {
   StatusBar,
   Image,
   ImageSourcePropType,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
-import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors } from "../constants/colors";
-import { ImageBackdrop } from "../components/scenes/ImageBackdrop";
-import { buttonGradientColors } from "../constants/skeuomorphicTokens";
-import { useRemoteContentStore } from "../store/useRemoteContentStore";
-import { styles } from "./PlaygroundScreenStyles";
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors } from '../constants/colors';
+import { ImageBackdrop } from '../components/scenes/ImageBackdrop';
+import { buttonGradientColors } from '../constants/skeuomorphicTokens';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
+import { styles } from './PlaygroundScreenStyles';
 
 interface GameCard {
   key: string;
@@ -32,38 +32,38 @@ interface GameCard {
 
 const GAMES: GameCard[] = [
   {
-    key: "ARWordFind",
-    title: "AR Word Find",
-    desc: "Find 3D models hidden in your room!",
-    iconName: "target",
-    cover: require("../assets/coverarts/AR-Word-Find.png"),
+    key: 'ARWordFind',
+    title: 'AR Word Find',
+    desc: 'Find 3D models hidden in your room!',
+    iconName: 'target',
+    cover: require('../assets/coverarts/AR-Word-Find.png'),
     accent: colors.accentCoral,
     available: true,
   },
   {
-    key: "MakeAMeal",
-    title: "Make a Meal",
-    desc: "Cook recipes with AR ingredients!",
-    iconName: "silverware-fork-knife",
-    cover: require("../assets/coverarts/Make-A-Meal.png"),
+    key: 'MakeAMeal',
+    title: 'Make a Meal',
+    desc: 'Cook recipes with AR ingredients!',
+    iconName: 'silverware-fork-knife',
+    cover: require('../assets/coverarts/Make-A-Meal.png'),
     accent: colors.accentOrange,
     available: true,
   },
   {
-    key: "ScanAndCount",
-    title: "Scan & Count",
-    desc: "Count 3D models all around you!",
-    iconName: "counter",
-    cover: require("../assets/coverarts/Scan-Count-Mode.png"),
+    key: 'ScanAndCount',
+    title: 'Scan & Count',
+    desc: 'Count 3D models all around you!',
+    iconName: 'counter',
+    cover: require('../assets/coverarts/Scan-Count-Mode.png'),
     accent: colors.accentMint,
     available: true,
   },
   {
-    key: "WriteAndScan",
-    title: "Write & Scan",
-    desc: "See the model, write the word, scan to check!",
-    iconName: "pencil-box-outline",
-    cover: require("../assets/coverarts/Write-And-Scan.png"),
+    key: 'WriteAndScan',
+    title: 'Write & Scan',
+    desc: 'See the model, write the word, scan to check!',
+    iconName: 'pencil-box-outline',
+    cover: require('../assets/coverarts/Write-And-Scan.png'),
     accent: colors.accentYellow,
     available: true,
   },
@@ -77,12 +77,12 @@ export const PlaygroundScreen = () => {
   const effectiveGames = arGamesEnabled
     ? GAMES
     : GAMES.map((g) =>
-        g.available ? { ...g, available: false, badgeText: "Off" } : g
+        g.available ? { ...g, available: false, badgeText: 'Off' } : g
       );
 
   return (
     <ImageBackdrop
-      source={require("../assets/backgrounds/playground-screen-bg.png")}
+      source={require('../assets/backgrounds/playground-screen-bg.png')}
     >
       <StatusBar barStyle="dark-content" />
 
@@ -126,7 +126,7 @@ export const PlaygroundScreen = () => {
               activeOpacity={game.available ? 0.85 : 1}
               accessibilityLabel={game.title}
               accessibilityHint={
-                game.available ? game.desc : game.badgeText ?? "Coming soon"
+                game.available ? game.desc : game.badgeText ?? 'Coming soon'
               }
               accessibilityRole="button"
             >
@@ -138,7 +138,7 @@ export const PlaygroundScreen = () => {
                     : {
                         backgroundColor: game.available
                           ? game.accent
-                          : "#CBD5E1",
+                          : '#CBD5E1',
                       },
                 ]}
               >
@@ -177,7 +177,7 @@ export const PlaygroundScreen = () => {
                   {!game.available && (
                     <View style={styles.badge}>
                       <Text style={styles.badgeText}>
-                        {game.badgeText ?? "Soon"}
+                        {game.badgeText ?? 'Soon'}
                       </Text>
                     </View>
                   )}
@@ -193,4 +193,3 @@ export const PlaygroundScreen = () => {
     </ImageBackdrop>
   );
 };
-

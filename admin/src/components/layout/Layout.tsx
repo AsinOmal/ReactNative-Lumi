@@ -14,21 +14,26 @@ interface LayoutProps {
 }
 
 const PAGE_TITLES: Record<string, string> = {
-  [ROUTES.DASHBOARD]:     'Dashboard',
-  [ROUTES.PACKS]:         'Packs',
-  [ROUTES.PACK_NEW]:      'New Pack',
-  [ROUTES.MODELS]:        'Models',
-  [ROUTES.MODEL_NEW]:     'New Model',
-  [ROUTES.USERS]:         'Users',
-  [ROUTES.ANALYTICS]:     'Analytics',
-  [ROUTES.MODERATION]:    'Moderation',
+  [ROUTES.DASHBOARD]: 'Dashboard',
+  [ROUTES.PACKS]: 'Packs',
+  [ROUTES.PACK_NEW]: 'New Pack',
+  [ROUTES.MODELS]: 'Models',
+  [ROUTES.MODEL_NEW]: 'New Model',
+  [ROUTES.USERS]: 'Users',
+  [ROUTES.ANALYTICS]: 'Analytics',
+  [ROUTES.MODERATION]: 'Moderation',
   [ROUTES.NOTIFICATIONS]: 'Notifications',
-  [ROUTES.APP_CONFIG]:    'App Config',
-  [ROUTES.REVENUE]:       'Revenue',
-  [ROUTES.FEEDBACK]:      'Feedback',
+  [ROUTES.APP_CONFIG]: 'App Config',
+  [ROUTES.REVENUE]: 'Revenue',
+  [ROUTES.FEEDBACK]: 'Feedback',
 };
 
-export const Layout: React.FC<LayoutProps> = ({ user, onSignOut, children, unreadFeedback }) => {
+export const Layout: React.FC<LayoutProps> = ({
+  user,
+  onSignOut,
+  children,
+  unreadFeedback,
+}) => {
   const { pathname } = useLocation();
   const pageTitle = PAGE_TITLES[pathname] ?? 'Lumi Admin';
 

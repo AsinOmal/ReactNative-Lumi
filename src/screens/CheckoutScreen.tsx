@@ -7,13 +7,21 @@
 
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ActivityIndicator, StatusBar,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { Pack } from '../types/pack';
-import { simulatePurchase, PaymentError } from '../services/mockPurchaseService';
+import {
+  simulatePurchase,
+  PaymentError,
+} from '../services/mockPurchaseService';
 import { useStrings } from '../hooks/useStrings';
 import { colors } from '../constants/colors';
 import { styles } from './CheckoutScreenStyles';
@@ -27,30 +35,43 @@ export const CheckoutScreen = () => {
   const { pack } = useRoute().params as { pack: Pack };
 
   const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry]         = useState('');
-  const [cvv, setCvv]               = useState('');
-  const [state, setState]           = useState<CheckoutState>('idle');
-  const [errorMsg, setErrorMsg]     = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [state, setState] = useState<CheckoutState>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const isValid = cardNumber.replace(/\s/g, '').length === 16 && expiry.length >= 4 && cvv.length >= 3;
+  const isValid =
+    cardNumber.replace(/\s/g, '').length === 16 &&
+    expiry.length >= 4 &&
+    cvv.length >= 3;
 
   const formatCard = (v: string) =>
-    v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+    v
+      .replace(/\D/g, '')
+      .slice(0, 16)
+      .replace(/(.{4})/g, '$1 ')
+      .trim();
 
   const formatExpiry = (v: string) => {
     const digits = v.replace(/\D/g, '').slice(0, 4);
-    return digits.length > 2 ? `${digits.slice(0, 2)} / ${digits.slice(2)}` : digits;
+    return digits.length > 2
+      ? `${digits.slice(0, 2)} / ${digits.slice(2)}`
+      : digits;
   };
 
   const handlePurchase = async () => {
-    if (!isValid || state !== 'idle') return;
+    if (!isValid || state !== 'idle') {
+      return;
+    }
     setState('processing');
     try {
       await simulatePurchase(pack.id);
       setState('success');
       setTimeout(() => navigation.goBack(), 1800);
     } catch (e) {
-      setErrorMsg(e instanceof PaymentError ? e.message : strings.CHECKOUT_ERROR);
+      setErrorMsg(
+        e instanceof PaymentError ? e.message : strings.CHECKOUT_ERROR
+      );
       setState('error');
     }
   };
@@ -60,7 +81,9 @@ export const CheckoutScreen = () => {
       <View style={[styles.centered, { paddingTop: insets.top }]}>
         <Ionicons name="checkmark-circle" size={72} color={colors.primary} />
         <Text style={styles.successTitle}>{strings.CHECKOUT_SUCCESS}</Text>
-        <Text style={styles.successSub}>{strings.CHECKOUT_UNLOCK_BENEFIT(pack.wordCount)}</Text>
+        <Text style={styles.successSub}>
+          {strings.CHECKOUT_UNLOCK_BENEFIT(pack.wordCount)}
+        </Text>
       </View>
     );
   }
@@ -68,7 +91,11 @@ export const CheckoutScreen = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
       <StatusBar barStyle="dark-content" />
-      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityRole="button">
+      <TouchableOpacity
+        style={styles.backBtn}
+        onPress={() => navigation.goBack()}
+        accessibilityRole="button"
+      >
         <Ionicons name="chevron-back" size={26} color={colors.textDark} />
       </TouchableOpacity>
 
@@ -111,16 +138,20 @@ export const CheckoutScreen = () => {
       {state === 'error' && <Text style={styles.errorText}>{errorMsg}</Text>}
 
       <TouchableOpacity
-        style={[styles.ctaBtn, (!isValid || state === 'processing') && styles.ctaDisabled]}
+        style={[
+          styles.ctaBtn,
+          (!isValid || state === 'processing') && styles.ctaDisabled,
+        ]}
         onPress={handlePurchase}
         disabled={!isValid || state === 'processing'}
         activeOpacity={0.85}
         accessibilityRole="button"
       >
-        {state === 'processing'
-          ? <ActivityIndicator color="#fff" />
-          : <Text style={styles.ctaText}>{strings.CHECKOUT_CTA}</Text>
-        }
+        {state === 'processing' ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.ctaText}>{strings.CHECKOUT_CTA}</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

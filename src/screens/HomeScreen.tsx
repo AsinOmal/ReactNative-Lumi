@@ -1,29 +1,29 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Animated,
   StatusBar,
   StyleSheet,
   ListRenderItem,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useNavigation,
   useFocusEffect,
   useIsFocused,
-} from "@react-navigation/native";
-import { useAuthStore } from "../store/useAuthStore";
-import { usePackStore } from "../store/usePackStore";
-import { HomeHeaderSection } from "../components/home/HomeHeaderSection";
-import { BannerAnnouncement } from "../components/home/BannerAnnouncement";
-import { PinResetBanner } from "../components/home/PinResetBanner";
-import { ColorPackCard } from "../components/library/ColorPackCard";
-import { getSavedWords, getStreak } from "../utils/achievementStore";
-import { getDailyWord, isDailyWordFound } from "../utils/dailyWordHunt";
-import { loadSavedWordsFromFirestore } from "../services/savedWordsService";
-import type { Pack } from "../types/pack";
-import { ParallaxScene } from "../components/scenes/ParallaxScene";
-import type { MascotState } from "../components/common/LumiMascot";
+} from '@react-navigation/native';
+import { useAuthStore } from '../store/useAuthStore';
+import { usePackStore } from '../store/usePackStore';
+import { HomeHeaderSection } from '../components/home/HomeHeaderSection';
+import { BannerAnnouncement } from '../components/home/BannerAnnouncement';
+import { PinResetBanner } from '../components/home/PinResetBanner';
+import { ColorPackCard } from '../components/library/ColorPackCard';
+import { getSavedWords, getStreak } from '../utils/achievementStore';
+import { getDailyWord, isDailyWordFound } from '../utils/dailyWordHunt';
+import { loadSavedWordsFromFirestore } from '../services/savedWordsService';
+import type { Pack } from '../types/pack';
+import { ParallaxScene } from '../components/scenes/ParallaxScene';
+import type { MascotState } from '../components/common/LumiMascot';
 
 // Mascot reactivity rules (kept loose so all states still get exercised):
 // - Daily word done → happy
@@ -31,11 +31,15 @@ import type { MascotState } from "../components/common/LumiMascot";
 // - Otherwise → idle
 const deriveMascotState = (
   dailyFound: boolean,
-  streak: number,
+  streak: number
 ): MascotState => {
-  if (dailyFound) return "happy";
-  if (streak >= 7) return "excited";
-  return "idle";
+  if (dailyFound) {
+    return 'happy';
+  }
+  if (streak >= 7) {
+    return 'excited';
+  }
+  return 'idle';
 };
 
 export const HomeScreen = () => {
@@ -69,7 +73,7 @@ export const HomeScreen = () => {
           setWordCount(local.length);
           setDailyFound(isDailyWordFound(local));
         } catch (e) {
-          console.error("[HomeScreen] loadData:", e);
+          console.error('[HomeScreen] loadData:', e);
         }
       };
       load();
@@ -80,7 +84,7 @@ export const HomeScreen = () => {
     <View style={styles.cell}>
       <ColorPackCard
         pack={pack}
-        onPress={() => (navigation as any).navigate("PackDetail", { pack })}
+        onPress={() => (navigation as any).navigate('PackDetail', { pack })}
       />
     </View>
   );
@@ -96,8 +100,8 @@ export const HomeScreen = () => {
         dailyWord={dailyWord}
         dailyFound={dailyFound}
         mascotState={mascotState}
-        onTrophyPress={() => (navigation as any).navigate("Achievements")}
-        onProgressPress={() => (navigation as any).navigate("SavedWords")}
+        onTrophyPress={() => (navigation as any).navigate('Achievements')}
+        onProgressPress={() => (navigation as any).navigate('SavedWords')}
       />
     </>
   );
@@ -118,7 +122,7 @@ export const HomeScreen = () => {
         ]}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
+          { useNativeDriver: true }
         )}
         scrollEventThrottle={16}
         decelerationRate={0.992}
@@ -132,7 +136,7 @@ export const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  list: { backgroundColor: "transparent" },
+  list: { backgroundColor: 'transparent' },
   scroll: { paddingHorizontal: 16, gap: 12 },
   row: { gap: 12 },
   cell: { flex: 1 },

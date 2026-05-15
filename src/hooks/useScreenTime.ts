@@ -21,22 +21,29 @@ import { AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { getScreenTimeForDate, saveScreenTimeForDate } from '../services/parentalControlsService';
+import {
+  getScreenTimeForDate,
+  saveScreenTimeForDate,
+} from '../services/parentalControlsService';
 import { config } from '../constants/config';
 
 const todayKey = () => `screenTime_${new Date().toISOString().slice(0, 10)}`;
 
 export const useScreenTime = () => {
   const { user } = useAuthStore();
-  const { settings, setTodayMinutes: setStoreTodayMinutes } = useParentalControlsStore();
+  const { settings, setTodayMinutes: setStoreTodayMinutes } =
+    useParentalControlsStore();
   const [todayMinutes, setTodayMinutes] = useState(0);
   const sessionStartRef = useRef<number>(Date.now());
   const accumulatedRef = useRef<number>(0);
 
-  const pushMinutes = useCallback((total: number) => {
-    setTodayMinutes(total);
-    setStoreTodayMinutes(total);
-  }, [setStoreTodayMinutes]);
+  const pushMinutes = useCallback(
+    (total: number) => {
+      setTodayMinutes(total);
+      setStoreTodayMinutes(total);
+    },
+    [setStoreTodayMinutes]
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -73,7 +80,9 @@ export const useScreenTime = () => {
 
     try {
       await AsyncStorage.setItem(todayKey(), String(total));
-      if (user) await saveScreenTimeForDate(user.uid, total);
+      if (user) {
+        await saveScreenTimeForDate(user.uid, total);
+      }
     } catch (e) {
       console.error('[useScreenTime] flush:', e);
     }
@@ -82,10 +91,17 @@ export const useScreenTime = () => {
   // Flush on background/foreground transitions
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state === 'background' || state === 'inactive') flush();
-      if (state === 'active') sessionStartRef.current = Date.now();
+      if (state === 'background' || state === 'inactive') {
+        flush();
+      }
+      if (state === 'active') {
+        sessionStartRef.current = Date.now();
+      }
     });
-    return () => { sub.remove(); flush(); };
+    return () => {
+      sub.remove();
+      flush();
+    };
   }, [flush]);
 
   // Live tick every 60s — keeps dashboard display current between flushes
@@ -98,7 +114,10 @@ export const useScreenTime = () => {
   }, [pushMinutes]);
 
   const dailyLimitMinutes = settings.dailyLimitMinutes;
-  const isAtWarning = dailyLimitMinutes > 0 && todayMinutes >= dailyLimitMinutes * (config.SCREEN_TIME_WARNING_PERCENT / 100);
+  const isAtWarning =
+    dailyLimitMinutes > 0 &&
+    todayMinutes >=
+      dailyLimitMinutes * (config.SCREEN_TIME_WARNING_PERCENT / 100);
   const isAtLimit = dailyLimitMinutes > 0 && todayMinutes >= dailyLimitMinutes;
 
   return { todayMinutes, dailyLimitMinutes, isAtWarning, isAtLimit };

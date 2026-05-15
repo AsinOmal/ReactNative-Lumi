@@ -6,7 +6,12 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, setDoc, increment } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  increment,
+} from '@react-native-firebase/firestore';
 
 const KEY = 'lumi_wishlist';
 
@@ -39,7 +44,9 @@ export async function getWishlist(): Promise<WishlistEntry[]> {
 export async function wishWord(word: string): Promise<boolean> {
   const key = word.toLowerCase();
   const list = await load();
-  if (list.some(e => e.word === key)) return false;
+  if (list.some((e) => e.word === key)) {
+    return false;
+  }
 
   list.push({ word: key, wishedAt: Date.now() });
   await AsyncStorage.setItem(KEY, JSON.stringify(list));
@@ -48,7 +55,7 @@ export async function wishWord(word: string): Promise<boolean> {
   setDoc(
     doc(getFirestore(getApp()), 'wishlist', key),
     { word: key, requestCount: increment(1), lastWishedAt: Date.now() },
-    { merge: true },
+    { merge: true }
   ).catch(() => {});
 
   return true;
@@ -57,12 +64,12 @@ export async function wishWord(word: string): Promise<boolean> {
 /** Returns true if the word has already been wished by this user */
 export async function isWished(word: string): Promise<boolean> {
   const list = await load();
-  return list.some(e => e.word === word.toLowerCase());
+  return list.some((e) => e.word === word.toLowerCase());
 }
 
 /** Remove a word from the local wishlist (does not decrement community count) */
 export async function removeWish(word: string): Promise<void> {
   const list = await load();
-  const next = list.filter(e => e.word !== word.toLowerCase());
+  const next = list.filter((e) => e.word !== word.toLowerCase());
   await AsyncStorage.setItem(KEY, JSON.stringify(next));
 }

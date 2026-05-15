@@ -15,7 +15,9 @@ interface TimerBarProps {
 export const TimerBar = ({ onTimeout }: TimerBarProps) => {
   const anim = useRef(new Animated.Value(1)).current;
   const onTimeoutRef = useRef(onTimeout);
-  useEffect(() => { onTimeoutRef.current = onTimeout; }, [onTimeout]);
+  useEffect(() => {
+    onTimeoutRef.current = onTimeout;
+  }, [onTimeout]);
 
   useEffect(() => {
     anim.setValue(1);
@@ -24,11 +26,18 @@ export const TimerBar = ({ onTimeout }: TimerBarProps) => {
       duration: config.SCAN_AND_COUNT_TIMER_MS,
       useNativeDriver: false,
     });
-    animation.start(({ finished }) => { if (finished) onTimeoutRef.current(); });
+    animation.start(({ finished }) => {
+      if (finished) {
+        onTimeoutRef.current();
+      }
+    });
     return () => animation.stop();
   }, []);
 
-  const width = anim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+  const width = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
   const backgroundColor = anim.interpolate({
     inputRange: [0, 0.25, 0.6, 1.0],
     outputRange: ['#EF4444', '#F59E0B', '#F59E0B', '#22C55E'],
@@ -43,8 +52,12 @@ export const TimerBar = ({ onTimeout }: TimerBarProps) => {
 
 const styles = StyleSheet.create({
   track: {
-    height: 8, backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 4, marginHorizontal: 16, marginTop: 6, overflow: 'hidden',
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 4,
+    marginHorizontal: 16,
+    marginTop: 6,
+    overflow: 'hidden',
   },
   bar: { height: '100%', borderRadius: 4 },
 });

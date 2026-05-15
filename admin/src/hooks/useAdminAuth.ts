@@ -23,34 +23,37 @@ export const useAdminAuth = (): UseAdminAuthResult => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
-      if (!firebaseUser) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-      try {
-        const tokenResult = await firebaseUser.getIdTokenResult();
-        if (!tokenResult.claims['admin']) {
-          await signOut(auth);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (firebaseUser: User | null) => {
+        if (!firebaseUser) {
           setUser(null);
-          setError('This account does not have admin access.');
-        } else {
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email ?? '',
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-          });
-          setError(null);
+          setLoading(false);
+          return;
         }
-      } catch (e) {
-        console.error('[useAdminAuth] Token check failed:', e);
-        setUser(null);
-      } finally {
-        setLoading(false);
+        try {
+          const tokenResult = await firebaseUser.getIdTokenResult();
+          if (!tokenResult.claims.admin) {
+            await signOut(auth);
+            setUser(null);
+            setError('This account does not have admin access.');
+          } else {
+            setUser({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email ?? '',
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL,
+            });
+            setError(null);
+          }
+        } catch (e) {
+          console.error('[useAdminAuth] Token check failed:', e);
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
       }
-    });
+    );
 
     return unsubscribe;
   }, []);

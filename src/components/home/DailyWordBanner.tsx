@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Animated, StyleSheet } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import LottieView from "lottie-react-native";
-import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { colors } from "../../constants/colors";
-import { buttonGradientColors } from "../../constants/skeuomorphicTokens";
-import { usePulseLoop } from "../../hooks/usePulseLoop";
-import { WordIllustration } from "./WordIllustration";
-import { styles } from "./DailyWordBannerStyles";
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from '../../constants/colors';
+import { buttonGradientColors } from '../../constants/skeuomorphicTokens';
+import { usePulseLoop } from '../../hooks/usePulseLoop';
+import { WordIllustration } from './WordIllustration';
+import { styles } from './DailyWordBannerStyles';
 
 interface Props {
   word: string;
@@ -22,34 +28,62 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
   const pulse = usePulseLoop();
 
   useEffect(() => {
-    if (isFound) setPlayFlip(true);
+    if (isFound) {
+      setPlayFlip(true);
+    }
   }, [isFound]);
 
   const sparkleColor = isFound
-    ? "rgba(5,150,105,0.25)"
-    : "rgba(180,140,0,0.22)";
+    ? 'rgba(5,150,105,0.25)'
+    : 'rgba(180,140,0,0.22)';
 
   return (
     <View style={[styles.card, isFound && styles.cardFound]}>
       <LinearGradient
-        colors={["rgba(255,255,255,0.22)", "rgba(255,255,255,0)"]}
+        colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)']}
         style={[StyleSheet.absoluteFill, styles.sheen]}
         pointerEvents="none"
       />
-      <Ionicons name="sparkles" size={13} color={sparkleColor} style={styles.s1} />
-      <Ionicons name="sparkles" size={8}  color={sparkleColor} style={styles.s2} />
-      <Ionicons name="sparkles" size={11} color={sparkleColor} style={styles.s3} />
-      <Ionicons name="sparkles" size={7}  color={sparkleColor} style={styles.s4} />
+      <Ionicons
+        name="sparkles"
+        size={13}
+        color={sparkleColor}
+        style={styles.s1}
+      />
+      <Ionicons
+        name="sparkles"
+        size={8}
+        color={sparkleColor}
+        style={styles.s2}
+      />
+      <Ionicons
+        name="sparkles"
+        size={11}
+        color={sparkleColor}
+        style={styles.s3}
+      />
+      <Ionicons
+        name="sparkles"
+        size={7}
+        color={sparkleColor}
+        style={styles.s4}
+      />
 
       {!isFound && <WordIllustration word={word} size={72} />}
       <View style={styles.left}>
-        <Text style={styles.label}>{isFound ? "✓ Found today!" : "— Today's Word —"}</Text>
+        <Text style={styles.label}>
+          {isFound ? '✓ Found today!' : "— Today's Word —"}
+        </Text>
         <View style={styles.speakerRow}>
           <Text style={styles.word}>{display}</Text>
         </View>
         {isFound && (
           <View style={styles.doneRow}>
-            <Ionicons name="checkmark-circle" size={16} color={colors.successDark} />
+            <Ionicons
+              name="checkmark-circle"
+              size={16}
+              color={colors.successDark}
+            />
             <Text style={styles.doneText}>Well done!</Text>
           </View>
         )}
@@ -58,7 +92,7 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
       {!isFound && (
         <Animated.View style={{ transform: [{ scale: pulse }] }}>
           <TouchableOpacity
-            onPress={() => (navigation as any).navigate("Scan")}
+            onPress={() => (navigation as any).navigate('Scan')}
             activeOpacity={0.85}
             accessibilityLabel={`Find today's word: ${display}`}
             accessibilityRole="button"
@@ -89,12 +123,16 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
       )}
       {isFound && !playFlip && (
         <View style={styles.checkCircle}>
-          <Ionicons name="checkmark-circle" size={42} color={colors.successDark} />
+          <Ionicons
+            name="checkmark-circle"
+            size={42}
+            color={colors.successDark}
+          />
         </View>
       )}
       {playFlip && (
         <LottieView
-          source={require("../../assets/lottie/page-flip.json")}
+          source={require('../../assets/lottie/page-flip.json')}
           autoPlay
           loop={false}
           style={styles.flipAnim}

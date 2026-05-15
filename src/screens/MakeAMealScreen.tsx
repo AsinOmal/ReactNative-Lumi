@@ -9,8 +9,15 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
-  SafeAreaView, StatusBar, Animated, Alert, ActivityIndicator,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Animated,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
@@ -29,14 +36,26 @@ import { Recipe } from '../types/makeAMeal';
 import { styles } from './MakeAMealScreenStyles';
 
 const MEAL_POSITIONS: [number, number, number][] = [
-  [-1.5,  0.4, -1.8], [ 0.0,  0.7, -1.5], [ 1.5,  0.4, -1.8],
-  [-1.2, -0.4, -2.1], [ 1.2, -0.4, -2.1], [ 0.0, -0.3, -2.3],
-  [ 0.5,  0.2, -1.2],
+  [-1.5, 0.4, -1.8],
+  [0.0, 0.7, -1.5],
+  [1.5, 0.4, -1.8],
+  [-1.2, -0.4, -2.1],
+  [1.2, -0.4, -2.1],
+  [0.0, -0.3, -2.3],
+  [0.5, 0.2, -1.2],
 ];
 
 export const MakeAMealScreen = () => {
   const navigation = useNavigation();
-  const { activeRecipe, collectedIngredients, gamePhase, setActiveRecipe, setGamePhase, playAgain, resetGame } = useMakeAMealStore();
+  const {
+    activeRecipe,
+    collectedIngredients,
+    gamePhase,
+    setActiveRecipe,
+    setGamePhase,
+    playAgain,
+    resetGame,
+  } = useMakeAMealStore();
   const [isLeaving, setIsLeaving] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
   const [loadedWords, setLoadedWords] = useState<Set<string>>(new Set());
@@ -45,27 +64,58 @@ export const MakeAMealScreen = () => {
   // Once started, keep it mounted; hide with opacity when on recipe select.
   const [viroEverStarted, setViroEverStarted] = useState(false);
 
-  const { spawnWords, feedback, feedbackAnim, handleIngredientTap, handleDistractorTap } = useMakeAMeal({
+  const {
+    spawnWords,
+    feedback,
+    feedbackAnim,
+    handleIngredientTap,
+    handleDistractorTap,
+  } = useMakeAMeal({
     recipe: activeRecipe,
     onComplete: () => setGamePhase('complete'),
   });
 
   // Gate on ingredients only — distractors can pop in after; child can start collecting sooner
-  const ingredientWords = activeRecipe?.ingredients.map(i => i.word) ?? [];
-  const allLoaded = ingredientWords.length > 0 && ingredientWords.every(w => loadedWords.has(w));
+  const ingredientWords = activeRecipe?.ingredients.map((i) => i.word) ?? [];
+  const allLoaded =
+    ingredientWords.length > 0 &&
+    ingredientWords.every((w) => loadedWords.has(w));
 
   // Double-ref stable callbacks — Viro reads viroAppProps once at mount
   const onIngredientRef = useRef<(w: string) => void>(() => {});
   const onDistractorRef = useRef<(w: string) => void>(() => {});
   const onModelLoadedRef = useRef<(w: string) => void>(() => {});
-  useEffect(() => { onIngredientRef.current = handleIngredientTap; }, [handleIngredientTap]);
-  useEffect(() => { onDistractorRef.current = handleDistractorTap; }, [handleDistractorTap]);
-  useEffect(() => { onModelLoadedRef.current = (w: string) => setLoadedWords(prev => { const s = new Set(prev); s.add(w); return s; }); }, []);
-  const stableOnIngredient    = useRef((w: string) => onIngredientRef.current(w)).current;
-  const stableOnDistractor    = useRef((w: string) => onDistractorRef.current(w)).current;
-  const stableOnModelLoaded   = useRef((w: string) => onModelLoadedRef.current(w)).current;
+  useEffect(() => {
+    onIngredientRef.current = handleIngredientTap;
+  }, [handleIngredientTap]);
+  useEffect(() => {
+    onDistractorRef.current = handleDistractorTap;
+  }, [handleDistractorTap]);
+  useEffect(() => {
+    onModelLoadedRef.current = (w: string) =>
+      setLoadedWords((prev) => {
+        const s = new Set(prev);
+        s.add(w);
+        return s;
+      });
+  }, []);
+  const stableOnIngredient = useRef((w: string) =>
+    onIngredientRef.current(w)
+  ).current;
+  const stableOnDistractor = useRef((w: string) =>
+    onDistractorRef.current(w)
+  ).current;
+  const stableOnModelLoaded = useRef((w: string) =>
+    onModelLoadedRef.current(w)
+  ).current;
 
-  useEffect(() => { loadGameSounds(); return () => { releaseGameSounds(); resetGame(); }; }, []);
+  useEffect(() => {
+    loadGameSounds();
+    return () => {
+      releaseGameSounds();
+      resetGame();
+    };
+  }, []);
 
   // Full exit — let the useEffect cleanup call resetGame on unmount
   const safeGoBack = useCallback(() => {
@@ -79,13 +129,16 @@ export const MakeAMealScreen = () => {
     resetGame(); // gamePhase → 'select' → Viro opacity 0, stays mounted
   }, [resetGame]);
 
-  const handleRecipeSelect = useCallback((recipe: Recipe) => {
-    setActiveRecipe(recipe);
-    setLoadedWords(new Set());
-    setViroEverStarted(true);
-    setSceneKey(k => k + 1);
-    setGamePhase('playing');
-  }, [setActiveRecipe, setGamePhase]);
+  const handleRecipeSelect = useCallback(
+    (recipe: Recipe) => {
+      setActiveRecipe(recipe);
+      setLoadedWords(new Set());
+      setViroEverStarted(true);
+      setSceneKey((k) => k + 1);
+      setGamePhase('playing');
+    },
+    [setActiveRecipe, setGamePhase]
+  );
 
   // Hide Viro first before forcing a remount via sceneKey — same Metal release concern
   const handlePlayAgain = useCallback(() => {
@@ -93,7 +146,7 @@ export const MakeAMealScreen = () => {
     setTimeout(() => {
       playAgain();
       setLoadedWords(new Set());
-      setSceneKey(k => k + 1);
+      setSceneKey((k) => k + 1);
       setIsLeaving(false);
     }, 350);
   }, [playAgain]);
@@ -114,7 +167,7 @@ export const MakeAMealScreen = () => {
             initialScene={{ scene: MakeAMealScene as any }}
             viroAppProps={{
               spawnWords,
-              ingredients: activeRecipe?.ingredients.map(i => i.word) ?? [],
+              ingredients: activeRecipe?.ingredients.map((i) => i.word) ?? [],
               collected: collectedIngredients,
               onIngredientTap: stableOnIngredient,
               onDistractorTap: stableOnDistractor,
@@ -129,12 +182,17 @@ export const MakeAMealScreen = () => {
       {/* HUD overlay */}
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <View style={styles.header} pointerEvents="box-none">
-          <TouchableOpacity style={styles.closeBtn} onPress={() =>
-            Alert.alert('Quit Recipe?', 'Your progress will be lost.', [
-              { text: 'Keep Cooking', style: 'cancel' },
-              { text: 'Quit', style: 'destructive', onPress: safeGoBack },
-            ])
-          } accessibilityLabel="Quit recipe" accessibilityRole="button">
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() =>
+              Alert.alert('Quit Recipe?', 'Your progress will be lost.', [
+                { text: 'Keep Cooking', style: 'cancel' },
+                { text: 'Quit', style: 'destructive', onPress: safeGoBack },
+              ])
+            }
+            accessibilityLabel="Quit recipe"
+            accessibilityRole="button"
+          >
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
           {activeRecipe && !viroHidden && (
@@ -147,12 +205,36 @@ export const MakeAMealScreen = () => {
 
         {gamePhase === 'playing' && activeRecipe && (
           <>
-            <IngredientProgressHUD recipe={activeRecipe} collected={collectedIngredients} />
+            <IngredientProgressHUD
+              recipe={activeRecipe}
+              collected={collectedIngredients}
+            />
             {feedback !== null && (
-              <Animated.View pointerEvents="none" style={[styles.feedbackBanner, feedback === 'correct' ? styles.feedbackGreen : styles.feedbackRed, { opacity: feedbackAnim }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Ionicons name={feedback === 'correct' ? 'checkmark-circle' : 'close-circle'} size={18} color="#FFF" />
-                  <Text style={styles.feedbackText}>{feedback === 'correct' ? 'Got one!' : 'Not quite!'}</Text>
+              <Animated.View
+                pointerEvents="none"
+                style={[
+                  styles.feedbackBanner,
+                  feedback === 'correct'
+                    ? styles.feedbackGreen
+                    : styles.feedbackRed,
+                  { opacity: feedbackAnim },
+                ]}
+              >
+                <View
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                >
+                  <Ionicons
+                    name={
+                      feedback === 'correct'
+                        ? 'checkmark-circle'
+                        : 'close-circle'
+                    }
+                    size={18}
+                    color="#FFF"
+                  />
+                  <Text style={styles.feedbackText}>
+                    {feedback === 'correct' ? 'Got one!' : 'Not quite!'}
+                  </Text>
                 </View>
               </Animated.View>
             )}
@@ -168,9 +250,18 @@ export const MakeAMealScreen = () => {
         </View>
       )}
 
-      {gamePhase === 'select' && <RecipeSelectOverlay onSelect={handleRecipeSelect} onBack={safeGoBack} />}
+      {gamePhase === 'select' && (
+        <RecipeSelectOverlay
+          onSelect={handleRecipeSelect}
+          onBack={safeGoBack}
+        />
+      )}
       {gamePhase === 'complete' && activeRecipe && (
-        <MealCelebrationOverlay recipe={activeRecipe} onPlayAgain={handlePlayAgain} onDone={handleBackToSelect} />
+        <MealCelebrationOverlay
+          recipe={activeRecipe}
+          onPlayAgain={handlePlayAgain}
+          onDone={handleBackToSelect}
+        />
       )}
     </View>
   );

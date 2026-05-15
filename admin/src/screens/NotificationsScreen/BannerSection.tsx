@@ -25,16 +25,26 @@ export const BannerSection: React.FC = () => {
   const [form, setForm] = useState<BannerConfig>(EMPTY);
   const [error, setError] = useState('');
 
-  useEffect(() => { setForm(banner ?? EMPTY); }, [banner]);
+  useEffect(() => {
+    setForm(banner ?? EMPTY);
+  }, [banner]);
 
   const handleSave = async () => {
-    if (!form.message.trim()) { setError('Message is required.'); return; }
+    if (!form.message.trim()) {
+      setError('Message is required.');
+      return;
+    }
     setError('');
-    try { await saveBanner(form); }
-    catch { setError('Failed to save. Try again.'); }
+    try {
+      await saveBanner(form);
+    } catch {
+      setError('Failed to save. Try again.');
+    }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="banner-section">
@@ -43,8 +53,8 @@ export const BannerSection: React.FC = () => {
         <div>
           <p className="banner-section__title">In-App Banner</p>
           <p className="banner-section__sub">
-            Shown at the top of the Home screen until the expiry time.
-            Stored in <code>/adminConfig/banner</code>.
+            Shown at the top of the Home screen until the expiry time. Stored in{' '}
+            <code>/adminConfig/banner</code>.
           </p>
         </div>
       </div>
@@ -57,33 +67,48 @@ export const BannerSection: React.FC = () => {
           maxLength={200}
           placeholder="e.g. New Vegetables Pack is live — tap Library to explore."
           value={form.message}
-          onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+          onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
         />
 
         <label className="banner-section__label">Accent Colour</label>
-        <ColorPicker value={form.accentColor} onChange={c => setForm(p => ({ ...p, accentColor: c }))} />
+        <ColorPicker
+          value={form.accentColor}
+          onChange={(c) => setForm((p) => ({ ...p, accentColor: c }))}
+        />
 
         <label className="banner-section__label">Expires At</label>
         <input
           type="datetime-local"
           className="banner-section__date"
           value={toLocal(form.expiresAt)}
-          onChange={e => setForm(p => ({ ...p, expiresAt: new Date(e.target.value) }))}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, expiresAt: new Date(e.target.value) }))
+          }
         />
 
         <div className="banner-section__active-row">
           <div>
-            <p className="banner-section__label" style={{ marginBottom: 2 }}>Active</p>
-            <p className="banner-section__hint">Inactive banners are never shown even before expiry.</p>
+            <p className="banner-section__label" style={{ marginBottom: 2 }}>
+              Active
+            </p>
+            <p className="banner-section__hint">
+              Inactive banners are never shown even before expiry.
+            </p>
           </div>
-          <Toggle checked={form.isActive} onChange={v => setForm(p => ({ ...p, isActive: v }))} disabled={saving} />
+          <Toggle
+            checked={form.isActive}
+            onChange={(v) => setForm((p) => ({ ...p, isActive: v }))}
+            disabled={saving}
+          />
         </div>
 
         {error && <p className="banner-section__error">{error}</p>}
 
         <div className="banner-section__actions">
           {form.isActive && <span className="banner-section__live">Live</span>}
-          <Button loading={saving} onClick={handleSave}>Save Banner</Button>
+          <Button loading={saving} onClick={handleSave}>
+            Save Banner
+          </Button>
         </div>
       </div>
     </div>

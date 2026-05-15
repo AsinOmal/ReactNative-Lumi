@@ -20,6 +20,6 @@ type StringsShape = typeof stringsEn;
 const _typeCheck: StringsShape = stringsSi;
 
 export const useStrings = (): StringsShape => {
-  const language = useLanguageStore(s => s.language);
+  const language = useLanguageStore((s) => s.language);
   return language === 'si' ? (stringsSi as StringsShape) : stringsEn;
 };

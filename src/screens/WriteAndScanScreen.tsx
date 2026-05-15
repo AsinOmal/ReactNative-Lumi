@@ -10,7 +10,13 @@
 // hands over to react-native-vision-camera.
 
 import React, { useCallback, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -27,8 +33,14 @@ const AR_UNMOUNT_DELAY_MS = 350;
 export const WriteAndScanScreen = () => {
   const navigation = useNavigation();
   const {
-    phase, targetWord, result,
-    startRound, onCountdownDone, proceedToScan, submitOcrText, playAgain,
+    phase,
+    targetWord,
+    result,
+    startRound,
+    onCountdownDone,
+    proceedToScan,
+    submitOcrText,
+    playAgain,
   } = useWriteAndScan();
 
   // Hide the AR view (opacity: 0) before unmounting so Metal can release
@@ -37,7 +49,9 @@ export const WriteAndScanScreen = () => {
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const safeExit = useCallback(() => {
-    if (transitionTimer.current) clearTimeout(transitionTimer.current);
+    if (transitionTimer.current) {
+      clearTimeout(transitionTimer.current);
+    }
     navigation.goBack();
   }, [navigation]);
 
@@ -57,9 +71,7 @@ export const WriteAndScanScreen = () => {
         <DifficultyPicker onPick={startRound} onClose={safeExit} />
       )}
 
-      {phase === 'countdown' && (
-        <CountdownOverlay onDone={onCountdownDone} />
-      )}
+      {phase === 'countdown' && <CountdownOverlay onDone={onCountdownDone} />}
 
       {phase === 'reveal' && targetWord && (
         <View style={[styles.black, arLeaving && { opacity: 0 }]}>

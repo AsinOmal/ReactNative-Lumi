@@ -18,19 +18,23 @@ export const useSavedWords = (uid: string | null) => {
 
   // Real-time Firestore listener — unsubscribes automatically on uid change or unmount
   useEffect(() => {
-    if (!uid) return;
+    if (!uid) {
+      return;
+    }
     const unsub = subscribeToSavedWords(uid, setSavedWords);
     return unsub;
   }, [uid]);
 
   const loadWishlist = useCallback(() => {
-    getWishlist().then(setWishlist).catch(() => {});
+    getWishlist()
+      .then(setWishlist)
+      .catch(() => {});
   }, []);
 
   const handleRemoveWish = useCallback(async (word: string) => {
     try {
       await removeWish(word);
-      setWishlist(prev => prev.filter(w => w.word !== word));
+      setWishlist((prev) => prev.filter((w) => w.word !== word));
     } catch (e) {
       console.error('[useSavedWords] handleRemoveWish:', e);
     }

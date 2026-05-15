@@ -10,7 +10,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ user, pageTitle }) => {
   const initials = user.displayName
-    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    ? user.displayName
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
     : user.email.slice(0, 2).toUpperCase();
 
   return (
@@ -34,7 +39,11 @@ export const Header: React.FC<HeaderProps> = ({ user, pageTitle }) => {
 
         <div className="header__avatar" title={user.email}>
           {user.photoURL ? (
-            <img src={user.photoURL} alt={initials} className="header__avatar-img" />
+            <img
+              src={user.photoURL}
+              alt={initials}
+              className="header__avatar-img"
+            />
           ) : (
             <span>{initials}</span>
           )}

@@ -5,7 +5,12 @@ import { useHazardLog } from '../../hooks/useHazardLog';
 import './HazardLogSection.css';
 
 const fmt = (d: Date) =>
-  d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
 export const HazardLogSection: React.FC = () => {
   const { events, loading } = useHazardLog();
@@ -16,11 +21,14 @@ export const HazardLogSection: React.FC = () => {
         <Activity size={16} /> Hazard Detection Log
       </h2>
       <p className="hazard-log__desc">
-        Fired when <code>useHazardDetection</code> classifies a camera frame as hazardous.
-        Use this to tune <code>HAZARD_KEYWORDS</code> and reduce false positives.
+        Fired when <code>useHazardDetection</code> classifies a camera frame as
+        hazardous. Use this to tune <code>HAZARD_KEYWORDS</code> and reduce
+        false positives.
       </p>
 
-      {loading ? <LoadingSpinner /> : events.length === 0 ? (
+      {loading ? (
+        <LoadingSpinner />
+      ) : events.length === 0 ? (
         <p className="hazard-log__empty">No hazard events logged yet.</p>
       ) : (
         <div className="hazard-log__table-wrap">
@@ -34,7 +42,7 @@ export const HazardLogSection: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {events.map(ev => (
+              {events.map((ev) => (
                 <tr key={ev.id} className="hazard-log__row">
                   <td className="hazard-log__label-cell">{ev.label}</td>
                   <td className="hazard-log__uid">{ev.uid}</td>

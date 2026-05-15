@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
-  collection, onSnapshot, doc, updateDoc,
-  orderBy, query, type QuerySnapshot, type DocumentData,
+  collection,
+  onSnapshot,
+  doc,
+  updateDoc,
+  orderBy,
+  query,
+  type QuerySnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { FeedbackItem } from '../types';
@@ -32,13 +38,13 @@ export const useFeedback = (): UseFeedbackResult => {
     const unsub = onSnapshot(
       q,
       (snap: QuerySnapshot) => {
-        setItems(snap.docs.map(d => docToFeedback(d.id, d.data())));
+        setItems(snap.docs.map((d) => docToFeedback(d.id, d.data())));
         setLoading(false);
       },
       (err) => {
         console.error('[useFeedback] onSnapshot error:', err);
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);
@@ -52,7 +58,7 @@ export const useFeedback = (): UseFeedbackResult => {
     }
   };
 
-  const unreadCount = items.filter(i => !i.isRead).length;
+  const unreadCount = items.filter((i) => !i.isRead).length;
 
   return { items, unreadCount, loading, markRead };
 };

@@ -5,7 +5,11 @@ const WORDS = ['apple', 'banana', 'grape', 'mango', 'cherry'];
 describe('matchWord — exact matches', () => {
   it('returns the word when OCR text contains it verbatim', () => {
     const result = matchWord('apple', WORDS);
-    expect(result).toEqual({ word: 'apple', scannedAs: 'apple', isCorrection: false });
+    expect(result).toEqual({
+      word: 'apple',
+      scannedAs: 'apple',
+      isCorrection: false,
+    });
   });
 
   it('is case-insensitive', () => {
@@ -117,7 +121,9 @@ describe('detectUnknownWord', () => {
   });
 
   it('ignores tokens longer than 18 characters', () => {
-    expect(detectUnknownWord('superlongwordthatexceedslimit', WORDS)).toBeNull();
+    expect(
+      detectUnknownWord('superlongwordthatexceedslimit', WORDS)
+    ).toBeNull();
   });
 
   it('returns the longest unknown token when multiple exist', () => {

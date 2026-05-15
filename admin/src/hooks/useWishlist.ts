@@ -21,19 +21,20 @@ export const useWishlist = (): UseWishlistResult => {
     const load = async () => {
       try {
         const snap = await getDocs(
-          query(collection(db, 'wishlist'), orderBy('requestCount', 'desc')),
+          query(collection(db, 'wishlist'), orderBy('requestCount', 'desc'))
         );
         setItems(
-          snap.docs.map(d => {
+          snap.docs.map((d) => {
             const data = d.data();
             return {
               word: data.word ?? d.id,
               requestCount: data.requestCount ?? 0,
-              lastWishedAt: typeof data.lastWishedAt === 'number'
-                ? new Date(data.lastWishedAt)
-                : data.lastWishedAt?.toDate?.() ?? new Date(),
+              lastWishedAt:
+                typeof data.lastWishedAt === 'number'
+                  ? new Date(data.lastWishedAt)
+                  : data.lastWishedAt?.toDate?.() ?? new Date(),
             };
-          }),
+          })
         );
       } catch (e) {
         console.error('[useWishlist] load failed:', e);

@@ -37,7 +37,7 @@ export const useBanner = (): UseBannerResult => {
       (err) => {
         console.error('[useBanner] onSnapshot:', err);
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);

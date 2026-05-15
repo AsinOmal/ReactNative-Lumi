@@ -42,7 +42,7 @@ export const useAppConfig = (): UseAppConfigResult => {
       (err) => {
         console.error('[useAppConfig] onSnapshot error:', err);
         setLoading(false);
-      },
+      }
     );
     return unsub;
   }, []);

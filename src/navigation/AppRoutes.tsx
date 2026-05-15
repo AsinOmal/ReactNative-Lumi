@@ -32,32 +32,47 @@ import { hasSeenOnboarding, getChildInfoSeen } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useStrings } from '../hooks/useStrings';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-const SPRING = { animation: 'spring' as const, config: { stiffness: 280, damping: 26, mass: 0.8, overshootClamping: false, restDisplacementThreshold: 0.01, restSpeedThreshold: 0.01 } };
+const SPRING = {
+  animation: 'spring' as const,
+  config: {
+    stiffness: 280,
+    damping: 26,
+    mass: 0.8,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+  },
+};
 
 export const AppRoutes = () => {
   const { user } = useAuthStore();
   const { isParentUnlocked } = useParentalControlsStore();
-  const introSeen = useLanguageStore(s => s.introSeen);
+  const introSeen = useLanguageStore((s) => s.introSeen);
   const strings = useStrings();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
   const { initializing, suspendedError } = useBootstrapSession();
-  const appConfig = useRemoteContentStore(s => s.appConfig);
+  const appConfig = useRemoteContentStore((s) => s.appConfig);
   useRemoteConfig(!!user);
   useDevRemoteModelsSync();
   const [onboardingReady, setOnboardingReady] = useState(false);
-  const [showOnboarding, setShowOnboarding]   = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showChildProfile, setShowChildProfile] = useState(false);
 
   useEffect(() => {
-    Promise.all([hasSeenOnboarding(), getChildInfoSeen()]).then(([seen, childSeen]) => {
-      setShowOnboarding(!seen);
-      setShowChildProfile(!childSeen);
-      setOnboardingReady(true);
-    });
+    Promise.all([hasSeenOnboarding(), getChildInfoSeen()]).then(
+      ([seen, childSeen]) => {
+        setShowOnboarding(!seen);
+        setShowChildProfile(!childSeen);
+        setOnboardingReady(true);
+      }
+    );
     scheduleStreakReminder();
   }, []);
 
@@ -74,23 +89,34 @@ export const AppRoutes = () => {
       <View style={styles.suspended}>
         <Text style={styles.suspendedTitle}>Account Suspended</Text>
         <Text style={styles.suspendedBody}>
-          Your account has been suspended. Please contact support if you believe this is an error.
+          Your account has been suspended. Please contact support if you believe
+          this is an error.
         </Text>
       </View>
     );
   }
 
-  if (showOnboarding && appConfig?.newUserOnboarding !== false) return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
-  if (!user) return <LoginScreen />;
+  if (showOnboarding && appConfig?.newUserOnboarding !== false) {
+    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
+  }
+  if (!user) {
+    return <LoginScreen />;
+  }
   // Show the intro guide once after the main onboarding completes.
-  if (!introSeen) return <AppIntroScreen />;
+  if (!introSeen) {
+    return <AppIntroScreen />;
+  }
   // Collect child name/age once after the intro guide.
-  if (showChildProfile) return <ChildProfileScreen onComplete={() => setShowChildProfile(false)} />;
+  if (showChildProfile) {
+    return <ChildProfileScreen onComplete={() => setShowChildProfile(false)} />;
+  }
 
   if (appConfig?.maintenanceMode) {
     return (
       <View style={styles.suspended}>
-        <Text style={styles.suspendedTitle}>{strings.maintenanceModeTitle}</Text>
+        <Text style={styles.suspendedTitle}>
+          {strings.maintenanceModeTitle}
+        </Text>
         <Text style={styles.suspendedBody}>{strings.maintenanceModeBody}</Text>
       </View>
     );
@@ -98,22 +124,47 @@ export const AppRoutes = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, transitionSpec: { open: SPRING, close: SPRING } }}>
-        <Stack.Screen name="MainTabs"      component={MainTabNavigator} />
-        <Stack.Screen name="Achievements"  component={AchievementsScreen} />
-        <Stack.Screen name="SavedWords"    component={SavedWordsScreen} />
-        <Stack.Screen name="ARWordFind"    component={ARWordFindScreen} />
-        <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
-        <Stack.Screen name="PackDetail"    component={PackDetailScreen} />
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          transitionSpec: { open: SPRING, close: SPRING },
+        }}
+      >
+        <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+        <Stack.Screen name="Achievements" component={AchievementsScreen} />
+        <Stack.Screen name="SavedWords" component={SavedWordsScreen} />
+        <Stack.Screen name="ARWordFind" component={ARWordFindScreen} />
+        <Stack.Screen
+          name="ParentDashboard"
+          component={ParentDashboardScreen}
+        />
+        <Stack.Screen name="PackDetail" component={PackDetailScreen} />
         <Stack.Screen name="PackARPreview" component={PackARPreviewScreen} />
-        <Stack.Screen name="PackGate"         component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="PremiumPackGate" component={PremiumPackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="Checkout"         component={CheckoutScreen} options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
-        <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
-        <Stack.Screen name="WriteAndScan"  component={WriteAndScanScreen} />
-        <Stack.Screen name="Scan"          component={ScanScreen} />
-        <Stack.Screen name="ARPlacement"   component={ARPlacementScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="PackGate"
+          component={PackGateScreen}
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="PremiumPackGate"
+          component={PremiumPackGateScreen}
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="Checkout"
+          component={CheckoutScreen}
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen name="MakeAMeal" component={MakeAMealScreen} />
+        <Stack.Screen name="ScanAndCount" component={ScanAndCountScreen} />
+        <Stack.Screen name="WriteAndScan" component={WriteAndScanScreen} />
+        <Stack.Screen name="Scan" component={ScanScreen} />
+        <Stack.Screen
+          name="ARPlacement"
+          component={ARPlacementScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
       <ScreenTimeLimitModal
         visible={isAtLimit && !isParentUnlocked}
@@ -126,8 +177,31 @@ export const AppRoutes = () => {
 };
 
 const styles = StyleSheet.create({
-  loading: { flex: 1, backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center' },
-  suspended: { flex: 1, backgroundColor: '#F0EBFF', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, gap: 12 },
-  suspendedTitle: { fontFamily: 'Fredoka-Bold', fontSize: 26, color: '#1A0A4B', textAlign: 'center' },
-  suspendedBody:  { fontFamily: 'Fredoka-Regular', fontSize: 16, color: '#7B5EA7', textAlign: 'center', lineHeight: 24 },
+  loading: {
+    flex: 1,
+    backgroundColor: '#F0EBFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  suspended: {
+    flex: 1,
+    backgroundColor: '#F0EBFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    gap: 12,
+  },
+  suspendedTitle: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 26,
+    color: '#1A0A4B',
+    textAlign: 'center',
+  },
+  suspendedBody: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 16,
+    color: '#7B5EA7',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
 });

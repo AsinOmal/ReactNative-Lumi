@@ -24,19 +24,32 @@ export const PlacementScene = (props: any) => {
   // Double-ref pattern: viroAppProps is read once at mount, so any callback
   // passed through it becomes stale after the first state change. Store the
   // latest value in a ref, expose a stable wrapper that reads from the ref.
-  const onPlaneSelectedRef = useRef<(() => void) | undefined>(onPlaneSelectedProp);
-  useEffect(() => { onPlaneSelectedRef.current = onPlaneSelectedProp; }, [onPlaneSelectedProp]);
-  const stableOnPlaneSelected = useRef(() => onPlaneSelectedRef.current?.()).current;
+  const onPlaneSelectedRef = useRef<(() => void) | undefined>(
+    onPlaneSelectedProp
+  );
+  useEffect(() => {
+    onPlaneSelectedRef.current = onPlaneSelectedProp;
+  }, [onPlaneSelectedProp]);
+  const stableOnPlaneSelected = useRef(() =>
+    onPlaneSelectedRef.current?.()
+  ).current;
 
   const modelEntry = getModel(word);
-  if (!modelEntry) return null;
+  if (!modelEntry) {
+    return null;
+  }
 
   const scale = modelEntry.scale;
 
   return (
     <ViroARScene>
       <ViroAmbientLight color="#ffffff" intensity={700} />
-      <ViroDirectionalLight color="#ffffff" direction={[0, -1, -0.2]} intensity={500} castsShadow={false} />
+      <ViroDirectionalLight
+        color="#ffffff"
+        direction={[0, -1, -0.2]}
+        intensity={500}
+        castsShadow={false}
+      />
 
       <ViroARPlaneSelector
         minHeight={0.1}
@@ -49,7 +62,9 @@ export const PlacementScene = (props: any) => {
           <Viro3DObject
             source={modelEntry.source}
             type="GLB"
-            onError={(e: any) => console.warn('[PlacementScene] model error:', e)}
+            onError={(e: any) =>
+              console.warn('[PlacementScene] model error:', e)
+            }
           />
         </ViroNode>
       </ViroARPlaneSelector>

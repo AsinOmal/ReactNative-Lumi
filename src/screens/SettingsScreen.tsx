@@ -1,23 +1,27 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, StatusBar, Switch } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
-import LinearGradient from "react-native-linear-gradient";
-import { useAuthStore } from "../store/useAuthStore";
-import { useUserProfile } from "../hooks/useUserProfile";
-import { getApp } from "@react-native-firebase/app";
-import { getAuth, signOut } from "@react-native-firebase/auth";
-import { getProgress, getStreak } from "../utils/achievementStore";
-import { colors } from "../constants/colors";
-import { useLanguageStore } from "../store/useLanguageStore";
-import { useStrings } from "../hooks/useStrings";
-import { SkyScene } from "../components/scenes/SkyScene";
-import { LumiMascot } from "../components/common/LumiMascot";
-import { StatsCard } from "../components/settings/StatsCard";
-import { SettingsRow } from "../components/settings/SettingsRow";
-import { FeedbackModal } from "../components/settings/FeedbackModal";
-import { EditUsernameModal } from "../components/settings/EditUsernameModal";
-import { styles } from "./SettingsScreenStyles";
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StatusBar, Switch } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  useNavigation,
+  useFocusEffect,
+  useIsFocused,
+} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useAuthStore } from '../store/useAuthStore';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { getApp } from '@react-native-firebase/app';
+import { getAuth, signOut } from '@react-native-firebase/auth';
+import { getProgress, getStreak } from '../utils/achievementStore';
+import { colors } from '../constants/colors';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { useStrings } from '../hooks/useStrings';
+import { SkyScene } from '../components/scenes/SkyScene';
+import { LumiMascot } from '../components/common/LumiMascot';
+import { StatsCard } from '../components/settings/StatsCard';
+import { SettingsRow } from '../components/settings/SettingsRow';
+import { FeedbackModal } from '../components/settings/FeedbackModal';
+import { EditUsernameModal } from '../components/settings/EditUsernameModal';
+import { styles } from './SettingsScreenStyles';
 
 export const SettingsScreen = () => {
   const { user } = useAuthStore();
@@ -34,7 +38,7 @@ export const SettingsScreen = () => {
   const [usernameVisible, setUsernameVisible] = useState(false);
 
   const headerName =
-    profile.username || profile.displayName || user?.displayName || "Explorer";
+    profile.username || profile.displayName || user?.displayName || 'Explorer';
 
   useFocusEffect(
     React.useCallback(() => {
@@ -52,7 +56,7 @@ export const SettingsScreen = () => {
     try {
       await signOut(getAuth(getApp()));
     } catch (e) {
-      console.error("[SettingsScreen] signOut:", e);
+      console.error('[SettingsScreen] signOut:', e);
     }
   };
 
@@ -77,15 +81,26 @@ export const SettingsScreen = () => {
 
       <ScrollView
         style={styles.body}
-        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingBottom: insets.bottom + 100 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_PROFILE}</Text>
+        <Text style={styles.sectionLabel}>
+          {strings.SETTINGS_SECTION_PROFILE}
+        </Text>
         <View style={styles.section}>
-          <SettingsRow iconName="person-outline" label={strings.SETTINGS_EDIT_USERNAME} onPress={() => setUsernameVisible(true)} />
+          <SettingsRow
+            iconName="person-outline"
+            label={strings.SETTINGS_EDIT_USERNAME}
+            onPress={() => setUsernameVisible(true)}
+          />
         </View>
 
-        <Text style={styles.sectionLabel}>{strings.SETTINGS_LANGUAGE_SECTION}</Text>
+        <Text style={styles.sectionLabel}>
+          {strings.SETTINGS_LANGUAGE_SECTION}
+        </Text>
         <View style={styles.section}>
           <SettingsRow
             iconName="language-outline"
@@ -103,24 +118,53 @@ export const SettingsScreen = () => {
           />
         </View>
 
-        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_PARENT}</Text>
+        <Text style={styles.sectionLabel}>
+          {strings.SETTINGS_SECTION_PARENT}
+        </Text>
         <View style={styles.section}>
-          <SettingsRow iconName="lock-closed" label={strings.SETTINGS_PARENT_DASHBOARD} onPress={() => (navigation as any).navigate("ParentDashboard")} />
+          <SettingsRow
+            iconName="lock-closed"
+            label={strings.SETTINGS_PARENT_DASHBOARD}
+            onPress={() => (navigation as any).navigate('ParentDashboard')}
+          />
         </View>
 
-        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_SUPPORT}</Text>
+        <Text style={styles.sectionLabel}>
+          {strings.SETTINGS_SECTION_SUPPORT}
+        </Text>
         <View style={styles.section}>
-          <SettingsRow iconName="chatbubble-outline" label={strings.SETTINGS_SEND_FEEDBACK} onPress={() => setFeedbackVisible(true)} />
+          <SettingsRow
+            iconName="chatbubble-outline"
+            label={strings.SETTINGS_SEND_FEEDBACK}
+            onPress={() => setFeedbackVisible(true)}
+          />
         </View>
 
-        <Text style={styles.sectionLabel}>{strings.SETTINGS_SECTION_ACCOUNT}</Text>
+        <Text style={styles.sectionLabel}>
+          {strings.SETTINGS_SECTION_ACCOUNT}
+        </Text>
         <View style={styles.section}>
-          <SettingsRow iconName="log-out-outline" label={strings.SETTINGS_SIGN_OUT} onPress={handleSignOut} danger />
+          <SettingsRow
+            iconName="log-out-outline"
+            label={strings.SETTINGS_SIGN_OUT}
+            onPress={handleSignOut}
+            danger
+          />
         </View>
       </ScrollView>
 
-      <FeedbackModal visible={feedbackVisible} uid={user?.uid ?? ""} email={user?.email ?? ""} onClose={() => setFeedbackVisible(false)} />
-      <EditUsernameModal visible={usernameVisible} uid={user?.uid ?? ""} currentUsername={profile.username || profile.displayName || ""} onClose={() => setUsernameVisible(false)} />
+      <FeedbackModal
+        visible={feedbackVisible}
+        uid={user?.uid ?? ''}
+        email={user?.email ?? ''}
+        onClose={() => setFeedbackVisible(false)}
+      />
+      <EditUsernameModal
+        visible={usernameVisible}
+        uid={user?.uid ?? ''}
+        currentUsername={profile.username || profile.displayName || ''}
+        onClose={() => setUsernameVisible(false)}
+      />
     </SkyScene>
   );
 };

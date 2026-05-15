@@ -1,9 +1,20 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Package, Box, Users, BarChart2,
-  Shield, Bell, Settings, DollarSign, MessageSquare,
-  Heart, LogOut, Moon, Sun,
+  LayoutDashboard,
+  Package,
+  Box,
+  Users,
+  BarChart2,
+  Shield,
+  Bell,
+  Settings,
+  DollarSign,
+  MessageSquare,
+  Heart,
+  LogOut,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import { useDarkMode } from '../../hooks/useDarkMode';
@@ -16,20 +27,23 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',     path: ROUTES.DASHBOARD,     icon: LayoutDashboard },
-  { label: 'Packs',         path: ROUTES.PACKS,         icon: Package },
-  { label: 'Models',        path: ROUTES.MODELS,        icon: Box },
-  { label: 'Users',         path: ROUTES.USERS,         icon: Users },
-  { label: 'Analytics',     path: ROUTES.ANALYTICS,     icon: BarChart2 },
-  { label: 'Moderation',    path: ROUTES.MODERATION,    icon: Shield },
+  { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard },
+  { label: 'Packs', path: ROUTES.PACKS, icon: Package },
+  { label: 'Models', path: ROUTES.MODELS, icon: Box },
+  { label: 'Users', path: ROUTES.USERS, icon: Users },
+  { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart2 },
+  { label: 'Moderation', path: ROUTES.MODERATION, icon: Shield },
   { label: 'Notifications', path: ROUTES.NOTIFICATIONS, icon: Bell },
-  { label: 'App Config',    path: ROUTES.APP_CONFIG,    icon: Settings },
-  { label: 'Revenue',       path: ROUTES.REVENUE,       icon: DollarSign },
-  { label: 'Feedback',      path: ROUTES.FEEDBACK,      icon: MessageSquare },
-  { label: 'Wishlist',      path: ROUTES.WISHLIST,      icon: Heart },
+  { label: 'App Config', path: ROUTES.APP_CONFIG, icon: Settings },
+  { label: 'Revenue', path: ROUTES.REVENUE, icon: DollarSign },
+  { label: 'Feedback', path: ROUTES.FEEDBACK, icon: MessageSquare },
+  { label: 'Wishlist', path: ROUTES.WISHLIST, icon: Heart },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  onSignOut,
+  unreadFeedback = 0,
+}) => {
   const { isDark, toggle } = useDarkMode();
 
   return (
@@ -49,13 +63,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 
               to={item.path}
               end={item.path === ROUTES.DASHBOARD}
               className={({ isActive }) =>
-                `sidebar__nav-item ${isActive ? 'sidebar__nav-item--active' : ''}`
+                `sidebar__nav-item ${
+                  isActive ? 'sidebar__nav-item--active' : ''
+                }`
               }
             >
               <Icon size={17} />
               <span>{item.label}</span>
               {hasBadge && (
-                <span className="sidebar__badge">{unreadFeedback > 99 ? '99+' : unreadFeedback}</span>
+                <span className="sidebar__badge">
+                  {unreadFeedback > 99 ? '99+' : unreadFeedback}
+                </span>
               )}
             </NavLink>
           );
@@ -63,7 +81,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSignOut, unreadFeedback = 0 
       </nav>
 
       <div className="sidebar__footer">
-        <button className="sidebar__theme-toggle" onClick={toggle} aria-label="Toggle theme">
+        <button
+          className="sidebar__theme-toggle"
+          onClick={toggle}
+          aria-label="Toggle theme"
+        >
           {isDark ? <Sun size={16} /> : <Moon size={16} />}
           <span>{isDark ? 'Light mode' : 'Dark mode'}</span>
         </button>

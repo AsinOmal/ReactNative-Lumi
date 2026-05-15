@@ -5,8 +5,8 @@
 // and runs entirely on the UI thread — safe to leave looping while the JS
 // thread does other work.
 
-import { useEffect, useRef } from "react";
-import { Animated, Easing } from "react-native";
+import { useEffect, useRef } from 'react';
+import { Animated, Easing } from 'react-native';
 
 const TRAVEL_PX = -8;
 const LEG_DURATION_MS = 2000;

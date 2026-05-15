@@ -22,23 +22,44 @@ export const PinResetBanner: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  if (!settings.pinResetPending || dismissed) return null;
+  if (!settings.pinResetPending || dismissed) {
+    return null;
+  }
 
   const handleSetPin = async (pin: string) => {
     try {
       await updatePin(pin);
-      if (user) await updateSettings(user.uid, { pinResetPending: false });
-    } catch { /* non-blocking */ }
+      if (user) {
+        await updateSettings(user.uid, { pinResetPending: false });
+      }
+    } catch {
+      /* non-blocking */
+    }
     setShowModal(false);
     setDismissed(true);
   };
 
   return (
     <>
-      <TouchableOpacity style={styles.banner} onPress={() => setShowModal(true)} activeOpacity={0.85} accessibilityRole="button">
-        <Ionicons name="key" size={18} color="#C96B00" style={{ marginRight: 8 }} />
+      <TouchableOpacity
+        style={styles.banner}
+        onPress={() => setShowModal(true)}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+      >
+        <Ionicons
+          name="key"
+          size={18}
+          color="#C96B00"
+          style={{ marginRight: 8 }}
+        />
         <Text style={styles.bannerText}>{strings.pinResetBannerMessage}</Text>
-        <TouchableOpacity onPress={() => setDismissed(true)} style={styles.dismissBtn} accessibilityRole="button" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={() => setDismissed(true)}
+          style={styles.dismissBtn}
+          accessibilityRole="button"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Ionicons name="close" size={16} color="#C96B00" />
         </TouchableOpacity>
       </TouchableOpacity>

@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 export const useDarkMode = () => {
   const [isDark, setIsDark] = useState(() => {
     const stored = localStorage.getItem('lumi-theme');
-    if (stored) return stored === 'dark';
+    if (stored) {
+      return stored === 'dark';
+    }
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
@@ -18,5 +20,5 @@ export const useDarkMode = () => {
     }
   }, [isDark]);
 
-  return { isDark, toggle: () => setIsDark(d => !d) };
+  return { isDark, toggle: () => setIsDark((d) => !d) };
 };

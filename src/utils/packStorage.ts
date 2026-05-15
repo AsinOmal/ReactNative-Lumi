@@ -14,9 +14,9 @@
  *   asset and reload it. The OS filesystem ignores the query string.
  */
 
-import RNBlobUtil from "react-native-blob-util";
-import { config } from "../constants/config";
-import { RemoteModelEntry } from "../types/remoteContent";
+import RNBlobUtil from 'react-native-blob-util';
+import { config } from '../constants/config';
+import { RemoteModelEntry } from '../types/remoteContent';
 
 const docsDir = RNBlobUtil.fs.dirs.DocumentDir;
 
@@ -24,7 +24,7 @@ export interface AssetTask {
   word: string;
   url: string;
   path: string;
-  kind: "model" | "audio";
+  kind: 'model' | 'audio';
 }
 
 export function getLocalModelPath(word: string): string {
@@ -35,7 +35,10 @@ export function getLocalAudioPath(word: string): string {
   return `${docsDir}/${config.AUDIO_CACHE_SUBDIR}/${word}.mp3`;
 }
 
-export function getModelUriForViro(path: string, _assetVersion: string): string {
+export function getModelUriForViro(
+  path: string,
+  _assetVersion: string
+): string {
   // ViroReact's GLB loader on iOS doesn't reliably handle query strings on
   // file:// URIs (the raw string can reach a C++ file reader that treats it as
   // part of the filename). Cache busting is already handled by remounting the
@@ -63,7 +66,7 @@ export async function ensureCacheDirs(): Promise<void> {
       await RNBlobUtil.fs.mkdir(audioDir);
     }
   } catch (e) {
-    console.error("[packStorage] ensureCacheDirs:", e);
+    console.error('[packStorage] ensureCacheDirs:', e);
     throw e;
   }
 }
@@ -84,7 +87,7 @@ export function buildAssetTasks(
         word,
         url: entry.modelUrl,
         path: getLocalModelPath(word),
-        kind: "model",
+        kind: 'model',
       });
     }
     if (entry.audioUrl) {
@@ -92,7 +95,7 @@ export function buildAssetTasks(
         word,
         url: entry.audioUrl,
         path: getLocalAudioPath(word),
-        kind: "audio",
+        kind: 'audio',
       });
     }
   }
@@ -108,7 +111,7 @@ export async function unlinkPaths(paths: string[]): Promise<void> {
           await RNBlobUtil.fs.unlink(p);
         }
       } catch (e) {
-        console.warn("[packStorage] unlinkPaths:", e);
+        console.warn('[packStorage] unlinkPaths:', e);
       }
     })
   );

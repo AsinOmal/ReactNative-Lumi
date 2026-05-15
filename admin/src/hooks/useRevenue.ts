@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { collectionGroup, getDocs, type DocumentData } from 'firebase/firestore';
+import {
+  collectionGroup,
+  getDocs,
+  type DocumentData,
+} from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Purchase } from '../types';
 
@@ -17,14 +21,14 @@ interface UseRevenueResult {
 // Display names for known product IDs
 export const PRODUCT_LABELS: Record<string, string> = {
   'com.lumi.pack.dinosaurs': 'Dinosaurs Pack',
-  'com.lumi.pack.space':     'Space Pack',
-  'com.lumi.pack.bundle':    'Bundle (Dino + Space)',
+  'com.lumi.pack.space': 'Space Pack',
+  'com.lumi.pack.bundle': 'Bundle (Dino + Space)',
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
   'com.lumi.pack.dinosaurs': 1.99,
-  'com.lumi.pack.space':     1.99,
-  'com.lumi.pack.bundle':    2.99,
+  'com.lumi.pack.space': 1.99,
+  'com.lumi.pack.bundle': 2.99,
 };
 
 export const useRevenue = (): UseRevenueResult => {
@@ -46,9 +50,10 @@ export const useRevenue = (): UseRevenueResult => {
           return {
             uid,
             productId: d.id,
-            purchasedAt: typeof data.purchasedAt === 'number'
-              ? new Date(data.purchasedAt)
-              : data.purchasedAt?.toDate?.() ?? new Date(),
+            purchasedAt:
+              typeof data.purchasedAt === 'number'
+                ? new Date(data.purchasedAt)
+                : data.purchasedAt?.toDate?.() ?? new Date(),
             simulated: data.simulated ?? false,
           };
         });

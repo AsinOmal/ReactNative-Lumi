@@ -8,12 +8,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { colors } from '../../constants/colors';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Sound from 'react-native-sound';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { ModelEntry } from '../../utils/modelRegistry';
@@ -39,23 +34,37 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
     setIsPlaying(false);
 
     const src = entry?.audioUrl || entry?.audio;
-    if (!src) return;
+    if (!src) {
+      return;
+    }
 
     // Remote audio uses a URL (null basePath); local audio is in the app bundle
     const basePath = entry?.audioUrl ? null : Sound.MAIN_BUNDLE;
     const sound = new Sound(src, basePath as string, (error) => {
-      if (!error) soundRef.current = sound;
+      if (!error) {
+        soundRef.current = sound;
+      }
     });
 
-    return () => { sound.release(); soundRef.current = null; };
+    return () => {
+      sound.release();
+      soundRef.current = null;
+    };
   }, [entry?.audio, entry?.audioUrl]);
 
-  useEffect(() => () => { soundRef.current?.release(); }, []);
+  useEffect(
+    () => () => {
+      soundRef.current?.release();
+    },
+    []
+  );
 
   // ── Playback ──────────────────────────────────────────────────────────────
   const play = useCallback(() => {
     const sound = soundRef.current;
-    if (!sound || isPlaying) return;
+    if (!sound || isPlaying) {
+      return;
+    }
 
     sound.stop(() => {
       sound.setCurrentTime(0);
@@ -65,7 +74,9 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
     });
   }, [isPlaying, slowMode]);
 
-  if (!entry) return null;
+  if (!entry) {
+    return null;
+  }
 
   const { syllables } = entry;
 
@@ -76,7 +87,9 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         style={[styles.playBtn, isPlaying && styles.playBtnActive]}
         onPress={play}
         activeOpacity={0.7}
-        accessibilityLabel={isPlaying ? 'Stop pronunciation' : 'Play pronunciation'}
+        accessibilityLabel={
+          isPlaying ? 'Stop pronunciation' : 'Play pronunciation'
+        }
         accessibilityRole="button"
       >
         <Ionicons
@@ -91,9 +104,7 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         {syllables.map((syllable, i) => (
           <React.Fragment key={i}>
             <Text style={styles.syllableText}>{syllable}</Text>
-            {i < syllables.length - 1 && (
-              <Text style={styles.dot}>·</Text>
-            )}
+            {i < syllables.length - 1 && <Text style={styles.dot}>·</Text>}
           </React.Fragment>
         ))}
       </View>
@@ -101,12 +112,18 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
       {/* Slow toggle */}
       <TouchableOpacity
         style={[styles.slowBtn, slowMode && styles.slowBtnActive]}
-        onPress={() => setSlowMode(prev => !prev)}
+        onPress={() => setSlowMode((prev) => !prev)}
         activeOpacity={0.75}
-        accessibilityLabel={slowMode ? 'Slow mode on, tap to turn off' : 'Slow mode off, tap to turn on'}
+        accessibilityLabel={
+          slowMode
+            ? 'Slow mode on, tap to turn off'
+            : 'Slow mode off, tap to turn on'
+        }
         accessibilityRole="switch"
       >
-        <Text style={[styles.slowBtnText, slowMode && styles.slowBtnTextActive]}>
+        <Text
+          style={[styles.slowBtnText, slowMode && styles.slowBtnTextActive]}
+        >
           🐢 Slow
         </Text>
       </TouchableOpacity>

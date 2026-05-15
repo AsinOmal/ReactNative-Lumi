@@ -8,14 +8,14 @@
 // so ~9% gets cropped horizontally; the artwork's focal content sits
 // centered so the crop is unnoticeable.
 
-import React from "react";
+import React from 'react';
 import {
   Image,
   ImageSourcePropType,
   StyleSheet,
   View,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 
 interface Props {
   source: ImageSourcePropType;
@@ -32,9 +32,9 @@ export const ImageBackdrop: React.FC<Props> = ({ source, children, style }) => (
 );
 
 const styles = StyleSheet.create({
-  root: { flex: 1, overflow: "hidden" },
+  root: { flex: 1, overflow: 'hidden' },
   veil: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.17)",
+    backgroundColor: 'rgba(255,255,255,0.17)',
   },
 });

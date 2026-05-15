@@ -15,13 +15,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACHIEVEMENTS, Achievement } from './achievementRegistry';
 
 const KEYS = {
-  scannedWords:       'lumi_scanned_words',
-  savedWords:         'lumi_saved_words',       // SavedWord[] with timestamps
-  spellCorrections:   'lumi_spell_corrections',
-  sessionCount:       'lumi_session_count',
+  scannedWords: 'lumi_scanned_words',
+  savedWords: 'lumi_saved_words', // SavedWord[] with timestamps
+  spellCorrections: 'lumi_spell_corrections',
+  sessionCount: 'lumi_session_count',
   earnedAchievements: 'lumi_earned_achievements',
-  streakCount:        'lumi_streak_count',
-  lastScanDate:       'lumi_last_scan_date',
+  streakCount: 'lumi_streak_count',
+  lastScanDate: 'lumi_last_scan_date',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ export async function getProgress(): Promise<AchievementProgress> {
     ]);
 
   // Migrate any old 'string[]' IDs to metadata objects safely
-  const earned: EarnedAchievement[] = earnedRaw.map(item => {
+  const earned: EarnedAchievement[] = earnedRaw.map((item) => {
     if (typeof item === 'string') {
       return { id: item, unlockedAt: Date.now(), triggerWord: 'unknown' };
     }
@@ -87,10 +87,8 @@ export async function getProgress(): Promise<AchievementProgress> {
  */
 export async function getSavedWords(): Promise<SavedWord[]> {
   const raw = await getJSON<any[]>(KEYS.savedWords, []);
-  const words: SavedWord[] = raw.map(item =>
-    typeof item === 'string'
-      ? { word: item, savedAt: 0 }
-      : (item as SavedWord)
+  const words: SavedWord[] = raw.map((item) =>
+    typeof item === 'string' ? { word: item, savedAt: 0 } : (item as SavedWord)
   );
   return words.slice().reverse(); // newest first
 }
@@ -103,7 +101,7 @@ export async function getSavedWords(): Promise<SavedWord[]> {
  */
 export async function recordScan(
   word: string,
-  isCorrection: boolean,
+  isCorrection: boolean
 ): Promise<Achievement[]> {
   const progress = await getProgress();
 
@@ -142,21 +140,18 @@ export async function recordScan(
   };
 
   const newlyEarned = checkAchievements(updated, isCorrection).filter(
-    a => !progress.earned.some(e => e.id === a.id),
+    (a) => !progress.earned.some((e) => e.id === a.id)
   );
 
   if (newlyEarned.length > 0) {
     const now = Date.now();
-    const newEarnedObjects: EarnedAchievement[] = newlyEarned.map(a => ({
+    const newEarnedObjects: EarnedAchievement[] = newlyEarned.map((a) => ({
       id: a.id,
       unlockedAt: now,
       triggerWord: word,
     }));
 
-    const updatedEarned = [
-      ...progress.earned,
-      ...newEarnedObjects,
-    ];
+    const updatedEarned = [...progress.earned, ...newEarnedObjects];
     await setJSON(KEYS.earnedAchievements, updatedEarned);
   }
 
@@ -165,16 +160,16 @@ export async function recordScan(
 
 /**
  * Remove a word from saved progress (unsave).
- * We do not retract achievements or spell correction counts, 
+ * We do not retract achievements or spell correction counts,
  * just the word itself from the scannedWords list.
  */
 export async function removeScan(word: string): Promise<void> {
   const progress = await getProgress();
-  const nextWords = progress.scannedWords.filter(w => w !== word);
+  const nextWords = progress.scannedWords.filter((w) => w !== word);
   // Also remove from named savedWords list
   const savedWordsList = await getJSON<any[]>(KEYS.savedWords, []);
-  const nextSavedWords = savedWordsList.filter((s: any) =>
-    (typeof s === 'string' ? s : s.word) !== word
+  const nextSavedWords = savedWordsList.filter(
+    (s: any) => (typeof s === 'string' ? s : s.word) !== word
   );
   await Promise.all([
     setJSON(KEYS.scannedWords, nextWords),
@@ -192,14 +187,20 @@ export async function resetSessionCount(): Promise<void> {
 /** Returns today's date as YYYY-MM-DD in local time */
 function todayISO(): string {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    '0'
+  )}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 /** Returns yesterday's date as YYYY-MM-DD */
 function yesterdayISO(): string {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    '0'
+  )}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 /** Read current streak count */
@@ -221,7 +222,9 @@ async function recordStreakDay(): Promise<void> {
     getJSON<number>(KEYS.streakCount, 0),
   ]);
 
-  if (lastDate === today) return; // already counted today
+  if (lastDate === today) {
+    return;
+  } // already counted today
 
   const newStreak = lastDate === yesterday ? currentStreak + 1 : 1;
   await Promise.all([
@@ -232,22 +235,41 @@ async function recordStreakDay(): Promise<void> {
 
 // ── Achievement Criteria ──────────────────────────────────────────────────────
 
-function checkAchievements(p: AchievementProgress, isCorrection: boolean): Achievement[] {
+function checkAchievements(
+  p: AchievementProgress,
+  isCorrection: boolean
+): Achievement[] {
   const earned: Achievement[] = [];
   const totalWords = p.scannedWords.length;
   const add = (id: string) => {
-    const a = ACHIEVEMENTS.find(x => x.id === id);
-    if (a) earned.push(a);
+    const a = ACHIEVEMENTS.find((x) => x.id === id);
+    if (a) {
+      earned.push(a);
+    }
   };
 
-  if (totalWords >= 1)  add('first_scan');
-  if (totalWords >= 3)  add('word_trio');
-  if (totalWords >= 5)  add('half_pack');
-  if (totalWords >= 10) add('pack_master');
+  if (totalWords >= 1) {
+    add('first_scan');
+  }
+  if (totalWords >= 3) {
+    add('word_trio');
+  }
+  if (totalWords >= 5) {
+    add('half_pack');
+  }
+  if (totalWords >= 10) {
+    add('pack_master');
+  }
 
-  if (p.spellCorrections >= 3)       add('spell_hero');
-  if (!isCorrection)                 add('perfect_scan');
-  if (p.sessionCount >= 3)           add('speed_scanner');
+  if (p.spellCorrections >= 3) {
+    add('spell_hero');
+  }
+  if (!isCorrection) {
+    add('perfect_scan');
+  }
+  if (p.sessionCount >= 3) {
+    add('speed_scanner');
+  }
 
   return earned;
 }

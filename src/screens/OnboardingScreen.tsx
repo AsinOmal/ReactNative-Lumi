@@ -6,19 +6,19 @@
 // us own pagination via the LumiButton CTA. Each slide instantiates its own
 // LumiMascot so each Lottie one-shot replays naturally on revisit.
 
-import React, { useRef, useState } from "react";
-import { View, ScrollView, StatusBar, Animated } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Camera } from "react-native-vision-camera";
-import { MascotState } from "../components/common/LumiMascot";
-import { LumiButton } from "../components/common/LumiButton";
-import { OnboardingSlide } from "../components/onboarding/OnboardingSlide";
-import { useFloatLoop } from "../hooks/useFloatLoop";
-import { markOnboardingDone } from "../utils/onboardingStore";
-import { requestNotificationPermission } from "../services/notificationService";
-import { colors } from "../constants/colors";
-import { useStrings } from "../hooks/useStrings";
-import { styles, SLIDE_W } from "./OnboardingScreenStyles";
+import React, { useRef, useState } from 'react';
+import { View, ScrollView, StatusBar, Animated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Camera } from 'react-native-vision-camera';
+import { MascotState } from '../components/common/LumiMascot';
+import { LumiButton } from '../components/common/LumiButton';
+import { OnboardingSlide } from '../components/onboarding/OnboardingSlide';
+import { useFloatLoop } from '../hooks/useFloatLoop';
+import { markOnboardingDone } from '../utils/onboardingStore';
+import { requestNotificationPermission } from '../services/notificationService';
+import { colors } from '../constants/colors';
+import { useStrings } from '../hooks/useStrings';
+import { styles, SLIDE_W } from './OnboardingScreenStyles';
 
 interface Slide {
   gradient: string[];
@@ -37,19 +37,19 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
   const SLIDES: Slide[] = [
     {
       gradient: [colors.skyTop, colors.skyMid, colors.skyBottom],
-      mascot: "wave",
+      mascot: 'wave',
       title: strings.onboardingSlide0Title,
       desc: strings.onboardingSlide0Desc,
     },
     {
-      gradient: ["#2D8C4E", "#4CAF50", "#81C784"],
-      mascot: "excited",
+      gradient: ['#2D8C4E', '#4CAF50', '#81C784'],
+      mascot: 'excited',
       title: strings.onboardingSlide1Title,
       desc: strings.onboardingSlide1Desc,
     },
     {
-      gradient: ["#1A1A4E", "#2D2D7E", "#4A4AB5"],
-      mascot: "celebrate",
+      gradient: ['#1A1A4E', '#2D2D7E', '#4A4AB5'],
+      mascot: 'celebrate',
       title: strings.onboardingSlide2Title,
       desc: strings.onboardingSlide2Desc,
     },
@@ -72,7 +72,7 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
       await markOnboardingDone();
       onComplete();
     } catch (error) {
-      console.error("[OnboardingScreen] goNext failed:", error);
+      console.error('[OnboardingScreen] goNext failed:', error);
     }
   };
 
@@ -120,7 +120,7 @@ export const OnboardingScreen = ({ onComplete }: Props) => {
         <LumiButton
           title={isLast ? strings.onboardingGetStarted : strings.onboardingNext}
           onPress={goNext}
-          icon={isLast ? "rocket-outline" : "arrow-forward"}
+          icon={isLast ? 'rocket-outline' : 'arrow-forward'}
         />
       </View>
     </View>

@@ -16,7 +16,9 @@ import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { usePinLockout } from './usePinLockout';
 
-const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: false });
+const rnBiometrics = new ReactNativeBiometrics({
+  allowDeviceCredentials: false,
+});
 
 export type AuthStep = 'idle' | 'biometric' | 'pin' | 'success' | 'failed';
 
@@ -36,18 +38,28 @@ interface UseParentAuthResult {
 // Two-step parent auth: biometrics first, PIN fallback.
 // Delegates lockout tracking to usePinLockout.
 export const useParentAuth = (): UseParentAuthResult => {
-  const { settings, setParentUnlocked, updateSettings } = useParentalControlsStore();
+  const { settings, setParentUnlocked, updateSettings } =
+    useParentalControlsStore();
   const { user } = useAuthStore();
   const [authStep, setAuthStep] = useState<AuthStep>('idle');
-  const [isBiometricsAvailable, setIsBiometricsAvailable] = useState<boolean | null>(null);
-  const { pinAttempts, isLocked, lockSecondsRemaining, onFailedAttempt, resetAttempts } = usePinLockout();
+  const [isBiometricsAvailable, setIsBiometricsAvailable] = useState<
+    boolean | null
+  >(null);
+  const {
+    pinAttempts,
+    isLocked,
+    lockSecondsRemaining,
+    onFailedAttempt,
+    resetAttempts,
+  } = usePinLockout();
 
   const authenticate = useCallback(async () => {
     setAuthStep('biometric');
     try {
-      const { available, biometryType } = await rnBiometrics.isSensorAvailable();
-      const canUseBiometrics = available && biometryType !== BiometryTypes.TouchID
-        ? true : available;
+      const { available, biometryType } =
+        await rnBiometrics.isSensorAvailable();
+      const canUseBiometrics =
+        available && biometryType !== BiometryTypes.TouchID ? true : available;
       setIsBiometricsAvailable(canUseBiometrics);
 
       if (!canUseBiometrics) {
@@ -69,33 +81,58 @@ export const useParentAuth = (): UseParentAuthResult => {
     }
   }, [setParentUnlocked]);
 
-  const verifyPin = useCallback((pin: string): boolean => {
-    if (isLocked) return false;
-    const inputHash = sha256(pin);
-    if (!settings.pinHash) {
-      if (user) updateSettings(user.uid, { pinHash: inputHash });
-      setParentUnlocked(true);
-      setAuthStep('success');
-      return true;
-    }
-    if (inputHash === settings.pinHash) {
-      setParentUnlocked(true);
-      setAuthStep('success');
-      return true;
-    }
-    setAuthStep('failed');
-    onFailedAttempt();
-    return false;
-  }, [settings.pinHash, isLocked, setParentUnlocked, user, updateSettings, onFailedAttempt]);
+  const verifyPin = useCallback(
+    (pin: string): boolean => {
+      if (isLocked) {
+        return false;
+      }
+      const inputHash = sha256(pin);
+      if (!settings.pinHash) {
+        if (user) {
+          updateSettings(user.uid, { pinHash: inputHash });
+        }
+        setParentUnlocked(true);
+        setAuthStep('success');
+        return true;
+      }
+      if (inputHash === settings.pinHash) {
+        setParentUnlocked(true);
+        setAuthStep('success');
+        return true;
+      }
+      setAuthStep('failed');
+      onFailedAttempt();
+      return false;
+    },
+    [
+      settings.pinHash,
+      isLocked,
+      setParentUnlocked,
+      user,
+      updateSettings,
+      onFailedAttempt,
+    ]
+  );
 
-  const updatePin = useCallback(async (newPin: string): Promise<void> => {
-    if (!user) return;
-    await updateSettings(user.uid, { pinHash: sha256(newPin) });
-  }, [user, updateSettings]);
+  const updatePin = useCallback(
+    async (newPin: string): Promise<void> => {
+      if (!user) {
+        return;
+      }
+      await updateSettings(user.uid, { pinHash: sha256(newPin) });
+    },
+    [user, updateSettings]
+  );
 
   return {
-    authStep, authenticate, verifyPin, updatePin,
-    isBiometricsAvailable, pinAttempts, isLocked,
-    lockSecondsRemaining, resetAttempts,
+    authStep,
+    authenticate,
+    verifyPin,
+    updatePin,
+    isBiometricsAvailable,
+    pinAttempts,
+    isLocked,
+    lockSecondsRemaining,
+    resetAttempts,
   };
 };

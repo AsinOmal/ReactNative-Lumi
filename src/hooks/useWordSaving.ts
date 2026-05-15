@@ -13,7 +13,10 @@ import { Achievement } from '../utils/achievementRegistry';
 import { MatchResult } from '../utils/wordMatcher';
 import { useAuthStore } from '../store/useAuthStore';
 import { syncAchievementToFirestore } from '../services/achievementService';
-import { saveWordToFirestore, removeWordFromFirestore } from '../services/savedWordsService';
+import {
+  saveWordToFirestore,
+  removeWordFromFirestore,
+} from '../services/savedWordsService';
 import { recordScanToday } from '../services/notificationService';
 
 interface UseWordSavingProps {
@@ -21,7 +24,10 @@ interface UseWordSavingProps {
   matchResult: MatchResult | null;
 }
 
-export const useWordSaving = ({ activeWord, matchResult }: UseWordSavingProps) => {
+export const useWordSaving = ({
+  activeWord,
+  matchResult,
+}: UseWordSavingProps) => {
   const { user } = useAuthStore();
   const [isWordSaved, setIsWordSaved] = useState(false);
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
@@ -35,7 +41,9 @@ export const useWordSaving = ({ activeWord, matchResult }: UseWordSavingProps) =
     if (isWordSaved) {
       setIsWordSaved(false);
       await removeScan(activeWord);
-      if (user) removeWordFromFirestore(user.uid, activeWord).catch(() => {});
+      if (user) {
+        removeWordFromFirestore(user.uid, activeWord).catch(() => {});
+      }
       return;
     }
 
@@ -46,7 +54,7 @@ export const useWordSaving = ({ activeWord, matchResult }: UseWordSavingProps) =
 
     if (user) {
       saveWordToFirestore(user.uid, activeWord).catch(() => {});
-      newAchievements.forEach(a => {
+      newAchievements.forEach((a) => {
         syncAchievementToFirestore(user.uid, {
           id: a.id,
           unlockedAt: Date.now(),
@@ -56,9 +64,16 @@ export const useWordSaving = ({ activeWord, matchResult }: UseWordSavingProps) =
     }
 
     if (newAchievements.length > 0) {
-      setAchievementQueue(prev => [...prev, ...newAchievements]);
+      setAchievementQueue((prev) => [...prev, ...newAchievements]);
     }
   }, [activeWord, matchResult, isWordSaved, user]);
 
-  return { isWordSaved, setIsWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue };
+  return {
+    isWordSaved,
+    setIsWordSaved,
+    checkWordSavedStatus,
+    handleSaveWord,
+    achievementQueue,
+    setAchievementQueue,
+  };
 };

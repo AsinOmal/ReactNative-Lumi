@@ -14,11 +14,21 @@ interface StatCardProps {
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
-  title, subtitle, value, detail, icon, accentColor, accentBg, trend,
+  title,
+  subtitle,
+  value,
+  detail,
+  icon,
+  accentColor,
+  accentBg,
+  trend,
 }) => (
   <div className="stat-card">
     <div className="stat-card__header">
-      <div className="stat-card__icon-wrap" style={{ backgroundColor: accentBg, color: accentColor }}>
+      <div
+        className="stat-card__icon-wrap"
+        style={{ backgroundColor: accentBg, color: accentColor }}
+      >
         {icon}
       </div>
       <div className="stat-card__labels">
@@ -28,12 +38,18 @@ export const StatCard: React.FC<StatCardProps> = ({
     </div>
 
     <div className="stat-card__body">
-      <span className="stat-card__value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+      <span className="stat-card__value">
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </span>
       {detail && <span className="stat-card__detail">{detail}</span>}
     </div>
 
     {trend && (
-      <div className={`stat-card__trend stat-card__trend--${trend.positive ? 'up' : 'down'}`}>
+      <div
+        className={`stat-card__trend stat-card__trend--${
+          trend.positive ? 'up' : 'down'
+        }`}
+      >
         {trend.positive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
         <span>{trend.value}</span>
       </div>
