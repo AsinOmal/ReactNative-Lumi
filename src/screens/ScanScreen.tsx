@@ -35,6 +35,10 @@ export const ScanScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [arLeavingForPlacement, setArLeavingForPlacement] = useState(false);
+  // When set, a useEffect fires navigation after mode='scan' is committed to the
+  // React tree — ensures ViroARSceneNavigator is fully unmounted before ARPlacement
+  // mounts its own navigator (two navigators cannot share the camera).
+  const pendingPlacementWord = useRef<string | null>(null);
   const cardAnim = useRef(new Animated.Value(400)).current;
   const packs     = usePackStore(s => s.packs);
   const loadPacks = usePackStore(s => s.loadPacks);
@@ -61,6 +65,17 @@ export const ScanScreen = () => {
 
   // Reset wish modal whenever a new unknown word appears
   useEffect(() => { setShowWishModal(false); }, [unknownWord]);
+
+  // Navigate to ARPlacement only after mode='scan' has been committed — by this
+  // point React has unmounted ViroARSceneNavigator, so the camera is free.
+  useEffect(() => {
+    if (mode === 'scan' && pendingPlacementWord.current) {
+      const word = pendingPlacementWord.current;
+      pendingPlacementWord.current = null;
+      setArLeavingForPlacement(false);
+      (navigation as any).navigate('ARPlacement', { word });
+    }
+  }, [mode, navigation]);
 
   const handleViewInAR = useCallback(async (word?: string) => {
     const target = word ?? matchResult?.word ?? activeWord;
@@ -164,16 +179,14 @@ export const ScanScreen = () => {
         onDismiss={dismissCard}
         onSave={handleSaveWord}
         onPlace={() => {
-          // Hide the AR navigator (opacity:0, keep mounted) and wait the full
-          // 350ms Metal texture release window before navigating — same pattern
-          // as safeGoBack in ARWordFindScreen. Without this ARPlacementScreen's
-          // navigator races for the camera and shows a permanent black screen.
+          // 1. Hide navigator (opacity:0) so the user doesn't see a flash.
+          // 2. After 350ms Metal release, call handleBackToScan() which sets
+          //    mode='scan' and triggers the useEffect above to navigate.
+          //    Navigation happens after the React commit so ViroARSceneNavigator
+          //    is truly unmounted before ARPlacementScreen mounts its own.
           setArLeavingForPlacement(true);
-          setTimeout(() => {
-            handleBackToScan();
-            setArLeavingForPlacement(false);
-            (navigation as any).navigate('ARPlacement', { word: activeWord });
-          }, 350);
+          pendingPlacementWord.current = activeWord;
+          setTimeout(() => handleBackToScan(), 350);
         }}
       />
 

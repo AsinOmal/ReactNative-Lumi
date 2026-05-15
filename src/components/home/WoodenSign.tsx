@@ -21,5 +21,5 @@ export const WoodenSign: React.FC = () => {
 
 const styles = StyleSheet.create({
   wrap: { alignSelf: "center", marginTop: 4 },
-  logo: { width: 220, height: 88 },
+  logo: { width: 500, height: 125 },
 });

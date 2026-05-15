@@ -5,12 +5,20 @@
 // content for an <Image> once illustration assets are ready.
 
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import LottieView from "lottie-react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { getPackGradient, getPackIcon } from "../../constants/packAccents";
+import { getPackGradient } from "../../constants/packAccents";
 import { PACK_WORDS } from "../../constants/packWords";
+
+const WORD_EMOJI: Record<string, string> = {
+  apple: '🍎', banana: '🍌', cherry: '🍒', grape: '🍇', lemon: '🍋',
+  mango: '🥭', orange: '🍊', pineapple: '🍍', strawberry: '🍓', watermelon: '🍉',
+  broccoli: '🥦', carrot: '🥕', chili: '🌶️', corn: '🌽', cucumber: '🥒',
+  eggplant: '🍆', onion: '🧅', potato: '🥔', pumpkin: '🎃', tomato: '🍅',
+  bicycle: '🚲', boat: '⛵', bus: '🚌', car: '🚗', helicopter: '🚁',
+  plane: '✈️', rocket: '🚀', tractor: '🚜', train: '🚂', truck: '🚛',
+};
 
 function packIdForWord(word: string): string {
   for (const [id, words] of Object.entries(PACK_WORDS)) {
@@ -27,7 +35,7 @@ interface Props {
 export const WordIllustration: React.FC<Props> = ({ word, size = 72 }) => {
   const packId = packIdForWord(word);
   const gradient = getPackGradient(packId);
-  const icon = getPackIcon(packId);
+  const emoji = WORD_EMOJI[word];
 
   return (
     <View style={[styles.wrap, { width: size, height: size }]}>
@@ -44,11 +52,7 @@ export const WordIllustration: React.FC<Props> = ({ word, size = 72 }) => {
         colors={gradient}
         style={[styles.circle, { borderRadius: size / 2, width: size - 8, height: size - 8 }]}
       >
-        <MaterialCommunityIcons
-          name={icon as any}
-          size={Math.round(size * 0.46)}
-          color="rgba(255,255,255,0.95)"
-        />
+        <Text style={{ fontSize: Math.round(size * 0.42) }}>{emoji ?? '🔍'}</Text>
       </LinearGradient>
     </View>
   );

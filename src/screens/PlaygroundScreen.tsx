@@ -63,6 +63,7 @@ const GAMES: GameCard[] = [
     title: "Write & Scan",
     desc: "See the model, write the word, scan to check!",
     iconName: "pencil-box-outline",
+    cover: require("../assets/coverarts/Write-And-Scan.png"),
     accent: colors.accentYellow,
     available: true,
   },

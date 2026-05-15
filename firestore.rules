@@ -80,10 +80,11 @@ service cloud.firestore {
     }
 
     match /users/{uid}/activityLog/{logId} {
+      allow read: if isOwner(uid);
       allow create: if isOwner(uid)
         && isValidString(request.resource.data.word)
         && request.resource.data.get('flagged', false) is bool;
-      // Users cannot read or update their own logs (anti-tampering).
+      // No update or delete from client — logs are append-only (anti-tampering).
     }
 
     match /users/{uid}/parentSettings/{document=**} {

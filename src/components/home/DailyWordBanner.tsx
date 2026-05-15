@@ -43,13 +43,9 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
 
       {!isFound && <WordIllustration word={word} size={72} />}
       <View style={styles.left}>
-        <Text style={styles.label}>{isFound ? "Found today!" : "Today's Word"}</Text>
+        <Text style={styles.label}>{isFound ? "✓ Found today!" : "— Today's Word —"}</Text>
         <View style={styles.speakerRow}>
           <Text style={styles.word}>{display}</Text>
-          {/* Speaker stub — wired to audio in Phase 2 */}
-          <TouchableOpacity accessibilityLabel={`Pronounce ${display}`} accessibilityRole="button">
-            <Ionicons name="volume-high-outline" size={20} color={colors.textMid} />
-          </TouchableOpacity>
         </View>
         {isFound && (
           <View style={styles.doneRow}>
@@ -83,7 +79,7 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
                     style={StyleSheet.absoluteFill}
                     pointerEvents="none"
                   />
-                  <Ionicons name="camera" size={24} color="#FFF" />
+                  <Ionicons name="camera" size={26} color="#FFF" />
                   <Text style={styles.scanBtnText}>Find it</Text>
                 </LinearGradient>
               </View>
