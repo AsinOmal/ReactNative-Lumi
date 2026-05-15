@@ -59,6 +59,25 @@ export const updateUsername = async (uid: string, username: string) => {
   }
 };
 
+export const updateChildProfile = async (uid: string, childName: string | null, childAge: number | null): Promise<void> => {
+  try {
+    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, { childName, childAge });
+  } catch (e) {
+    console.error('[userService] updateChildProfile:', e);
+    throw e;
+  }
+};
+
+export const loadChildProfile = async (uid: string): Promise<{ childName: string | null; childAge: number | null }> => {
+  try {
+    const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
+    const data = snap.data() as any;
+    return { childName: data?.childName ?? null, childAge: data?.childAge ?? null };
+  } catch {
+    return { childName: null, childAge: null };
+  }
+};
+
 // Fails open — a network failure must not block a legitimate user.
 export const isUserSuspended = async (uid: string): Promise<boolean> => {
   try {

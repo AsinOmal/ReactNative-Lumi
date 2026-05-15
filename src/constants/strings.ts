@@ -29,9 +29,36 @@ export const strings = {
   pinVerifyTitle: 'Parent Access',
   pinVerifySubtitle: 'Enter your 4-digit PIN to continue',
   pinIncorrect: 'Incorrect PIN. Try again.',
+  // PIN Security section (dashboard)
+  pinSecuritySectionLabel: 'PIN SECURITY',
+  pinChangePinLabel: 'Change PIN',
+  pinChangePinSub: 'Update your parental access PIN',
+  pinForgotPinLabel: 'Forgot PIN?',
+  pinForgotPinSub: "Set a new PIN — you're already verified",
+  pinVerifyCurrentTitle: 'Verify Current PIN',
+  pinVerifyCurrentSubtitle: 'Enter your current PIN to continue',
+  pinSetNewTitle: 'Set New PIN',
+  pinSetNewSubtitle: 'Choose a new 4-digit PIN',
+  pinUpdateSuccess: 'PIN updated!',
+  // PIN lockout
+  pinLockedTitle: 'Too Many Attempts',
+  pinLockedBody: (secs: number) => `Try again in ${secs}s`,
+  pinContactSupport: "Can't remember? Contact support",
+  pinSupportMessage: (email: string) => `Hi, I've forgotten my parent PIN and need help resetting it.\nAccount: ${email}`,
+  // PIN reset banner
+  pinResetBannerMessage: 'Your PIN has been reset — tap here to set a new one.',
+  pinResetBannerDismiss: 'Dismiss',
+  // Child profile onboarding
+  childProfileNameTitle: "What's your child's name?",
+  childProfileNamePlaceholder: "Enter child's name",
+  childProfileAgeTitle: "How old is your child?",
+  childProfileNext: 'Next',
+  childProfileSkip: 'Skip',
+  childProfileFinish: 'Finish',
 
   // Parent Dashboard
   dashboardTitle: 'Parent Dashboard',
+  dashboardSubtitle: 'Manage learning time & safety',
   dashboardTabTime: 'Time',
   dashboardTabActivity: 'Activity',
   dashboardTabFlagged: 'Flagged',

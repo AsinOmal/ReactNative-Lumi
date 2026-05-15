@@ -5,6 +5,7 @@ import { Toggle } from '../../components/common/Toggle';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useAppConfig } from '../../hooks/useAppConfig';
 import { useGameConstants, DEFAULT_CONSTANTS } from '../../hooks/useGameConstants';
+import { PinManagementSection } from './PinManagementSection';
 import type { AppConfig, GameConstants } from '../../types';
 import './AppConfigScreen.css';
 
@@ -100,6 +101,8 @@ export const AppConfigScreen: React.FC = () => {
         </div>
         {constSaving && <p className="app-config__saving">Saving…</p>}
       </div>
+
+      <PinManagementSection />
     </div>
   );
 };

@@ -2,7 +2,17 @@ import { StyleSheet } from "react-native";
 import { colors } from "../constants/colors";
 
 export const styles = StyleSheet.create({
+  bgImage: { flex: 1 },
   safeArea: { flex: 1 },
+
+  sun: {
+    position: "absolute",
+    top: 36,
+    right: 0,
+    width: 100,
+    height: 100,
+    zIndex: 0,
+  },
 
   header: {
     flexDirection: "row",
@@ -11,6 +21,7 @@ export const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 8,
     gap: 12,
+    zIndex: 1,
   },
   backBtn: {
     width: 36,
@@ -25,17 +36,23 @@ export const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
+  headerText: { flex: 1 },
   title: {
-    flex: 1,
     fontFamily: "Fredoka-Bold",
     fontSize: 28,
     color: colors.textDark,
+  },
+  subtitle: {
+    fontFamily: "Fredoka-Regular",
+    fontSize: 14,
+    color: colors.textMid,
+    marginTop: 1,
   },
 
   tabBar: {
     flexDirection: "row",
     marginHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 12,
     backgroundColor: colors.backgroundCard,
     borderRadius: 14,
     padding: 4,
@@ -45,6 +62,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    zIndex: 1,
   },
   tab: { flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: "center" },
   tabActive: { backgroundColor: colors.primary },
@@ -55,5 +73,6 @@ export const styles = StyleSheet.create({
   },
   tabTextActive: { color: colors.white },
 
+  scrollContent: { paddingBottom: 40 },
   loading: { flex: 1, alignItems: "center", justifyContent: "center" },
 });

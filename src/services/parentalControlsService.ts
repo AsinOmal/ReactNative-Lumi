@@ -21,6 +21,7 @@ import {
   orderBy,
   limit,
   getDocs,
+  onSnapshot,
 } from '@react-native-firebase/firestore';
 import { ParentSettings, ActivityLogEntry, ScreenTimeRecord } from '../types/parentalControls';
 
@@ -38,6 +39,19 @@ export const loadParentSettings = async (uid: string): Promise<ParentSettings | 
     console.error('[parentalControlsService] loadParentSettings:', e);
     return null;
   }
+};
+
+// Returns an unsubscribe function. Calls callback whenever parentSettings changes in Firestore.
+export const subscribeToParentSettings = (
+  uid: string,
+  callback: (settings: ParentSettings | null) => void,
+): (() => void) => {
+  const ref = doc(db(), 'users', uid, 'parentSettings', 'settings');
+  return onSnapshot(ref, (snap: any) => {
+    callback(snap.exists() ? (snap.data() as ParentSettings) : null);
+  }, (e: any) => {
+    console.error('[parentalControlsService] subscribeToParentSettings:', e);
+  });
 };
 
 export const saveParentSettings = async (uid: string, settings: ParentSettings): Promise<void> => {

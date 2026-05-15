@@ -25,7 +25,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useParentalControlsStore } from "../store/useParentalControlsStore";
 import { useRemoteContentStore } from "../store/useRemoteContentStore";
 import { usePackDownloadStore } from "../store/usePackDownloadStore";
-import { createUserIfNew, isUserSuspended } from "../services/userService";
+import { createUserIfNew, isUserSuspended, loadChildProfile } from "../services/userService";
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
@@ -45,8 +45,8 @@ interface BootstrapResult {
 }
 
 export const useBootstrapSession = (): BootstrapResult => {
-  const { initializing, setUser, setInitializing } = useAuthStore();
-  const { loadSettings, mergeGlobalBlocklist } = useParentalControlsStore();
+  const { initializing, setUser, setInitializing, setChildProfile } = useAuthStore();
+  const { loadSettings, unloadSettings, mergeGlobalBlocklist } = useParentalControlsStore();
   const { loadRemoteModels, setRemoteContent } = useRemoteContentStore();
   const [suspendedError, setSuspendedError] = useState(false);
 
@@ -67,6 +67,7 @@ export const useBootstrapSession = (): BootstrapResult => {
 
       if (!userState) {
         setSuspendedError(false);
+        unloadSettings();
         unsubTokenRefresh?.();
         return;
       }
@@ -95,11 +96,11 @@ export const useBootstrapSession = (): BootstrapResult => {
       unsubTokenRefresh?.();
       unsubTokenRefresh = setupTokenRefresh(userState.uid);
 
-      try {
-        await loadSettings(userState.uid);
-      } catch (e) {
-        console.warn("[useBootstrapSession] loadSettings:", e);
-      }
+      loadSettings(userState.uid);
+
+      loadChildProfile(userState.uid)
+        .then(({ childName, childAge }) => setChildProfile(childName, childAge))
+        .catch(() => {});
       if (sessionUid !== activeUid) return;
 
       loadRemoteModels().catch(() => {});

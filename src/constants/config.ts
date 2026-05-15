@@ -33,6 +33,8 @@ export const config = {
   // Parental Controls
   SCREEN_TIME_WARNING_PERCENT: 80,  // % of daily limit at which warning state activates
   PARENT_PIN_LENGTH: 4,
+  MAX_PIN_ATTEMPTS: 5,
+  PIN_LOCKOUT_MS: 60000,
 
   // Safety Layer (Phase 4b)
   // VNClassifyImageRequest labels that should trigger the hazard alert.

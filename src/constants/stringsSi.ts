@@ -33,9 +33,36 @@ export const stringsSi = {
   pinVerifyTitle: 'දෙමාපිය ප්‍රවේශය',
   pinVerifySubtitle: 'ඉදිරියට යාමට ඔබේ 4-ඉලක්කම් PIN ඇතුළු කරන්න',
   pinIncorrect: 'වැරදි PIN. නැවත උත්සාහ කරන්න.',
+  // PIN Security section (dashboard)
+  pinSecuritySectionLabel: 'PIN ආරක්‍ෂාව',
+  pinChangePinLabel: 'PIN වෙනස් කරන්න',
+  pinChangePinSub: 'ඔබේ දෙමාපිය PIN යාවත්කාලීන කරන්න',
+  pinForgotPinLabel: 'PIN අමතක වුණාද?',
+  pinForgotPinSub: 'නව PIN එකක් සකසන්න — ඔබ දැනටමත් තහවුරු කර ඇත',
+  pinVerifyCurrentTitle: 'වත්මන් PIN තහවුරු කරන්න',
+  pinVerifyCurrentSubtitle: 'ඉදිරියට යාමට ඔබේ වත්මන් PIN ඇතුළු කරන්න',
+  pinSetNewTitle: 'නව PIN සකසන්න',
+  pinSetNewSubtitle: 'නව 4-ඉලක්කම් PIN එකක් තෝරන්න',
+  pinUpdateSuccess: 'PIN යාවත්කාලීන කරන ලදී!',
+  // PIN lockout
+  pinLockedTitle: 'උත්සාහයන් ඉක්මවා ගියා',
+  pinLockedBody: (secs: number) => `තත්පර ${secs}කින් නැවත උත්සාහ කරන්න`,
+  pinContactSupport: 'අමතක වුණාද? සහාය සොයාගන්න',
+  pinSupportMessage: (email: string) => `ආයුබෝවන්, දෙමාපිය PIN එක අමතක වී ඇත. reset කිරීමට සහාය අවශ්‍යයි.\nගිණුම: ${email}`,
+  // PIN reset banner
+  pinResetBannerMessage: 'ඔබේ PIN reset කර ඇත — නව PIN එකක් සකසන්න.',
+  pinResetBannerDismiss: 'ඉවත් කරන්න',
+  // Child profile onboarding
+  childProfileNameTitle: 'ඔබේ දරුවාගේ නම කුමක්ද?',
+  childProfileNamePlaceholder: 'දරුවාගේ නම ඇතුළු කරන්න',
+  childProfileAgeTitle: 'ඔබේ දරුවාට වයස කීයද?',
+  childProfileNext: 'ඊළඟ',
+  childProfileSkip: 'මඟ හරින්න',
+  childProfileFinish: 'නිම කරන්න',
 
   // Parent Dashboard
   dashboardTitle: 'දෙමාපිය උපකරණ පුවරුව',
+  dashboardSubtitle: 'ඉගෙනීමේ කාලය සහ ආරක්‍ෂාව කළමනාකරණය කරන්න',
   dashboardTabTime: 'කාලය',
   dashboardTabActivity: 'ක්‍රියාකාරකම',
   dashboardTabFlagged: 'සලකුණු කළ',

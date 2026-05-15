@@ -15,7 +15,7 @@
 
 import { create } from 'zustand';
 import { ParentSettings } from '../types/parentalControls';
-import { loadParentSettings, saveParentSettings } from '../services/parentalControlsService';
+import { subscribeToParentSettings, saveParentSettings } from '../services/parentalControlsService';
 import { STATIC_BLOCKLIST } from '../data/blocklist';
 
 const DEFAULT_SETTINGS: ParentSettings = {
@@ -31,9 +31,11 @@ interface ParentalControlsState {
   settings: ParentSettings;
   mergedBlocklist: Set<string>;
   todayMinutes: number;          // live value written by useScreenTime
+  _unsubSettings: (() => void) | null;
   setTodayMinutes: (m: number) => void;
   setParentUnlocked: (unlocked: boolean) => void;
-  loadSettings: (uid: string) => Promise<void>;
+  loadSettings: (uid: string) => void;
+  unloadSettings: () => void;
   updateSettings: (uid: string, patch: Partial<ParentSettings>) => Promise<void>;
   mergeGlobalBlocklist: (globalWords: string[]) => void;
 }
@@ -43,20 +45,25 @@ export const useParentalControlsStore = create<ParentalControlsState>((set, get)
   settings: DEFAULT_SETTINGS,
   mergedBlocklist: new Set(STATIC_BLOCKLIST),
   todayMinutes: 0,
+  _unsubSettings: null,
   setTodayMinutes: (m) => set({ todayMinutes: m }),
 
   setParentUnlocked: (unlocked) => set({ isParentUnlocked: unlocked }),
 
-  loadSettings: async (uid) => {
-    try {
-      const loaded = await loadParentSettings(uid);
+  loadSettings: (uid) => {
+    // Cancel any previous listener before subscribing
+    get()._unsubSettings?.();
+    const unsub = subscribeToParentSettings(uid, (loaded) => {
       const settings = loaded ?? DEFAULT_SETTINGS;
-      // Build merged blocklist once — STATIC_BLOCKLIST ∪ parent customBlocklist
       const merged = new Set([...STATIC_BLOCKLIST, ...settings.customBlocklist]);
       set({ settings, mergedBlocklist: merged });
-    } catch (e) {
-      console.error('[useParentalControlsStore] loadSettings:', e);
-    }
+    });
+    set({ _unsubSettings: unsub });
+  },
+
+  unloadSettings: () => {
+    get()._unsubSettings?.();
+    set({ _unsubSettings: null, settings: DEFAULT_SETTINGS });
   },
 
   updateSettings: async (uid, patch) => {

@@ -20,7 +20,7 @@ const WORD_GOAL = 10;
 const GEM_COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#7C3AED", "#FF9A2E"];
 
 interface Props {
-  firstName: string;
+  childName: string | null;
   streak: number;
   wordCount: number;
   dailyWord: string;
@@ -31,7 +31,7 @@ interface Props {
 }
 
 export const HomeHeaderSection: React.FC<Props> = ({
-  firstName,
+  childName,
   streak,
   wordCount,
   dailyWord,
@@ -66,7 +66,7 @@ export const HomeHeaderSection: React.FC<Props> = ({
           <LumiMascot state={mascotState} size={90} />
         </View>
         <View style={styles.greetingBlock}>
-          <Text style={styles.greeting}>Hello, {firstName}!</Text>
+          <Text style={styles.greeting}>Hello{childName ? `! ${childName}` : '!'}</Text>
           <Text style={styles.subGreeting}>Ready to explore?</Text>
           {streak >= 3 && (
             <View style={styles.streakBadge}>

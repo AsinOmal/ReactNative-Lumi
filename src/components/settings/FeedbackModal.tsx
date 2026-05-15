@@ -15,11 +15,12 @@ interface FeedbackModalProps {
   uid: string;
   email: string;
   onClose: () => void;
+  initialMessage?: string;
 }
 
-export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, email, onClose }) => {
+export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, email, onClose, initialMessage }) => {
   const insets = useSafeAreaInsets();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(initialMessage ?? '');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,7 +37,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ visible, uid, emai
       autoCloseTimerRef.current = null;
     }
     setSent(false);
-    setMessage('');
+    setMessage(initialMessage ?? '');
     onClose();
   };
 

@@ -16,6 +16,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { usePackStore } from "../store/usePackStore";
 import { HomeHeaderSection } from "../components/home/HomeHeaderSection";
 import { BannerAnnouncement } from "../components/home/BannerAnnouncement";
+import { PinResetBanner } from "../components/home/PinResetBanner";
 import { ColorPackCard } from "../components/library/ColorPackCard";
 import { getSavedWords, getStreak } from "../utils/achievementStore";
 import { getDailyWord, isDailyWordFound } from "../utils/dailyWordHunt";
@@ -38,12 +39,11 @@ const deriveMascotState = (
 };
 
 export const HomeScreen = () => {
-  const { user } = useAuthStore();
+  const { user, childName } = useAuthStore();
   const { packs, loading, loadPacks } = usePackStore();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  const firstName = user?.displayName?.split(" ")[0] ?? "Explorer";
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [wordCount, setWordCount] = useState(0);
@@ -87,9 +87,10 @@ export const HomeScreen = () => {
 
   const header = (
     <>
+      <PinResetBanner />
       <BannerAnnouncement />
       <HomeHeaderSection
-        firstName={firstName}
+        childName={childName}
         streak={streak}
         wordCount={wordCount}
         dailyWord={dailyWord}

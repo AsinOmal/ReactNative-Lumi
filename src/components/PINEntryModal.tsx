@@ -23,12 +23,15 @@ interface PINEntryModalProps {
   onSubmit: (pin: string) => void;
   onCancel: () => void;
   hasError?: boolean;
+  titleOverride?: string;
+  subtitleOverride?: string;
 }
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
 
 export const PINEntryModal: React.FC<PINEntryModalProps> = ({
   visible, mode, onSubmit, onCancel, hasError = false,
+  titleOverride, subtitleOverride,
 }) => {
   const strings = useStrings();
   const [pin, setPin] = useState('');
@@ -53,10 +56,10 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>
-            {mode === 'set' ? strings.pinSetTitle : strings.pinVerifyTitle}
+            {titleOverride ?? (mode === 'set' ? strings.pinSetTitle : strings.pinVerifyTitle)}
           </Text>
           <Text style={styles.subtitle}>
-            {mode === 'set' ? strings.pinSetSubtitle : strings.pinVerifySubtitle}
+            {subtitleOverride ?? (mode === 'set' ? strings.pinSetSubtitle : strings.pinVerifySubtitle)}
           </Text>
 
           {/* Dot indicators */}

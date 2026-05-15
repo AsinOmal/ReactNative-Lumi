@@ -11,6 +11,7 @@ export interface ParentSettings {
   timedModeEnabled: boolean;       // enables per-round timer in Scan & Count
   customBlocklist: string[];       // parent-added words, merged with STATIC_BLOCKLIST
   pinHash: string | null;          // sha256 of 4-digit PIN; null = not set
+  pinResetPending?: boolean;       // true when admin has reset the PIN — triggers banner
   updatedAt: number;               // epoch ms
 }
 

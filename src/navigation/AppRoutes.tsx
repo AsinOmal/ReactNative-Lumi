@@ -27,7 +27,8 @@ import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { AppIntroScreen } from '../screens/AppIntroScreen';
-import { hasSeenOnboarding } from '../utils/onboardingStore';
+import { ChildProfileScreen } from '../screens/ChildProfileScreen';
+import { hasSeenOnboarding, getChildInfoSeen } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useStrings } from '../hooks/useStrings';
@@ -49,10 +50,12 @@ export const AppRoutes = () => {
   useDevRemoteModelsSync();
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [showOnboarding, setShowOnboarding]   = useState(false);
+  const [showChildProfile, setShowChildProfile] = useState(false);
 
   useEffect(() => {
-    hasSeenOnboarding().then(seen => {
+    Promise.all([hasSeenOnboarding(), getChildInfoSeen()]).then(([seen, childSeen]) => {
       setShowOnboarding(!seen);
+      setShowChildProfile(!childSeen);
       setOnboardingReady(true);
     });
     scheduleStreakReminder();
@@ -81,6 +84,8 @@ export const AppRoutes = () => {
   if (!user) return <LoginScreen />;
   // Show the intro guide once after the main onboarding completes.
   if (!introSeen) return <AppIntroScreen />;
+  // Collect child name/age once after the intro guide.
+  if (showChildProfile) return <ChildProfileScreen onComplete={() => setShowChildProfile(false)} />;
 
   if (appConfig?.maintenanceMode) {
     return (

@@ -1,0 +1,65 @@
+import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
+
+export const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  card: {
+    backgroundColor: colors.backgroundCard,
+    borderRadius: 24,
+    padding: 28,
+    alignItems: 'center',
+    gap: 14,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  iconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#FFF0DC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 22,
+    color: colors.textDark,
+    textAlign: 'center',
+  },
+  body: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 16,
+    color: colors.textMid,
+    textAlign: 'center',
+  },
+  supportBtn: {
+    marginTop: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  supportBtnText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 15,
+    color: colors.white,
+  },
+});

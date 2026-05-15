@@ -1,0 +1,96 @@
+import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
+
+const ITEM_HEIGHT = 52;
+
+export const styles = StyleSheet.create({
+  bg: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  card: {
+    backgroundColor: colors.backgroundCard,
+    borderRadius: 28,
+    padding: 28,
+    marginHorizontal: 24,
+    width: '88%',
+    alignItems: 'center',
+    gap: 16,
+    shadowColor: '#5C3317',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  title: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 22,
+    color: colors.textDark,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: colors.primaryLight,
+    borderRadius: 14,
+    padding: 14,
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 17,
+    color: colors.textDark,
+    backgroundColor: '#FFFDF6',
+  },
+  pickerWrap: {
+    width: '60%',
+    height: ITEM_HEIGHT * 5,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  pickerHighlight: {
+    position: 'absolute',
+    top: ITEM_HEIGHT * 2,
+    left: 0,
+    right: 0,
+    height: ITEM_HEIGHT,
+    backgroundColor: colors.primaryLight + '30',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: colors.primary + '60',
+    zIndex: 1,
+  },
+  picker: { width: '100%' },
+  pickerItem: {
+    height: ITEM_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickerText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 24,
+    color: colors.textLight,
+  },
+  pickerTextSelected: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 28,
+    color: colors.primary,
+  },
+  primaryBtn: {
+    width: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  primaryBtnText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 17,
+    color: colors.white,
+  },
+  skipBtn: { paddingVertical: 8 },
+  skipBtnText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 15,
+    color: colors.textMid,
+  },
+});

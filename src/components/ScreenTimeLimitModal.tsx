@@ -19,6 +19,7 @@ import { Modal, View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '../constants/colors';
 import { useStrings } from '../hooks/useStrings';
 import { PINEntryModal } from './PINEntryModal';
+import { PinLockoutModal } from './PinLockoutModal';
 import { useParentAuth } from '../hooks/useParentAuth';
 
 interface ScreenTimeLimitModalProps {
@@ -35,7 +36,7 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
   onUnlocked,
 }) => {
   const strings = useStrings();
-  const { authStep, verifyPin } = useParentAuth();
+  const { verifyPin, isLocked, lockSecondsRemaining } = useParentAuth();
   const [pinError, setPinError] = useState(false);
   const [showPin, setShowPin] = useState(false);
 
@@ -72,12 +73,13 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
         </View>
 
         <PINEntryModal
-          visible={showPin}
+          visible={showPin && !isLocked}
           mode="verify"
           onSubmit={handlePinSubmit}
           onCancel={() => setShowPin(false)}
           hasError={pinError}
         />
+        <PinLockoutModal visible={isLocked} lockSecondsRemaining={lockSecondsRemaining} />
       </View>
     </Modal>
   );
