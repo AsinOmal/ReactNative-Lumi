@@ -4,22 +4,22 @@ export const shadowCard =
   Platform.select({
     ios: {
       shadowColor: "#C4A060",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.4,
-      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.62,
+      shadowRadius: 18,
     },
-    android: { elevation: 6 },
+    android: { elevation: 10 },
   }) ?? {};
 
 export const shadowCardDeep =
   Platform.select({
     ios: {
       shadowColor: "#5C3317",
-      shadowOffset: { width: 0, height: 7 },
-      shadowOpacity: 0.5,
-      shadowRadius: 14,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.65,
+      shadowRadius: 22,
     },
-    android: { elevation: 10 },
+    android: { elevation: 14 },
   }) ?? {};
 
 export const shadowHeader =

@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
   },
   resultWordBlock: { flex: 1 },
   resultWord: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: colors.textDark },
+  sinhalaLabel: { fontFamily: 'Fredoka-Regular', fontSize: 12, color: colors.textMuted, marginTop: 2 },
   resultPack: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: colors.textMid, marginTop: 1 },
   pronunciationBtn: {
     width: 40, height: 40, borderRadius: 20,
@@ -82,6 +83,15 @@ export const styles = StyleSheet.create({
   dismissBtn: {
     width: 40, height: 40, borderRadius: 20,
     backgroundColor: colors.backgroundLight, alignItems: 'center', justifyContent: 'center',
+  },
+  placeBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.backgroundLight,
+    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20,
+    borderWidth: 1, borderColor: colors.borderPrimary,
+  },
+  placeBtnText: {
+    fontFamily: 'Fredoka-SemiBold', fontSize: 14, color: colors.primary,
   },
   saveBtn: {
     flexDirection: 'row',

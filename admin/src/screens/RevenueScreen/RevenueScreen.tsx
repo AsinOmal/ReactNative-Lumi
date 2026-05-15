@@ -75,7 +75,7 @@ export const RevenueScreen: React.FC = () => {
         ) : (
           <table className="revenue__table">
             <thead>
-              <tr><th>Product</th><th>User UID</th><th>Date</th></tr>
+              <tr><th>Product</th><th>User UID</th><th>Date</th><th>Type</th></tr>
             </thead>
             <tbody>
               {stats.recentPurchases.map((p, i) => (
@@ -83,6 +83,7 @@ export const RevenueScreen: React.FC = () => {
                   <td>{PRODUCT_LABELS[p.productId] ?? p.productId}</td>
                   <td className="revenue__uid">{p.uid}</td>
                   <td>{fmt(p.purchasedAt)}</td>
+                  <td>{p.simulated ? <span className="revenue__badge">Simulated</span> : 'Real'}</td>
                 </tr>
               ))}
             </tbody>

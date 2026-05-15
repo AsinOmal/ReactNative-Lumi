@@ -19,11 +19,11 @@ import { decidePackGate } from '../utils/packUtils';
 import { usePackStore } from '../store/usePackStore';
 import { usePackDownloadStore } from '../store/usePackDownloadStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { usePurchaseStore } from '../store/usePurchaseStore';
 import { logActivityEvent } from '../services/parentalControlsService';
 import { ScanMode } from '../types';
 import { HazardAlertOverlay } from '../components/HazardAlertOverlay';
 import { styles } from './ScanScreenStyles';
-const ALL_SUPPORTED_WORDS = Object.keys(MODEL_REGISTRY);
 
 // 📖 Orchestrator for Scan Mode. Heavy logic lives in useScanOCR (camera) and
 // useWordSaving (Firestore). Rendering delegated to ScanCameraLayer / ScanOverlayLayer.
@@ -34,13 +34,29 @@ export const ScanScreen = () => {
   const [showWishModal, setShowWishModal] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [arLeavingForPlacement, setArLeavingForPlacement] = useState(false);
+  // When set, a useEffect fires navigation after mode='scan' is committed to the
+  // React tree — ensures ViroARSceneNavigator is fully unmounted before ARPlacement
+  // mounts its own navigator (two navigators cannot share the camera).
+  const pendingPlacementWord = useRef<string | null>(null);
   const cardAnim = useRef(new Animated.Value(400)).current;
-  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult, setUnknownWord } = useScanOCR({ mode, allSupportedWords: ALL_SUPPORTED_WORDS });
+  const packs     = usePackStore(s => s.packs);
+  const loadPacks = usePackStore(s => s.loadPacks);
+  useEffect(() => { loadPacks(); }, []);
+  // All pack words are scannable so the gate flow triggers correctly.
+  // decidePackGate() decides whether to show AR or a gate screen based on
+  // pack type + download/purchase state — detection must come first.
+  const allSupportedWords = React.useMemo(() => {
+    const base = Object.keys(MODEL_REGISTRY);
+    const allPackWords = packs.flatMap(p => p.words);
+    return [...new Set([...base, ...allPackWords])];
+  }, [packs]);
+  const { cameraRef, device, hasPermission, isAppActive, isFocused, matchResult, unknownWord, setMatchResult } = useScanOCR({ mode, allSupportedWords });
   const { isWordSaved, checkWordSavedStatus, handleSaveWord, achievementQueue, setAchievementQueue } = useWordSaving({ activeWord, matchResult });
   const { recordView } = useModelCache();
-  const packs        = usePackStore(s => s.packs);
-  const isDownloaded = usePackDownloadStore(s => s.isDownloaded);
-  const uid          = useAuthStore(s => s.user?.uid);
+  const isDownloaded  = usePackDownloadStore(s => s.isDownloaded);
+  const isPurchased   = usePurchaseStore(s => s.isPurchased);
+  const uid           = useAuthStore(s => s.user?.uid);
   // Safety layer — only active in scan mode with camera live
   const { currentHazard, dismissHazard } = useHazardDetection({
     cameraRef,
@@ -50,13 +66,26 @@ export const ScanScreen = () => {
   // Reset wish modal whenever a new unknown word appears
   useEffect(() => { setShowWishModal(false); }, [unknownWord]);
 
+  // Navigate to ARPlacement only after mode='scan' has been committed — by this
+  // point React has unmounted ViroARSceneNavigator, so the camera is free.
+  useEffect(() => {
+    if (mode === 'scan' && pendingPlacementWord.current) {
+      const word = pendingPlacementWord.current;
+      pendingPlacementWord.current = null;
+      setArLeavingForPlacement(false);
+      (navigation as any).navigate('ARPlacement', { word });
+    }
+  }, [mode, navigation]);
+
   const handleViewInAR = useCallback(async (word?: string) => {
     const target = word ?? matchResult?.word ?? activeWord;
 
     const gate = decidePackGate(target, packs, isDownloaded);
     if (gate.status === 'gated' && gate.pack) {
       if (uid) logActivityEvent(uid, { word: target, source: 'pack_gate', flagged: false });
-      (navigation as any).navigate('PackGate', { word: target, pack: gate.pack });
+      const isPremiumUnpurchased = gate.pack.packType === 'premium' && !isPurchased(gate.pack.id);
+      const screen = isPremiumUnpurchased ? 'PremiumPackGate' : 'PackGate';
+      (navigation as any).navigate(screen, { word: target, pack: gate.pack });
       return;
     }
 
@@ -71,7 +100,7 @@ export const ScanScreen = () => {
     } catch (e) {
       console.error('[ScanScreen] handleViewInAR:', e);
     }
-  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, uid, navigation]);
+  }, [matchResult, activeWord, checkWordSavedStatus, cardAnim, recordView, packs, isDownloaded, isPurchased, uid, navigation]);
 
   const handleBackToScan = useCallback(() => {
     setMode('scan');
@@ -128,7 +157,11 @@ export const ScanScreen = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ViroARSceneNavigator key={sceneKey} initialScene={{ scene: ARWordScene as any }} viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }} style={styles.arView} />
+      {/* opacity:0 hides the navigator without unmounting it — required before
+          navigating to ARPlacementScreen so Metal textures release asynchronously */}
+      <View style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}>
+        <ViroARSceneNavigator key={sceneKey} initialScene={{ scene: ARWordScene as any }} viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }} style={styles.arView} />
+      </View>
 
       <TouchableOpacity style={styles.backButton} onPress={handleBackToScan} accessibilityLabel="Back to scan mode" accessibilityRole="button">
         <Ionicons name="chevron-back" size={22} color="#fff" />
@@ -145,6 +178,16 @@ export const ScanScreen = () => {
         isWordSaved={isWordSaved}
         onDismiss={dismissCard}
         onSave={handleSaveWord}
+        onPlace={() => {
+          // 1. Hide navigator (opacity:0) so the user doesn't see a flash.
+          // 2. After 350ms Metal release, call handleBackToScan() which sets
+          //    mode='scan' and triggers the useEffect above to navigate.
+          //    Navigation happens after the React commit so ViroARSceneNavigator
+          //    is truly unmounted before ARPlacementScreen mounts its own.
+          setArLeavingForPlacement(true);
+          pendingPlacementWord.current = activeWord;
+          setTimeout(() => handleBackToScan(), 350);
+        }}
       />
 
       <AchievementToast queue={achievementQueue} onDismissed={() => setAchievementQueue(prev => prev.slice(1))} />

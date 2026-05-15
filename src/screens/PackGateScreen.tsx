@@ -23,11 +23,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import type { Pack } from "../types/pack";
 import { usePackDownload } from "../hooks/usePackDownload";
 import { getPackGradient, getPackIcon } from "../constants/packAccents";
-import { strings } from "../constants/strings";
+import { useStrings } from "../hooks/useStrings";
 import { colors } from "../constants/colors";
 import { styles } from "./PackGateScreenStyles";
 
 export const PackGateScreen = () => {
+  const strings = useStrings();
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
@@ -40,7 +41,6 @@ export const PackGateScreen = () => {
     errorMessage,
     download,
   } = usePackDownload(pack);
-
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
   const isPremium = pack.packType === "premium";
@@ -70,7 +70,7 @@ export const PackGateScreen = () => {
 
         <Text style={styles.heading}>{strings.packFoundFmt(word)}</Text>
         <Text style={styles.subtext}>
-          {isPremium ? strings.packLockedComingSoon : strings.packGateSubtext}
+          {strings.packGateSubtext}
         </Text>
 
         {status === "downloading" && (
@@ -94,7 +94,7 @@ export const PackGateScreen = () => {
           <Text style={styles.errorText}>{errorMessage ?? strings.error}</Text>
         )}
 
-        {!isPremium && status !== "downloading" && (
+        {status !== "downloading" && (
           <TouchableOpacity
             style={styles.cta}
             onPress={download}
@@ -105,13 +105,6 @@ export const PackGateScreen = () => {
               {status === "error" ? strings.downloadPack : strings.packGateCta}
             </Text>
           </TouchableOpacity>
-        )}
-
-        {isPremium && (
-          <View style={[styles.cta, styles.ctaDisabled]}>
-            <Ionicons name="lock-closed" size={20} color="#FFF" />
-            <Text style={styles.ctaText}>{strings.packLocked}</Text>
-          </View>
         )}
 
         <TouchableOpacity

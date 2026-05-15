@@ -59,4 +59,6 @@ export const config = {
   AUDIO_CACHE_SUBDIR: "lumi_audio",
   // AsyncStorage key for the stale-while-revalidate remote pack-metadata mirror.
   REMOTE_MODELS_CACHE_KEY: "@lumi/remote_models_cache",
+  // AR tap-to-place: seconds before "no surface found" timeout
+  AR_PLACEMENT_TIMEOUT_MS: 15000,
 };

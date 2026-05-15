@@ -18,7 +18,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Ionicons from "react-native-vector-icons/Ionicons";
 import type { Pack } from "../../types/pack";
 import { usePackDownload } from "../../hooks/usePackDownload";
-import { strings } from "../../constants/strings";
+import { useStrings } from "../../hooks/useStrings";
 import { colors } from "../../constants/colors";
 import { styles } from "./PackDetailCTAStyles";
 
@@ -36,6 +36,7 @@ interface Props {
 }
 
 export const PackDetailCTA: React.FC<Props> = ({ pack, accent, onPlay }) => {
+  const strings = useStrings();
   const {
     status,
     progress,

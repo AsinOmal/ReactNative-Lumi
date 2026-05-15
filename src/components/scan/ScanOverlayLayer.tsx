@@ -8,9 +8,11 @@ import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
 import { MatchResult } from '../../utils/wordMatcher';
+import { useLanguageStore } from '../../store/useLanguageStore';
+import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
-import { strings } from '../../constants/strings';
 import { PACK_WORDS } from '../../constants/packWords';
+import { triggerHaptic } from '../../hooks/useHaptic';
 
 function getPackLabel(word: string): string {
   for (const [pack, words] of Object.entries(PACK_WORDS)) {
@@ -26,6 +28,7 @@ interface ScanOverlayLayerProps {
   isWordSaved: boolean;
   onDismiss: () => void;
   onSave: () => void;
+  onPlace: () => void;
 }
 
 // 📖 What this does:
@@ -39,13 +42,18 @@ export const ScanOverlayLayer = ({
   isWordSaved,
   onDismiss,
   onSave,
+  onPlace,
 }: ScanOverlayLayerProps) => {
+  const strings = useStrings();
   const fact = getRandomFact(activeWord);
   const packLabel = getPackLabel(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
+  const language = useLanguageStore(s => s.language);
+  const sinhalaLabel = getModel(activeWord)?.sinhalaLabel;
 
   useEffect(() => {
     setShowConfetti(true);
+    triggerHaptic('medium');
   }, [activeWord]);
 
   return (
@@ -65,6 +73,9 @@ export const ScanOverlayLayer = ({
           <Text style={styles.resultWord}>
             {activeWord.charAt(0).toUpperCase() + activeWord.slice(1)}
           </Text>
+          {language === 'si' && sinhalaLabel ? (
+            <Text style={styles.sinhalaLabel}>{sinhalaLabel}</Text>
+          ) : null}
           {packLabel ? <Text style={styles.resultPack}>{packLabel}</Text> : null}
         </View>
       </View>
@@ -87,6 +98,16 @@ export const ScanOverlayLayer = ({
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} accessibilityLabel="Dismiss word card" accessibilityRole="button">
           <Ionicons name="close" size={20} color={colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.placeBtn}
+          onPress={onPlace}
+          activeOpacity={0.8}
+          accessibilityLabel={strings.AR_PLACE_BUTTON}
+          accessibilityRole="button"
+        >
+          <Ionicons name="cube-outline" size={18} color={colors.primary} />
+          <Text style={styles.placeBtnText}>{strings.AR_PLACE_BUTTON}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}

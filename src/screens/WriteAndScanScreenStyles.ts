@@ -1,0 +1,134 @@
+import { StyleSheet } from 'react-native';
+import { colors } from '../constants/colors';
+
+export const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#0D0728' },
+  black: { flex: 1, backgroundColor: '#000' },
+
+  // Generic top-left close button (overlay on AR/Camera)
+  closeBtn: {
+    position: 'absolute', top: 56, left: 16,
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: colors.backgroundCard,
+    alignItems: 'center', justifyContent: 'center', zIndex: 10,
+  },
+  closeBtnDark: {
+    position: 'absolute', top: 56, left: 16,
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center', zIndex: 10,
+  },
+
+  // ── Difficulty picker ─────────────────────────────────────────────────────
+  diffWrap: {
+    flex: 1, alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 24, paddingTop: 40,
+  },
+  diffMascot: { marginBottom: 4 },
+  diffTitle: { fontFamily: 'Fredoka-Bold', fontSize: 32, color: '#FFD700', marginBottom: 4 },
+  diffSubtitle: { fontFamily: 'Fredoka-Regular', fontSize: 16, color: 'rgba(255,255,255,0.7)', marginBottom: 28 },
+  diffList: { width: '100%', gap: 14 },
+  diffBtnShadow: {
+    shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35, shadowRadius: 10, elevation: 6,
+  },
+  diffBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+    paddingVertical: 18, paddingHorizontal: 20, borderRadius: 22,
+  },
+  diffBtnText: { flex: 1 },
+  diffBtnLabel: { fontFamily: 'Fredoka-Bold', fontSize: 20, color: '#FFF' },
+  diffBtnRange: { fontFamily: 'Fredoka-Regular', fontSize: 13, color: 'rgba(255,255,255,0.85)' },
+
+  // ── Countdown overlay ─────────────────────────────────────────────────────
+  countdownWrap: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0D0728',
+    alignItems: 'center', justifyContent: 'center', gap: 12, zIndex: 5,
+  },
+  countdownHeading: { fontFamily: 'Fredoka-SemiBold', fontSize: 20, color: 'rgba(255,255,255,0.7)' },
+  countdownNumber: { fontFamily: 'Fredoka-Bold', fontSize: 140, color: '#FFD700' },
+  countdownTip: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: 'rgba(255,255,255,0.55)' },
+
+  // ── Reveal overlay (above AR) ─────────────────────────────────────────────
+  revealPrompt: {
+    position: 'absolute', top: 56, left: 70, right: 70,
+    backgroundColor: 'rgba(15,7,40,0.85)', borderRadius: 18,
+    paddingVertical: 10, paddingHorizontal: 14, alignItems: 'center',
+    borderWidth: 1.5, borderColor: 'rgba(196,181,253,0.3)',
+  },
+  revealPromptLabel: { fontFamily: 'Fredoka-Regular', fontSize: 11, color: '#C4B5FD', letterSpacing: 2 },
+  revealPromptWord: { fontFamily: 'Fredoka-Bold', fontSize: 16, color: '#FFF' },
+  revealScanBtn: {
+    position: 'absolute', bottom: 50, alignSelf: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: '#10B981', borderRadius: 28,
+    paddingVertical: 16, paddingHorizontal: 32,
+    shadowColor: '#10B981', shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45, shadowRadius: 12, elevation: 6,
+  },
+  revealScanBtnText: { fontFamily: 'Fredoka-Bold', fontSize: 18, color: '#FFF' },
+
+  // ── Capture (OCR) layer ───────────────────────────────────────────────────
+  capNoCam: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', gap: 12 },
+  capNoCamText: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: 'rgba(255,255,255,0.5)' },
+  capDim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
+  capPrompt: {
+    position: 'absolute', top: 56, left: 70, right: 70,
+    backgroundColor: 'rgba(0,0,0,0.65)', borderRadius: 18,
+    paddingVertical: 10, alignItems: 'center',
+    borderWidth: 1.5, borderColor: 'rgba(255,215,0,0.45)',
+  },
+  capPromptLabel: { fontFamily: 'Fredoka-Regular', fontSize: 11, color: '#FFD700', letterSpacing: 2 },
+  capPromptWord: { fontFamily: 'Fredoka-Bold', fontSize: 18, color: '#FFF' },
+  capReticle: {
+    position: 'absolute', top: '32%', left: '8%', right: '8%', height: '28%',
+    borderWidth: 3, borderColor: 'rgba(255,215,0,0.85)', borderRadius: 16,
+    borderStyle: 'dashed',
+  },
+  capBtn: {
+    position: 'absolute', bottom: 48, alignSelf: 'center',
+    width: 76, height: 76, borderRadius: 38,
+    backgroundColor: '#10B981',
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 4, borderColor: 'rgba(255,255,255,0.9)',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4, shadowRadius: 8, elevation: 6,
+  },
+  capBtnBusy: { backgroundColor: '#6B7280' },
+  capHint: {
+    position: 'absolute', bottom: 22, alignSelf: 'center',
+    fontFamily: 'Fredoka-Regular', fontSize: 12, color: 'rgba(255,255,255,0.7)',
+  },
+
+  // ── Result modal ──────────────────────────────────────────────────────────
+  resultBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center', padding: 28 },
+  resultCard: {
+    width: '100%', borderRadius: 28, padding: 24, alignItems: 'center', gap: 8,
+    borderWidth: 1.5,
+  },
+  resultCardOk:  { backgroundColor: '#064E3B', borderColor: '#10B981' },
+  resultCardBad: { backgroundColor: '#3D2410', borderColor: '#F59E0B' },
+  resultMascot: { marginTop: -8 },
+  resultTitle: { fontFamily: 'Fredoka-Bold', fontSize: 28, color: '#FFF' },
+  resultSubtitle: { fontFamily: 'Fredoka-Regular', fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 8 },
+  resultRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    marginVertical: 8, width: '100%', justifyContent: 'center',
+  },
+  resultBlock: { alignItems: 'center', minWidth: 96 },
+  resultBlockLabel: { fontFamily: 'Fredoka-SemiBold', fontSize: 11, color: 'rgba(255,255,255,0.55)', letterSpacing: 1.5 },
+  resultBlockWord: { fontFamily: 'Fredoka-Bold', fontSize: 20, color: '#FFF' },
+  resultBlockWordWrong: { color: '#FCA5A5', textDecorationLine: 'line-through' },
+  resultBlockWordTarget: { color: '#FDE68A' },
+  resultBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingVertical: 14, paddingHorizontal: 32, borderRadius: 24,
+    marginTop: 8, width: '100%', justifyContent: 'center',
+  },
+  resultBtnOk:  { backgroundColor: '#10B981' },
+  resultBtnBad: { backgroundColor: '#F59E0B' },
+  resultBtnText: { fontFamily: 'Fredoka-Bold', fontSize: 16, color: '#FFF' },
+  resultDoneBtn: { paddingVertical: 10, marginTop: 2 },
+  resultDoneText: { fontFamily: 'Fredoka-SemiBold', fontSize: 15, color: 'rgba(255,255,255,0.7)' },
+});

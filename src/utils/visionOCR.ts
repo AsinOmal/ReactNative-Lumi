@@ -10,6 +10,9 @@ import { NativeModules, Platform } from 'react-native';
 
 const { LumiVisionOCR } = NativeModules;
 
+// Logged once per session so the dev toast doesn't fire on every scan frame.
+let _hazardUnavailableLogged = false;
+
 /**
  * Runs Apple's Vision Framework text recognition on a local image file.
  * Returns the recognized text as a single string (lines joined with '\n').
@@ -47,7 +50,10 @@ export async function classifyFrameForHazards(imagePath: string): Promise<string
   if (Platform.OS !== 'ios') return [];
 
   if (!LumiVisionOCR || typeof LumiVisionOCR.classifyFrameForHazards !== 'function') {
-    console.warn('[VisionOCR] ❌ classifyFrameForHazards unavailable — rebuild required');
+    if (!_hazardUnavailableLogged) {
+      _hazardUnavailableLogged = true;
+      console.log('[VisionOCR] classifyFrameForHazards unavailable — rebuild required');
+    }
     return [];
   }
 

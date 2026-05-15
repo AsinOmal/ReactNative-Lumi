@@ -40,7 +40,13 @@ export const styles = StyleSheet.create({
     elevation: 6,
   },
   cardLocked: { opacity: 0.55 },
-  iconArea: { height: 130, alignItems: "center", justifyContent: "center" },
+  iconArea: {
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  iconAreaImage: { width: "100%", height: "100%" },
   cardFooter: { padding: 12, gap: 6 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   cardTitle: {

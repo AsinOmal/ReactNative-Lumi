@@ -10,6 +10,10 @@
   gap: var(--space-4);
 }
 
+@media (max-width: 1200px) {
+  .analytics__kpis { grid-template-columns: repeat(4, 1fr); }
+}
+
 @media (max-width: 900px) {
   .analytics__kpis { grid-template-columns: repeat(2, 1fr); }
 }

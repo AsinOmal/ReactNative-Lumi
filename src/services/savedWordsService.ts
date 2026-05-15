@@ -15,11 +15,18 @@ import {
   collection, query, orderBy, onSnapshot, getDocs,
 } from '@react-native-firebase/firestore';
 import { SavedWord } from '../utils/achievementStore';
+import { isValidWord } from '../utils/wordValidator';
+
+export { isValidWord };
 
 const db = () => getFirestore(getApp());
 
 /** Persist a saved word to Firestore. */
 export const saveWordToFirestore = async (uid: string, word: string): Promise<void> => {
+  if (!isValidWord(word)) {
+    console.error('[savedWordsService] saveWordToFirestore: invalid word format:', word);
+    return;
+  }
   try {
     const ref = doc(db(), 'users', uid, 'savedWords', word);
     await setDoc(ref, { word, savedAt: Date.now() });

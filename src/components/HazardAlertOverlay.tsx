@@ -17,7 +17,7 @@
 
 import React, { useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { strings } from '../constants/strings';
+import { useStrings } from '../hooks/useStrings';
 
 interface HazardAlertOverlayProps {
   visible: boolean;
@@ -28,6 +28,7 @@ export const HazardAlertOverlay: React.FC<HazardAlertOverlayProps> = ({
   visible,
   onDismiss,
 }) => {
+  const strings = useStrings();
   useEffect(() => {
     // Audio alert intentionally omitted until a suitable child-safe alert SFX
     // is sourced — using a game SFX here would feel wrong contextually.

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "#FFFFFF",
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "800",
     letterSpacing: 1.5,
     textAlign: "center",

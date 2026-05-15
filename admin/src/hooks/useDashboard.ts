@@ -6,6 +6,8 @@ import {
 import { db } from '../firebase';
 import type { DashboardStats } from '../types';
 
+export interface WordStat { word: string; count: number; }
+
 export interface ActivityRow {
   id: string;
   uid: string;
@@ -20,40 +22,47 @@ export interface ActivityRow {
 interface UseDashboardResult {
   stats: DashboardStats | null;
   recentActivity: ActivityRow[];
+  topWords: WordStat[];
   loading: boolean;
 }
 
-const toMs = (val: unknown): number => {
-  if (!val) return 0;
-  if (typeof (val as any).toDate === 'function') return (val as any).toDate().getTime();
-  return typeof val === 'number' ? val : 0;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const toMs = (v: unknown): number => !v ? 0 : typeof (v as any).toDate === 'function' ? (v as any).toDate().getTime() : typeof v === 'number' ? v : 0;
 
 const formatRelative = (ms: number): string => {
-  const diff = Date.now() - ms;
-  const mins = Math.floor(diff / 60_000);
+  const mins = Math.floor((Date.now() - ms) / 60_000);
   if (mins < 1) return 'Just now';
   if (mins < 60) return `${mins} min ago`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+  return hrs < 24 ? `${hrs}h ago` : `${Math.floor(hrs / 24)}d ago`;
 };
 
-// Requires a COLLECTION_GROUP_ASC index on activityLog.flagged — falls back to 0 if missing.
+// Falls back to 0 if a required composite index is missing.
 const fetchFlaggedCount = async (): Promise<number> => {
+  try { return (await getCountFromServer(query(collectionGroup(db, 'activityLog'), where('flagged', '==', true)))).data().count; }
+  catch { return 0; }
+};
+const fetchGroupCount = async (col: string): Promise<number> => {
+  try { return (await getCountFromServer(collectionGroup(db, col))).data().count; }
+  catch { return 0; }
+};
+const fetchWeeklySavedCount = async (): Promise<number> => {
+  try { return (await getCountFromServer(query(collectionGroup(db, 'savedWords'), where('savedAt', '>=', Date.now() - 7 * 86_400_000)))).data().count; }
+  catch { return 0; }
+};
+const fetchTopWords = async (): Promise<WordStat[]> => {
   try {
-    const snap = await getCountFromServer(
-      query(collectionGroup(db, 'activityLog'), where('flagged', '==', true)),
-    );
-    return snap.data().count;
-  } catch {
-    return 0;
-  }
+    const snap = await getDocs(collectionGroup(db, 'savedWords'));
+    const tally: Record<string, number> = {};
+    snap.docs.forEach(d => { const w = d.data().word as string; if (w) tally[w] = (tally[w] ?? 0) + 1; });
+    return Object.entries(tally).map(([word, count]) => ({ word, count })).sort((a, b) => b.count - a.count).slice(0, 8);
+  } catch { return []; }
 };
 
 export const useDashboard = (): UseDashboardResult => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<ActivityRow[]>([]);
+  const [topWords, setTopWords] = useState<WordStat[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,23 +70,28 @@ export const useDashboard = (): UseDashboardResult => {
       try {
         const todayMs = new Date().setHours(0, 0, 0, 0);
 
-        // Run independently so a missing index doesn't crash the whole load
-        const [usersSnap, activitySnap, flaggedEvents] = await Promise.all([
+        const [
+          usersSnap, activitySnap, flaggedEvents,
+          wordsSaved, wordsSavedThisWeek, achievementsUnlocked, gamesPlayed, rawTopWords,
+        ] = await Promise.all([
           getDocs(collection(db, 'users')),
           getDocs(query(collectionGroup(db, 'activityLog'), orderBy('timestamp', 'desc'), limit(5))),
           fetchFlaggedCount(),
+          fetchGroupCount('savedWords'),
+          fetchWeeklySavedCount(),
+          fetchGroupCount('achievements'),
+          fetchGroupCount('gameProgress'),
+          fetchTopWords(),
         ]);
 
         let newUsersToday = 0;
         let activeToday = 0;
-        let wordsSaved = 0;
         const uidToUser = new Map<string, { email: string; username: string }>();
 
         for (const d of usersSnap.docs) {
           const u = d.data();
           if (toMs(u.createdAt) >= todayMs) newUsersToday++;
           if (toMs(u.lastActive) >= todayMs) activeToday++;
-          wordsSaved += u.wordCount ?? 0;
           uidToUser.set(d.id, { email: u.email ?? d.id, username: u.username ?? '' });
         }
 
@@ -86,11 +100,12 @@ export const useDashboard = (): UseDashboardResult => {
           newUsersToday,
           activeToday,
           wordsSaved,
-          wordsSavedThisWeek: 0,
-          gamesPlayed: 0,
-          achievementsUnlocked: 0,
+          wordsSavedThisWeek,
+          gamesPlayed,
+          achievementsUnlocked,
           flaggedEvents,
         });
+        setTopWords(rawTopWords);
 
         setRecentActivity(activitySnap.docs.map(d => {
           const data = d.data();
@@ -116,5 +131,5 @@ export const useDashboard = (): UseDashboardResult => {
     load();
   }, []);
 
-  return { stats, recentActivity, loading };
+  return { stats, recentActivity, topWords, loading };
 };

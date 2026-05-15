@@ -9,6 +9,9 @@
 //   safely embedded in the React admin web app. The Function runs server-side
 //   with the project's default credential.
 //
+// Rate limit: max 5 broadcasts per hour. Excess docs are marked 'failed'
+// immediately to prevent accidental or malicious notification spam.
+//
 // Mobile app wiring needed (not in this file):
 //   In useAuthStore.ts after sign-in:
 //     messaging().getToken().then(token =>
@@ -26,6 +29,9 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
+const BROADCASTS_PER_HOUR_LIMIT = 5;
+const HOUR_MS = 60 * 60 * 1000;
+
 interface BroadcastDoc {
   title: string;
   body: string;
@@ -35,6 +41,19 @@ interface BroadcastDoc {
   recipientCount?: number;
 }
 
+const countRecentBroadcasts = async (excludeId: string): Promise<number> => {
+  const hourAgo = admin.firestore.Timestamp.fromMillis(Date.now() - HOUR_MS);
+  const snap = await db
+    .collection('adminConfig')
+    .doc('notifications')
+    .collection('broadcasts')
+    .where('sentAt', '>=', hourAgo)
+    .where('status', 'in', ['sent', 'pending'])
+    .get();
+  // Exclude the document that just triggered this function.
+  return snap.docs.filter(d => d.id !== excludeId).length;
+};
+
 export const dispatchBroadcast = onDocumentCreated(
   'adminConfig/notifications/broadcasts/{broadcastId}',
   async (event) => {
@@ -43,11 +62,16 @@ export const dispatchBroadcast = onDocumentCreated(
 
     const data = snap.data() as BroadcastDoc;
 
-    // Guard against re-runs or already-processed docs
     if (data.status && data.status !== 'pending') return;
 
     try {
-      // Collect all user FCM tokens from /users collection
+      const recentCount = await countRecentBroadcasts(event.params.broadcastId);
+      if (recentCount >= BROADCASTS_PER_HOUR_LIMIT) {
+        await snap.ref.update({ status: 'failed', failureReason: 'rate_limit_exceeded' });
+        logger.warn(`dispatchBroadcast ${event.params.broadcastId}: rate limit exceeded (${recentCount} in last hour)`);
+        return;
+      }
+
       const usersSnap = await db.collection('users').get();
       const tokens: string[] = [];
       usersSnap.forEach(doc => {
@@ -61,7 +85,7 @@ export const dispatchBroadcast = onDocumentCreated(
         return;
       }
 
-      // FCM supports up to 500 tokens per multicast batch
+      // FCM supports up to 500 tokens per multicast batch.
       const CHUNK = 500;
       let successCount = 0;
       for (let i = 0; i < tokens.length; i += CHUNK) {

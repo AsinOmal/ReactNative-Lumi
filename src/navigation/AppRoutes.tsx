@@ -18,13 +18,19 @@ import { ParentDashboardScreen } from '../screens/ParentDashboardScreen';
 import { PackDetailScreen } from '../screens/PackDetailScreen';
 import { PackARPreviewScreen } from '../screens/PackARPreviewScreen';
 import { PackGateScreen } from '../screens/PackGateScreen';
+import { PremiumPackGateScreen } from '../screens/PremiumPackGateScreen';
+import { CheckoutScreen } from '../screens/CheckoutScreen';
+import { ARPlacementScreen } from '../screens/ARPlacementScreen';
 import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
+import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
+import { AppIntroScreen } from '../screens/AppIntroScreen';
 import { hasSeenOnboarding } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
-import { strings } from '../constants/strings';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { useStrings } from '../hooks/useStrings';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
@@ -34,6 +40,8 @@ const SPRING = { animation: 'spring' as const, config: { stiffness: 280, damping
 export const AppRoutes = () => {
   const { user } = useAuthStore();
   const { isParentUnlocked } = useParentalControlsStore();
+  const introSeen = useLanguageStore(s => s.introSeen);
+  const strings = useStrings();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
   const { initializing, suspendedError } = useBootstrapSession();
   const appConfig = useRemoteContentStore(s => s.appConfig);
@@ -71,6 +79,8 @@ export const AppRoutes = () => {
 
   if (showOnboarding && appConfig?.newUserOnboarding !== false) return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
   if (!user) return <LoginScreen />;
+  // Show the intro guide once after the main onboarding completes.
+  if (!introSeen) return <AppIntroScreen />;
 
   if (appConfig?.maintenanceMode) {
     return (
@@ -91,10 +101,14 @@ export const AppRoutes = () => {
         <Stack.Screen name="ParentDashboard" component={ParentDashboardScreen} />
         <Stack.Screen name="PackDetail"    component={PackDetailScreen} />
         <Stack.Screen name="PackARPreview" component={PackARPreviewScreen} />
-        <Stack.Screen name="PackGate"      component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="PackGate"         component={PackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="PremiumPackGate" component={PremiumPackGateScreen} options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="Checkout"         component={CheckoutScreen} options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="MakeAMeal"     component={MakeAMealScreen} />
         <Stack.Screen name="ScanAndCount"  component={ScanAndCountScreen} />
+        <Stack.Screen name="WriteAndScan"  component={WriteAndScanScreen} />
         <Stack.Screen name="Scan"          component={ScanScreen} />
+        <Stack.Screen name="ARPlacement"   component={ARPlacementScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
       <ScreenTimeLimitModal
         visible={isAtLimit && !isParentUnlocked}

@@ -5,21 +5,37 @@
       "collectionGroup": "activityLog",
       "fieldPath": "timestamp",
       "indexes": [
-        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" },
-        { "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }
-      ]
-    },
-    {
-      "collectionGroup": "hazardEvents",
-      "fieldPath": "detectedAt",
-      "indexes": [
-        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" },
+        { "order": "ASCENDING",  "queryScope": "COLLECTION_GROUP" },
         { "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }
       ]
     },
     {
       "collectionGroup": "activityLog",
       "fieldPath": "flagged",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "hazardEvents",
+      "fieldPath": "detectedAt",
+      "indexes": [
+        { "order": "ASCENDING",  "queryScope": "COLLECTION_GROUP" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "savedWords",
+      "fieldPath": "savedAt",
+      "indexes": [
+        { "order": "ASCENDING",  "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING",  "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "savedWords",
+      "fieldPath": "word",
       "indexes": [
         { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
       ]

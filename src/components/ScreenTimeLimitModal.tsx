@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '../constants/colors';
-import { strings } from '../constants/strings';
+import { useStrings } from '../hooks/useStrings';
 import { PINEntryModal } from './PINEntryModal';
 import { useParentAuth } from '../hooks/useParentAuth';
 
@@ -34,6 +34,7 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
   limitMinutes,
   onUnlocked,
 }) => {
+  const strings = useStrings();
   const { authStep, verifyPin } = useParentAuth();
   const [pinError, setPinError] = useState(false);
   const [showPin, setShowPin] = useState(false);

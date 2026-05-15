@@ -21,7 +21,7 @@ import {
   cancelPackDownload,
   downloadPack,
 } from "../services/packDownloadService";
-import { strings } from "../constants/strings";
+import { useStrings } from "./useStrings";
 import { invalidateModelCache } from "../utils/modelRegistry";
 
 interface UsePackDownloadReturn {
@@ -36,6 +36,7 @@ interface UsePackDownloadReturn {
 }
 
 export function usePackDownload(pack: Pack): UsePackDownloadReturn {
+  const strings = useStrings();
   const state = usePackDownloadStore((s) => s.packs[pack.id]);
   const startDownload = usePackDownloadStore((s) => s.startDownload);
   const updateProgress = usePackDownloadStore((s) => s.updateProgress);

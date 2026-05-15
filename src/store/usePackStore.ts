@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { Image } from 'react-native';
 import { fetchPacks } from '../services/packService';
-import type { Pack } from "../types/pack";
+import type { Pack } from '../types/pack';
 
 interface PackState {
   packs: Pack[];
@@ -10,6 +11,17 @@ interface PackState {
   loadPacks: () => Promise<void>;
   setUserProgress: (packId: string, count: number) => void;
 }
+
+// Warm the native image cache with every pack's cover so cards render
+// instantly on subsequent mounts/navigations. fire-and-forget; failures
+// (e.g. offline) silently fall back to the normal load path.
+const prefetchCovers = (packs: Pack[]) => {
+  packs.forEach((p) => {
+    if (p.coverImageUrl) {
+      Image.prefetch(p.coverImageUrl).catch(() => {});
+    }
+  });
+};
 
 export const usePackStore = create<PackState>((set, get) => ({
   packs: [],
@@ -28,13 +40,14 @@ export const usePackStore = create<PackState>((set, get) => ({
         return a.isPremium ? 1 : -1;
       });
       set({ packs: sorted, loading: false });
+      prefetchCovers(sorted);
     } catch (e: any) {
       set({ error: e.message, loading: false });
     }
   },
 
   setUserProgress: (packId, count) =>
-    set(state => ({
+    set((state) => ({
       userProgress: { ...state.userProgress, [packId]: count },
     })),
 }));

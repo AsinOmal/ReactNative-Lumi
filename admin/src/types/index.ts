@@ -42,6 +42,7 @@ export interface ModelEntry {
   positionZ?: number;
   packId: string;
   isCalibrated: boolean;
+  sinhalaLabel?: string;
 }
 
 export interface AppUser {
@@ -114,6 +115,7 @@ export interface Purchase {
   uid: string;
   productId: string;
   purchasedAt: Date;
+  simulated?: boolean;
 }
 
 export interface BannerConfig {

@@ -30,6 +30,7 @@ export interface ModelEntry {
   audio: string;
   audioUrl?: string;
   emoji: string;
+  sinhalaLabel?: string;
 }
 
 const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
@@ -40,6 +41,7 @@ const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   audio: '',
   audioUrl: r.audioUrl,
   emoji: '',
+  sinhalaLabel: r.sinhalaLabel,
 });
 
 // In-memory cache: AR loops call getModel many times per frame. Invalidated
@@ -63,20 +65,22 @@ const downloadedToEntry = (
   audio: '',
   audioUrl: audioPath ? getAudioUriForPlayback(audioPath) : r.audioUrl,
   emoji: '',
+  sinhalaLabel: r.sinhalaLabel,
 });
 
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   // ── Fruits Pack ───────────────────────────────────────────────────────────
-  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.0037, 0.0037, 0.0037], position: [0, 0, -1.0], syllables: ['Ap', 'ple'],              audio: 'apple.mp3',      emoji: '🍎' },
-  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.00065, 0.00065, 0.00065], position: [0, 0, -1.0], syllables: ['Ba', 'na', 'na'],      audio: 'banana.mp3',     emoji: '🍌' },
-  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050], position: [0, 0, -1.0], syllables: ['Cher', 'ry'],               audio: 'cherry.mp3',     emoji: '🍒' },
-  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.012, 0.012, 0.012], position: [0, 0, -1.0], syllables: ['Grape'],                    audio: 'grape.mp3',      emoji: '🍇' },
-  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.038, 0.038, 0.038], position: [0, 0, -1.0], syllables: ['Lem', 'on'],                audio: 'lemon.mp3',      emoji: '🍋' },
-  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.60,  0.60,  0.60],  position: [0, 0, -0.35], syllables: ['Man', 'go'],               audio: 'mango.mp3',      emoji: '🥭' },
-  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.60,  0.60,  0.60],  position: [0, 0, -0.35], syllables: ['Or', 'ange'],              audio: 'orange.mp3',     emoji: '🍊' },
-  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [3.5,   3.5,   3.5],   position: [0, 0, -0.8],  syllables: ['Pine', 'ap', 'ple'],       audio: 'pineapple.mp3',  emoji: '🍍' },
-  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.60,  0.60,  0.60],  position: [0, 0, -1.0],  syllables: ['Straw', 'ber', 'ry'],      audio: 'strawberry.mp3', emoji: '🍓' },
-  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.052, 0.052, 0.052], position: [0, 0, -1.0],  syllables: ['Wa', 'ter', 'mel', 'on'],  audio: 'watermelon.mp3', emoji: '🍉' },
+  // TODO: verify all sinhalaLabel values with a native Sinhala speaker
+  apple:      { source: require('../assets/models/fruits/apple.glb'),      scale: [0.0037, 0.0037, 0.0037], position: [0, 0, -1.0], syllables: ['Ap', 'ple'],              audio: 'apple.mp3',      emoji: '🍎', sinhalaLabel: 'ඇපල්' },
+  banana:     { source: require('../assets/models/fruits/banana.glb'),     scale: [0.00065, 0.00065, 0.00065], position: [0, 0, -1.0], syllables: ['Ba', 'na', 'na'],      audio: 'banana.mp3',     emoji: '🍌', sinhalaLabel: 'කෙසෙල්' },
+  cherry:     { source: require('../assets/models/fruits/cherry.glb'),     scale: [0.050, 0.050, 0.050], position: [0, 0, -1.0], syllables: ['Cher', 'ry'],               audio: 'cherry.mp3',     emoji: '🍒', sinhalaLabel: 'චෙරි' },
+  grape:      { source: require('../assets/models/fruits/grape.glb'),      scale: [0.012, 0.012, 0.012], position: [0, 0, -1.0], syllables: ['Grape'],                    audio: 'grape.mp3',      emoji: '🍇', sinhalaLabel: 'මිදි' },
+  lemon:      { source: require('../assets/models/fruits/lemon.glb'),      scale: [0.038, 0.038, 0.038], position: [0, 0, -1.0], syllables: ['Lem', 'on'],                audio: 'lemon.mp3',      emoji: '🍋', sinhalaLabel: 'දෙහි' },
+  mango:      { source: require('../assets/models/fruits/mango.glb'),      scale: [0.60,  0.60,  0.60],  position: [0, 0, -0.35], syllables: ['Man', 'go'],               audio: 'mango.mp3',      emoji: '🥭', sinhalaLabel: 'අඹ' },
+  orange:     { source: require('../assets/models/fruits/orange.glb'),     scale: [0.60,  0.60,  0.60],  position: [0, 0, -0.35], syllables: ['Or', 'ange'],              audio: 'orange.mp3',     emoji: '🍊', sinhalaLabel: 'දොඩම්' },
+  pineapple:  { source: require('../assets/models/fruits/pineapple.glb'),  scale: [3.5,   3.5,   3.5],   position: [0, 0, -0.8],  syllables: ['Pine', 'ap', 'ple'],       audio: 'pineapple.mp3',  emoji: '🍍', sinhalaLabel: 'අන්නාසි' },
+  strawberry: { source: require('../assets/models/fruits/strawberry.glb'), scale: [0.60,  0.60,  0.60],  position: [0, 0, -1.0],  syllables: ['Straw', 'ber', 'ry'],      audio: 'strawberry.mp3', emoji: '🍓', sinhalaLabel: 'ස්ට්‍රෝබෙරි' },
+  watermelon: { source: require('../assets/models/fruits/watermelon.glb'), scale: [0.052, 0.052, 0.052], position: [0, 0, -1.0],  syllables: ['Wa', 'ter', 'mel', 'on'],  audio: 'watermelon.mp3', emoji: '🍉', sinhalaLabel: 'ඉදි වට්ටක්කා' },
 
   // ── Vegetables Pack ───────────────────────────────────────────────────────
   // 🚧 DISABLED — scales uncalibrated, re-enable after on-device testing

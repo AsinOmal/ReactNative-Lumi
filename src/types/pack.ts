@@ -25,4 +25,5 @@ export interface Pack {
   packType?: PackType;
   assetVersion?: string;
   estimatedSizeMB?: number;
+  gateImageUrl?: string;
 }

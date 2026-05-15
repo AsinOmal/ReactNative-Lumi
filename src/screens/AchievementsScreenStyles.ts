@@ -2,8 +2,6 @@ import { StyleSheet } from "react-native";
 import { colors } from "../constants/colors";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1 },
-
   header: {
     paddingHorizontal: 24,
     paddingBottom: 32,
@@ -11,10 +9,10 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     overflow: "hidden",
     shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 12,
   },
   watermark: { position: "absolute", right: -28, bottom: -24 },
   headerRow: { flexDirection: "row", alignItems: "center", gap: 8 },
@@ -41,10 +39,10 @@ export const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 16,
     shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    elevation: 4,
   },
   progressTrack: {
     flex: 1,
@@ -56,25 +54,37 @@ export const styles = StyleSheet.create({
   progressFill: { height: 8, borderRadius: 4, backgroundColor: "#F59E0B" },
   progressLabel: {
     fontFamily: "Fredoka-SemiBold",
-    fontSize: 14,
+    fontSize: 17,
     color: colors.textMid,
   },
 
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 14 },
   cell: { width: "47%" },
 
-  card: {
+  // Wood bevel for unlocked cards
+  woodOuter: {
+    borderRadius: 22,
+    padding: 2.5,
+    backgroundColor: "#5C3317",
+    shadowColor: "#5C3317",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 7,
+  },
+  woodInner: {
+    borderRadius: 19.5,
+    padding: 2,
+    backgroundColor: "#C48A4A",
+  },
+  cardInner: {
     backgroundColor: colors.backgroundCard,
-    borderRadius: 20,
+    borderRadius: 18,
     padding: 14,
     alignItems: "center",
     gap: 6,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.16,
-    shadowRadius: 12,
-    elevation: 4,
   },
-  cardLocked: { opacity: 0.55, shadowOpacity: 0, elevation: 0 },
+  cardLocked: { opacity: 0.5 },
 
   iconCircle: {
     width: 58,
@@ -88,23 +98,22 @@ export const styles = StyleSheet.create({
 
   cardTitle: {
     fontFamily: "Fredoka-Bold",
-    fontSize: 17,
+    fontSize: 21,
     color: colors.textDark,
     textAlign: "center",
   },
   cardTitleLocked: { color: "#CBD5E1" },
   cardDesc: {
     fontFamily: "Fredoka-Regular",
-    fontSize: 13,
+    fontSize: 16,
     color: colors.textMid,
     textAlign: "center",
-    lineHeight: 18,
+    lineHeight: 22,
   },
-
   doneRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },
   doneText: {
     fontFamily: "Fredoka-SemiBold",
-    fontSize: 12,
+    fontSize: 15,
     color: colors.successDark,
   },
 });

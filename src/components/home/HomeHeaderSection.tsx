@@ -8,11 +8,16 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { LumiMascot } from "../common/LumiMascot";
+import { useNavigation } from "@react-navigation/native";
+import { LumiMascot, MascotState } from "../common/LumiMascot";
 import { DailyWordBanner } from "./DailyWordBanner";
+import { WoodenSign } from "./WoodenSign";
 import { colors } from "../../constants/colors";
+import { buttonGradientColors } from "../../constants/skeuomorphicTokens";
 import { styles } from "./HomeHeaderSectionStyles";
+
+const WORD_GOAL = 10;
+const GEM_COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#7C3AED", "#FF9A2E"];
 
 interface Props {
   firstName: string;
@@ -20,6 +25,7 @@ interface Props {
   wordCount: number;
   dailyWord: string;
   dailyFound: boolean;
+  mascotState: MascotState;
   onTrophyPress: () => void;
   onProgressPress: () => void;
 }
@@ -30,84 +36,87 @@ export const HomeHeaderSection: React.FC<Props> = ({
   wordCount,
   dailyWord,
   dailyFound,
+  mascotState,
   onTrophyPress,
   onProgressPress,
-}) => (
-  <View style={styles.container}>
-    <View style={styles.logoRow}>
-      <View style={styles.logoPlaceholder}>
-        <Text style={styles.logoText}>LUMI</Text>
-      </View>
-    </View>
+}) => {
+  const navigation = useNavigation();
+  const progressRatio = Math.min(wordCount / WORD_GOAL, 1);
 
-    <LinearGradient colors={["#FF9A2E", "#C96B00"]} style={styles.headerCard}>
-      <MaterialCommunityIcons
-        name="star-four-points"
-        size={14}
-        color="rgba(255,255,255,0.35)"
-        style={styles.deco1}
-      />
-      <MaterialCommunityIcons
-        name="star-four-points"
-        size={9}
-        color="rgba(255,255,255,0.25)"
-        style={styles.deco2}
-      />
-      <MaterialCommunityIcons
-        name="star-four-points"
-        size={12}
-        color="rgba(255,255,255,0.3)"
-        style={styles.deco3}
-      />
-      <View style={styles.mascotCircle}>
-        <LumiMascot state="idle" size={90} />
+  return (
+    <View style={styles.container}>
+      <View style={styles.logoRow}>
+        <WoodenSign />
       </View>
-      <View style={styles.greetingBlock}>
-        <Text style={styles.greeting}>Hello, {firstName}!</Text>
-        <Text style={styles.subGreeting}>Ready to explore?</Text>
-        {streak >= 3 && (
-          <View style={styles.streakBadge}>
-            <Ionicons name="flame" size={13} color={colors.accentYellow} />
-            <Text style={styles.streakText}>{streak} day streak</Text>
-          </View>
-        )}
-      </View>
-      <TouchableOpacity
-        style={styles.trophyBtn}
-        onPress={onTrophyPress}
-        accessibilityLabel="View achievements"
-        accessibilityRole="button"
-      >
-        <Ionicons name="trophy" size={28} color="#FFF" />
-      </TouchableOpacity>
-    </LinearGradient>
 
-    <DailyWordBanner word={dailyWord} isFound={dailyFound} />
-
-    <TouchableOpacity
-      style={styles.progressBanner}
-      activeOpacity={0.85}
-      onPress={onProgressPress}
-      accessibilityLabel="Words found, tap to see collection"
-      accessibilityRole="button"
-    >
-      <View style={styles.progressLeft}>
-        <Ionicons name="bookmark" size={22} color={colors.primary} />
-        <View>
-          <Text style={styles.progressCount}>{wordCount} words found</Text>
-          <Text style={styles.progressSub}>Tap to see your collection</Text>
+      <LinearGradient colors={["#FFB347", "#FF9A2E", "#C96B00"]} style={styles.headerCard}>
+        <LinearGradient
+          colors={buttonGradientColors.sheen}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 0.45 }}
+          style={styles.headerSheen}
+          pointerEvents="none"
+        />
+        <Ionicons name="sparkles" size={14} color="rgba(255,255,255,0.35)" style={styles.deco1} />
+        <Ionicons name="sparkles" size={9}  color="rgba(255,255,255,0.25)" style={styles.deco2} />
+        <Ionicons name="sparkles" size={12} color="rgba(255,255,255,0.3)"  style={styles.deco3} />
+        <Ionicons name="sparkles" size={10} color="rgba(255,255,255,0.2)"  style={styles.deco4} />
+        <Ionicons name="sparkles" size={8}  color="rgba(255,255,255,0.28)" style={styles.deco5} />
+        <View style={styles.mascotCircle}>
+          <LumiMascot state={mascotState} size={90} />
         </View>
-      </View>
-      <Ionicons name="chevron-forward" size={20} color={colors.primary} />
-    </TouchableOpacity>
+        <View style={styles.greetingBlock}>
+          <Text style={styles.greeting}>Hello, {firstName}!</Text>
+          <Text style={styles.subGreeting}>Ready to explore?</Text>
+          {streak >= 3 && (
+            <View style={styles.streakBadge}>
+              <Ionicons name="flame" size={13} color={colors.accentYellow} />
+              <Text style={styles.streakText}>{streak} day streak</Text>
+            </View>
+          )}
+        </View>
+        <TouchableOpacity style={styles.trophyWrap} onPress={onTrophyPress} accessibilityLabel="View achievements" accessibilityRole="button">
+          <View style={styles.trophyCircle}>
+            <Ionicons name="trophy" size={38} color="#FFF" />
+          </View>
+        </TouchableOpacity>
+      </LinearGradient>
 
-    <View style={styles.sectionRow}>
-      <MaterialCommunityIcons
-        name="package-variant-closed"
-        size={22}
-        color={colors.primary}
-      />
-      <Text style={styles.sectionTitle}>Your Packs</Text>
+      <DailyWordBanner word={dailyWord} isFound={dailyFound} />
+
+      <TouchableOpacity style={styles.progressBanner} activeOpacity={0.88} onPress={onProgressPress} accessibilityLabel="Words found, tap to see collection" accessibilityRole="button">
+        <View style={styles.progressLeft}>
+          <View style={styles.gemRow}>
+            {GEM_COLORS.slice(0, Math.min(3, wordCount)).map((color, i) => (
+              <View key={i} style={[styles.gem, { backgroundColor: color + '18', borderColor: color }]}>
+                <Ionicons name="star" size={16} color={color} />
+              </View>
+            ))}
+            {wordCount > 3 && <Text style={styles.gemMore}>+{wordCount - 3}</Text>}
+          </View>
+          <Text style={styles.progressCount}>{wordCount}/{WORD_GOAL} words collected</Text>
+          <Text style={styles.progressSub}>Tap to see your collection</Text>
+          <View style={styles.progressTrack}>
+            <LinearGradient
+              colors={['#FF9A2E', '#FFD700']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: `${Math.max(progressRatio * 100, 6)}%` }]}
+            />
+          </View>
+        </View>
+        <View style={styles.chevronCircle}>
+          <Ionicons name="chevron-forward" size={22} color="#FF9A2E" />
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.sectionRow}>
+        <Ionicons name="star" size={20} color={colors.accentYellow} />
+        <Text style={styles.sectionTitle}>Your Packs</Text>
+        <TouchableOpacity onPress={() => (navigation as any).navigate("Library")} accessibilityLabel="View all packs" accessibilityRole="button">
+          <Text style={styles.viewAll}>View All</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+};

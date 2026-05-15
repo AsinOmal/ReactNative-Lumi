@@ -5,6 +5,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  Image,
+  ImageSourcePropType,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -12,7 +14,7 @@ import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { colors } from "../constants/colors";
-import { GameBackground } from "../components/common/GameBackground";
+import { ImageBackdrop } from "../components/scenes/ImageBackdrop";
 import { buttonGradientColors } from "../constants/skeuomorphicTokens";
 import { useRemoteContentStore } from "../store/useRemoteContentStore";
 import { styles } from "./PlaygroundScreenStyles";
@@ -22,6 +24,7 @@ interface GameCard {
   title: string;
   desc: string;
   iconName: string;
+  cover?: ImageSourcePropType;
   accent: string;
   available: boolean;
   badgeText?: string;
@@ -33,6 +36,7 @@ const GAMES: GameCard[] = [
     title: "AR Word Find",
     desc: "Find 3D models hidden in your room!",
     iconName: "target",
+    cover: require("../assets/coverarts/AR-Word-Find.png"),
     accent: colors.accentCoral,
     available: true,
   },
@@ -41,6 +45,7 @@ const GAMES: GameCard[] = [
     title: "Make a Meal",
     desc: "Cook recipes with AR ingredients!",
     iconName: "silverware-fork-knife",
+    cover: require("../assets/coverarts/Make-A-Meal.png"),
     accent: colors.accentOrange,
     available: true,
   },
@@ -49,16 +54,18 @@ const GAMES: GameCard[] = [
     title: "Scan & Count",
     desc: "Count 3D models all around you!",
     iconName: "counter",
+    cover: require("../assets/coverarts/Scan-Count-Mode.png"),
     accent: colors.accentMint,
     available: true,
   },
   {
-    key: "ComingSoon",
-    title: "Coming Soon",
-    desc: "More exciting games are on the way!",
-    iconName: "star-outline",
-    accent: "#CBD5E1",
-    available: false,
+    key: "WriteAndScan",
+    title: "Write & Scan",
+    desc: "See the model, write the word, scan to check!",
+    iconName: "pencil-box-outline",
+    cover: require("../assets/coverarts/Write-And-Scan.png"),
+    accent: colors.accentYellow,
+    available: true,
   },
 ];
 
@@ -74,7 +81,9 @@ export const PlaygroundScreen = () => {
       );
 
   return (
-    <GameBackground>
+    <ImageBackdrop
+      source={require("../assets/backgrounds/playground-screen-bg.png")}
+    >
       <StatusBar barStyle="dark-content" />
 
       {/* Coral → orange gradient — wave bottom, gamepad watermark */}
@@ -124,14 +133,28 @@ export const PlaygroundScreen = () => {
               <View
                 style={[
                   styles.iconArea,
-                  { backgroundColor: game.available ? game.accent : "#CBD5E1" },
+                  game.cover
+                    ? null
+                    : {
+                        backgroundColor: game.available
+                          ? game.accent
+                          : "#CBD5E1",
+                      },
                 ]}
               >
-                <MaterialCommunityIcons
-                  name={game.iconName}
-                  size={52}
-                  color="rgba(255,255,255,0.95)"
-                />
+                {game.cover ? (
+                  <Image
+                    source={game.cover}
+                    style={styles.iconAreaImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={game.iconName}
+                    size={52}
+                    color="rgba(255,255,255,0.95)"
+                  />
+                )}
               </View>
               <View style={styles.cardFooter}>
                 <View style={styles.titleRow}>
@@ -167,7 +190,7 @@ export const PlaygroundScreen = () => {
           ))}
         </View>
       </ScrollView>
-    </GameBackground>
+    </ImageBackdrop>
   );
 };
 

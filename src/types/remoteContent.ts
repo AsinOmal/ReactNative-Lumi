@@ -12,6 +12,7 @@ export interface RemoteModelEntry {
   positionZ?: number;
   packId: string;
   isCalibrated: boolean;
+  sinhalaLabel?: string;
 }
 
 export interface RemotePack {

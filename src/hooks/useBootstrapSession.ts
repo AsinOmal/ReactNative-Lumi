@@ -29,7 +29,10 @@ import { createUserIfNew, isUserSuspended } from "../services/userService";
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
+  fetchActiveBanner,
 } from "../services/remoteContentService";
+import { useLanguageStore } from "../store/useLanguageStore";
+import { usePurchaseStore } from "../store/usePurchaseStore";
 import { fetchPacks } from "../services/packService";
 import {
   registerFcmToken,
@@ -68,6 +71,11 @@ export const useBootstrapSession = (): BootstrapResult => {
         return;
       }
 
+      // Load language + intro preference and purchase history before anything
+      // else so the first screen renders with the correct state.
+      useLanguageStore.getState().loadFromStorage().catch(() => {});
+      usePurchaseStore.getState().loadFromStorage().catch(() => {});
+
       try {
         await createUserIfNew(userState);
       } catch (e) {
@@ -97,12 +105,13 @@ export const useBootstrapSession = (): BootstrapResult => {
       loadRemoteModels().catch(() => {});
 
       try {
-        const [remotePacks, blocklist] = await Promise.all([
+        const [remotePacks, blocklist, activeBanner] = await Promise.all([
           fetchRemotePacks(),
           fetchGlobalBlocklist(),
+          fetchActiveBanner(),
         ]);
         if (sessionUid !== activeUid) return;
-        setRemoteContent({ remotePacks, globalBlocklist: blocklist });
+        setRemoteContent({ remotePacks, globalBlocklist: blocklist, activeBanner });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
         console.warn("[useBootstrapSession] remote content fetch:", e);

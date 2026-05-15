@@ -15,7 +15,7 @@ import './ModelEditorScreen.css';
 const EMPTY_MODEL: ModelEntry = {
   word: '', syllables: [], audioUrl: '', modelUrl: '',
   audioRef: '', modelRef: '', scale: 1, positionY: 0, positionZ: -1.0,
-  packId: '', isCalibrated: false,
+  packId: '', isCalibrated: false, sinhalaLabel: '',
 };
 
 export const ModelEditorScreen: React.FC = () => {
@@ -192,6 +192,15 @@ export const ModelEditorScreen: React.FC = () => {
               value={syllableInput}
               onChange={e => setSyllableInput(e.target.value)}
               placeholder="tri, cer, a, tops"
+            />
+          </FormField>
+
+          <FormField label="Sinhala Label" hint="Optional — Sinhala script translation shown alongside the English word (e.g. ඇපල්). Verify with a native speaker.">
+            <input
+              className="form-input"
+              value={form.sinhalaLabel ?? ''}
+              onChange={e => set('sinhalaLabel', e.target.value)}
+              placeholder="ඇපල්"
             />
           </FormField>
 
