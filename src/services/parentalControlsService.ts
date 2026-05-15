@@ -22,18 +22,27 @@ import {
   limit,
   getDocs,
   onSnapshot,
+  FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import { ParentSettings, ActivityLogEntry, ScreenTimeRecord } from '../types/parentalControls';
+import {
+  ParentSettings,
+  ActivityLogEntry,
+  ScreenTimeRecord,
+} from '../types/parentalControls';
 
 const db = () => getFirestore(getApp());
 
 // ── Parent Settings ────────────────────────────────────────────────────────────
 
-export const loadParentSettings = async (uid: string): Promise<ParentSettings | null> => {
+export const loadParentSettings = async (
+  uid: string
+): Promise<ParentSettings | null> => {
   try {
     const ref = doc(db(), 'users', uid, 'parentSettings', 'settings');
     const snap = await getDoc(ref);
-    if (!snap.exists()) return null;
+    if (!snap.exists()) {
+      return null;
+    }
     return snap.data() as ParentSettings;
   } catch (e) {
     console.error('[parentalControlsService] loadParentSettings:', e);
@@ -44,17 +53,24 @@ export const loadParentSettings = async (uid: string): Promise<ParentSettings | 
 // Returns an unsubscribe function. Calls callback whenever parentSettings changes in Firestore.
 export const subscribeToParentSettings = (
   uid: string,
-  callback: (settings: ParentSettings | null) => void,
+  callback: (settings: ParentSettings | null) => void
 ): (() => void) => {
   const ref = doc(db(), 'users', uid, 'parentSettings', 'settings');
-  return onSnapshot(ref, (snap: any) => {
-    callback(snap.exists() ? (snap.data() as ParentSettings) : null);
-  }, (e: any) => {
-    console.error('[parentalControlsService] subscribeToParentSettings:', e);
-  });
+  return onSnapshot(
+    ref,
+    (snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
+      callback(snap.exists() ? (snap.data() as ParentSettings) : null);
+    },
+    (e: Error) => {
+      console.error('[parentalControlsService] subscribeToParentSettings:', e);
+    }
+  );
 };
 
-export const saveParentSettings = async (uid: string, settings: ParentSettings): Promise<void> => {
+export const saveParentSettings = async (
+  uid: string,
+  settings: ParentSettings
+): Promise<void> => {
   try {
     const ref = doc(db(), 'users', uid, 'parentSettings', 'settings');
     await setDoc(ref, { ...settings, updatedAt: Date.now() });
@@ -65,7 +81,10 @@ export const saveParentSettings = async (uid: string, settings: ParentSettings):
 
 // ── Activity Log ───────────────────────────────────────────────────────────────
 
-export const logActivityEvent = async (uid: string, entry: Omit<ActivityLogEntry, 'timestamp'>): Promise<void> => {
+export const logActivityEvent = async (
+  uid: string,
+  entry: Omit<ActivityLogEntry, 'timestamp'>
+): Promise<void> => {
   try {
     const ref = collection(db(), 'users', uid, 'activityLog');
     await addDoc(ref, { ...entry, timestamp: Date.now() });
@@ -74,13 +93,18 @@ export const logActivityEvent = async (uid: string, entry: Omit<ActivityLogEntry
   }
 };
 
-export const loadActivityLog = async (uid: string, count = 20): Promise<ActivityLogEntry[]> => {
+export const loadActivityLog = async (
+  uid: string,
+  count = 20
+): Promise<ActivityLogEntry[]> => {
   try {
     const ref = collection(db(), 'users', uid, 'activityLog');
     const q = query(ref, orderBy('timestamp', 'desc'), limit(count));
     const snap = await getDocs(q);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return snap.docs.map((d: any) => d.data() as ActivityLogEntry);
+    return snap.docs.map(
+      (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) =>
+        d.data() as ActivityLogEntry
+    );
   } catch (e) {
     console.error('[parentalControlsService] loadActivityLog:', e);
     return [];
@@ -91,11 +115,16 @@ export const loadActivityLog = async (uid: string, count = 20): Promise<Activity
 
 const todayKey = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-export const getScreenTimeForDate = async (uid: string, date = todayKey()): Promise<number> => {
+export const getScreenTimeForDate = async (
+  uid: string,
+  date = todayKey()
+): Promise<number> => {
   try {
     const ref = doc(db(), 'users', uid, 'screenTime', date);
     const snap = await getDoc(ref);
-    if (!snap.exists()) return 0;
+    if (!snap.exists()) {
+      return 0;
+    }
     return (snap.data() as ScreenTimeRecord).totalMinutes ?? 0;
   } catch (e) {
     console.error('[parentalControlsService] getScreenTimeForDate:', e);
@@ -103,7 +132,11 @@ export const getScreenTimeForDate = async (uid: string, date = todayKey()): Prom
   }
 };
 
-export const saveScreenTimeForDate = async (uid: string, minutes: number, date = todayKey()): Promise<void> => {
+export const saveScreenTimeForDate = async (
+  uid: string,
+  minutes: number,
+  date = todayKey()
+): Promise<void> => {
   try {
     const ref = doc(db(), 'users', uid, 'screenTime', date);
     await setDoc(ref, { totalMinutes: minutes });

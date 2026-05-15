@@ -1,19 +1,36 @@
 import { getApp } from '@react-native-firebase/app';
 import {
-  getFirestore, collection, getDocs, getDoc, doc, query, where, onSnapshot,
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+  FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { RemoteModelEntry, RemotePack, BannerConfig, RemoteAppConfig } from '../types/remoteContent';
+import type {
+  RemoteModelEntry,
+  RemotePack,
+  BannerConfig,
+  RemoteAppConfig,
+} from '../types/remoteContent';
 import { config } from '../constants/config';
 
 /**
  * Load the last-known remoteModels payload from AsyncStorage. Returns null on
  * cold install or read error so callers can fall through to network fetch.
  */
-export const loadCachedRemoteModels = async (): Promise<RemoteModelEntry[] | null> => {
+export const loadCachedRemoteModels = async (): Promise<
+  RemoteModelEntry[] | null
+> => {
   try {
     const raw = await AsyncStorage.getItem(config.REMOTE_MODELS_CACHE_KEY);
-    if (!raw) return null;
+    if (!raw) {
+      return null;
+    }
     return JSON.parse(raw) as RemoteModelEntry[];
   } catch (e) {
     console.warn('[remoteContentService] loadCachedRemoteModels:', e);
@@ -21,9 +38,14 @@ export const loadCachedRemoteModels = async (): Promise<RemoteModelEntry[] | nul
   }
 };
 
-const saveCachedRemoteModels = async (models: RemoteModelEntry[]): Promise<void> => {
+const saveCachedRemoteModels = async (
+  models: RemoteModelEntry[]
+): Promise<void> => {
   try {
-    await AsyncStorage.setItem(config.REMOTE_MODELS_CACHE_KEY, JSON.stringify(models));
+    await AsyncStorage.setItem(
+      config.REMOTE_MODELS_CACHE_KEY,
+      JSON.stringify(models)
+    );
   } catch (e) {
     console.warn('[remoteContentService] saveCachedRemoteModels:', e);
   }
@@ -37,29 +59,34 @@ const saveCachedRemoteModels = async (models: RemoteModelEntry[]): Promise<void>
  * event, so production builds should stick to one-shot fetchRemoteModels.
  */
 export const subscribeRemoteModels = (
-  onChange: (models: RemoteModelEntry[]) => void,
+  onChange: (models: RemoteModelEntry[]) => void
 ): (() => void) => {
   const db = getFirestore(getApp());
-  return onSnapshot(collection(db, 'adminModels'), (snap) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const models: RemoteModelEntry[] = snap.docs.map((d: any) => ({
-      word: d.id,
-      ...(d.data() as Omit<RemoteModelEntry, 'word'>),
-    }));
-    onChange(models);
-  }, (e) => console.warn('[remoteContentService] subscribeRemoteModels:', e));
+  return onSnapshot(
+    collection(db, 'adminModels'),
+    (snap) => {
+      const models: RemoteModelEntry[] = snap.docs.map(
+        (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) => ({
+          word: d.id,
+          ...(d.data() as Omit<RemoteModelEntry, 'word'>),
+        })
+      );
+      onChange(models);
+    },
+    (e) => console.warn('[remoteContentService] subscribeRemoteModels:', e)
+  );
 };
 
 export const fetchRemoteModels = async (): Promise<RemoteModelEntry[]> => {
   try {
     const db = getFirestore(getApp());
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snap = await getDocs(collection(db, 'adminModels'));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const models: RemoteModelEntry[] = snap.docs.map((d: any) => ({
-      word: d.id,
-      ...(d.data() as Omit<RemoteModelEntry, 'word'>),
-    }));
+    const models: RemoteModelEntry[] = snap.docs.map(
+      (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) => ({
+        word: d.id,
+        ...(d.data() as Omit<RemoteModelEntry, 'word'>),
+      })
+    );
     saveCachedRemoteModels(models); // fire-and-forget — refresh persistence
     return models;
   } catch (e) {
@@ -71,11 +98,12 @@ export const fetchRemoteModels = async (): Promise<RemoteModelEntry[]> => {
 export const fetchRemotePacks = async (): Promise<RemotePack[]> => {
   try {
     const db = getFirestore(getApp());
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const q = query(collection(db, 'packs'), where('isPublished', '==', true));
     const snap = await getDocs(q);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as RemotePack));
+    return snap.docs.map(
+      (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) =>
+        ({ id: d.id, ...d.data() } as RemotePack)
+    );
   } catch (e) {
     console.error('[remoteContentService] fetchRemotePacks:', e);
     return [];
@@ -85,43 +113,50 @@ export const fetchRemotePacks = async (): Promise<RemotePack[]> => {
 export const fetchGlobalBlocklist = async (): Promise<string[]> => {
   try {
     const db = getFirestore(getApp());
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snap = await getDoc(doc(db, 'adminConfig', 'moderation') as any);
-    return (snap.data() as any)?.globalBlocklist ?? [];
+    const snap = await getDoc(doc(db, 'adminConfig', 'moderation'));
+    return (
+      (snap.data() as { globalBlocklist?: string[] } | undefined)
+        ?.globalBlocklist ?? []
+    );
   } catch (e) {
     console.error('[remoteContentService] fetchGlobalBlocklist:', e);
     return [];
   }
 };
 
-export const fetchRemoteAppConfig = async (): Promise<RemoteAppConfig | null> => {
-  try {
-    const db = getFirestore(getApp());
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snap = await getDoc(doc(db, 'adminConfig', 'featureFlags') as any);
-    if (!snap.exists()) return null;
-    const d = snap.data() as any;
-    return {
-      maintenanceMode: d?.maintenanceMode ?? false,
-      newUserOnboarding: d?.newUserOnboarding ?? true,
-      premiumPacksEnabled: d?.premiumPacksEnabled ?? true,
-      arGamesEnabled: d?.arGamesEnabled ?? true,
-    };
-  } catch (e) {
-    console.error('[remoteContentService] fetchRemoteAppConfig:', e);
-    return null;
-  }
-};
+export const fetchRemoteAppConfig =
+  async (): Promise<RemoteAppConfig | null> => {
+    try {
+      const db = getFirestore(getApp());
+      const snap = await getDoc(doc(db, 'adminConfig', 'featureFlags'));
+      if (!snap.exists()) {
+        return null;
+      }
+      const d = snap.data();
+      return {
+        maintenanceMode: d?.maintenanceMode ?? false,
+        newUserOnboarding: d?.newUserOnboarding ?? true,
+        premiumPacksEnabled: d?.premiumPacksEnabled ?? true,
+        arGamesEnabled: d?.arGamesEnabled ?? true,
+      };
+    } catch (e) {
+      console.error('[remoteContentService] fetchRemoteAppConfig:', e);
+      return null;
+    }
+  };
 
 export const fetchActiveBanner = async (): Promise<BannerConfig | null> => {
   try {
     const db = getFirestore(getApp());
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snap = await getDoc(doc(db, 'adminConfig', 'banner') as any);
-    if (!snap.exists()) return null;
-    const d = snap.data() as any;
+    const snap = await getDoc(doc(db, 'adminConfig', 'banner'));
+    if (!snap.exists()) {
+      return null;
+    }
+    const d = snap.data();
     const expiresAt: Date = d?.expiresAt?.toDate() ?? new Date(0);
-    if (!d?.isActive || expiresAt < new Date()) return null;
+    if (!d?.isActive || expiresAt < new Date()) {
+      return null;
+    }
     return {
       message: d?.message ?? '',
       accentColor: d?.accentColor ?? '#7B3FC4',

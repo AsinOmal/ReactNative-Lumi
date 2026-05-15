@@ -4,7 +4,8 @@ import { colors } from '../constants/colors';
 const ITEM_HEIGHT = 52;
 
 export const styles = StyleSheet.create({
-  bg: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  bg: { flex: 1 },
+  kavWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   card: {
     backgroundColor: colors.backgroundCard,
     borderRadius: 28,
@@ -92,5 +93,23 @@ export const styles = StyleSheet.create({
     fontFamily: 'Fredoka-Regular',
     fontSize: 15,
     color: colors.textMid,
+  },
+  ageWarning: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: colors.warningBg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.warningBorder,
+    padding: 12,
+    width: '100%',
+  },
+  ageWarningText: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 13,
+    color: colors.warningText,
+    flex: 1,
+    lineHeight: 18,
   },
 });

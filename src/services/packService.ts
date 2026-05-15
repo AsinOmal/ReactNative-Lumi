@@ -1,6 +1,16 @@
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, where } from '@react-native-firebase/firestore';
-import type { Pack } from "../types/pack";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
+import type { Pack } from '../types/pack';
 
 // Fruits stays 'bundled' until its GLBs are uploaded to Firebase Storage and
 // confirmed working from file:// paths on device. Flip to 'free' in the
@@ -15,7 +25,18 @@ const INITIAL_PACKS: Pack[] = [
     isPublished: true,
     colorFrom: '#FF6B6B',
     colorTo: '#FF8E53',
-    words: ['apple', 'banana', 'cherry', 'grape', 'lemon', 'mango', 'orange', 'pineapple', 'strawberry', 'watermelon'],
+    words: [
+      'apple',
+      'banana',
+      'cherry',
+      'grape',
+      'lemon',
+      'mango',
+      'orange',
+      'pineapple',
+      'strawberry',
+      'watermelon',
+    ],
     packType: 'bundled',
     assetVersion: '1.0.0',
     estimatedSizeMB: 0,
@@ -29,7 +50,18 @@ const INITIAL_PACKS: Pack[] = [
     isPublished: false,
     colorFrom: '#22C55E',
     colorTo: '#16A34A',
-    words: ['broccoli', 'carrot', 'chili', 'corn', 'cucumber', 'eggplant', 'onion', 'potato', 'pumpkin', 'tomato'],
+    words: [
+      'broccoli',
+      'carrot',
+      'chili',
+      'corn',
+      'cucumber',
+      'eggplant',
+      'onion',
+      'potato',
+      'pumpkin',
+      'tomato',
+    ],
     packType: 'free',
     assetVersion: '1.0.0',
     estimatedSizeMB: 12,
@@ -43,7 +75,18 @@ const INITIAL_PACKS: Pack[] = [
     isPublished: false,
     colorFrom: '#3B82F6',
     colorTo: '#06B6D4',
-    words: ['bicycle', 'boat', 'bus', 'car', 'helicopter', 'plane', 'rocket', 'tractor', 'train', 'truck'],
+    words: [
+      'bicycle',
+      'boat',
+      'bus',
+      'car',
+      'helicopter',
+      'plane',
+      'rocket',
+      'tractor',
+      'train',
+      'truck',
+    ],
     packType: 'free',
     assetVersion: '1.0.0',
     estimatedSizeMB: 14,
@@ -57,7 +100,18 @@ const INITIAL_PACKS: Pack[] = [
     isPublished: false,
     colorFrom: '#78350F',
     colorTo: '#92400E',
-    words: ['trex', 'stegosaurus', 'brachiosaurus', 'pterodactyl', 'velociraptor', 'triceratops', 'diplodocus', 'ankylosaurus', 'spinosaurus', 'allosaurus'],
+    words: [
+      'trex',
+      'stegosaurus',
+      'brachiosaurus',
+      'pterodactyl',
+      'velociraptor',
+      'triceratops',
+      'diplodocus',
+      'ankylosaurus',
+      'spinosaurus',
+      'allosaurus',
+    ],
     packType: 'premium',
     assetVersion: '1.0.0',
     estimatedSizeMB: 15,
@@ -71,7 +125,18 @@ const INITIAL_PACKS: Pack[] = [
     isPublished: false,
     colorFrom: '#4B4AEF',
     colorTo: '#8B5CF6',
-    words: ['planet', 'star', 'moon', 'comet', 'satellite', 'galaxy', 'asteroid', 'nebula', 'orbit', 'meteor'],
+    words: [
+      'planet',
+      'star',
+      'moon',
+      'comet',
+      'satellite',
+      'galaxy',
+      'asteroid',
+      'nebula',
+      'orbit',
+      'meteor',
+    ],
     packType: 'premium',
     assetVersion: '1.0.0',
     estimatedSizeMB: 12,
@@ -98,12 +163,15 @@ export const seedPacksIfNeeded = async () => {
 export const fetchPacks = async (): Promise<Pack[]> => {
   try {
     const db = getFirestore(getApp());
-    const snap = await getDocs(query(collection(db, 'packs'), where('isPublished', '==', true)));
+    const snap = await getDocs(
+      query(collection(db, 'packs'), where('isPublished', '==', true))
+    );
     if (snap.empty) {
-      console.warn('[packService] fetchPacks: no published packs found. Toggle Published in the admin Packs screen.');
+      console.warn(
+        '[packService] fetchPacks: no published packs found. Toggle Published in the admin Packs screen.'
+      );
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return snap.docs.map((d: any) => {
+    return snap.docs.map((d: FirebaseFirestoreTypes.QueryDocumentSnapshot) => {
       const data = d.data();
       return {
         ...data,

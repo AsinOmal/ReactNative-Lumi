@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Image } from 'react-native';
 import { fetchPacks } from '../services/packService';
+import { useAuthStore } from './useAuthStore';
 import type { Pack } from '../types/pack';
 
 interface PackState {
@@ -30,19 +31,29 @@ export const usePackStore = create<PackState>((set, get) => ({
   userProgress: {},
 
   loadPacks: async () => {
-    if (get().loading || get().packs.length > 0) return;
+    // Firestore rules require auth for /packs reads — bail before the
+    // permission-denied error if the user hasn't signed in yet.
+    if (!useAuthStore.getState().user) {
+      return;
+    }
+    if (get().loading || get().packs.length > 0) {
+      return;
+    }
     set({ loading: true, error: null });
     try {
       const packs = await fetchPacks();
       // Sort: free packs first, then premium
       const sorted = packs.sort((a, b) => {
-        if (a.isPremium === b.isPremium) return a.name.localeCompare(b.name);
+        if (a.isPremium === b.isPremium) {
+          return a.name.localeCompare(b.name);
+        }
         return a.isPremium ? 1 : -1;
       });
       set({ packs: sorted, loading: false });
       prefetchCovers(sorted);
-    } catch (e: any) {
-      set({ error: e.message, loading: false });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      set({ error: message, loading: false });
     }
   },
 

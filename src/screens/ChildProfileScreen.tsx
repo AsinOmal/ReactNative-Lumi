@@ -6,19 +6,29 @@
 
 import React, { useState, useRef } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  ScrollView, ImageBackground,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuthStore } from '../store/useAuthStore';
 import { updateChildProfile } from '../services/userService';
 import { markChildInfoSeen } from '../utils/onboardingStore';
 import { useStrings } from '../hooks/useStrings';
+import { colors } from '../constants/colors';
 import { styles } from './ChildProfileScreenStyles';
 
 const AGES = Array.from({ length: 14 }, (_, i) => i + 3); // 3–16
 const ITEM_HEIGHT = 52;
 
-interface Props { onComplete: () => void; }
+interface Props {
+  onComplete: () => void;
+}
 
 export const ChildProfileScreen: React.FC<Props> = ({ onComplete }) => {
   const strings = useStrings();
@@ -34,9 +44,13 @@ export const ChildProfileScreen: React.FC<Props> = ({ onComplete }) => {
     const finalName = name.trim() || null;
     const finalAge = skipAge ? null : selectedAge;
     try {
-      if (user) await updateChildProfile(user.uid, finalName, finalAge);
+      if (user) {
+        await updateChildProfile(user.uid, finalName, finalAge);
+      }
       setChildProfile(finalName, finalAge);
-    } catch { /* non-blocking — profile is a nice-to-have */ }
+    } catch {
+      /* non-blocking — profile is a nice-to-have */
+    }
     await markChildInfoSeen();
     onComplete();
   };
@@ -53,64 +67,118 @@ export const ChildProfileScreen: React.FC<Props> = ({ onComplete }) => {
       style={styles.bg}
       resizeMode="cover"
     >
-      <View style={styles.card}>
-        {step === 'name' ? (
-          <>
-            <Text style={styles.title}>{strings.childProfileNameTitle}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder={strings.childProfileNamePlaceholder}
-              placeholderTextColor="#C4A882"
-              value={name}
-              onChangeText={setName}
-              autoFocus
-              maxLength={30}
-              returnKeyType="next"
-              onSubmitEditing={handleNameNext}
-            />
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleNameNext} accessibilityRole="button">
-              <Text style={styles.primaryBtnText}>{strings.childProfileNext}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.skipBtn} onPress={handleNameNext} accessibilityRole="button">
-              <Text style={styles.skipBtnText}>{strings.childProfileSkip}</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <Text style={styles.title}>{strings.childProfileAgeTitle}</Text>
-            <View style={styles.pickerWrap}>
-              <View style={styles.pickerHighlight} pointerEvents="none" />
-              <ScrollView
-                ref={scrollRef}
-                style={styles.picker}
-                showsVerticalScrollIndicator={false}
-                snapToInterval={ITEM_HEIGHT}
-                decelerationRate="fast"
-                contentContainerStyle={{ paddingVertical: ITEM_HEIGHT * 2 }}
-                onMomentumScrollEnd={e => {
-                  const idx = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
-                  setSelectedAge(AGES[Math.max(0, Math.min(idx, AGES.length - 1))]);
-                }}
-                onScrollBeginDrag={() => {}}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.kavWrap}
+      >
+        <View style={styles.card}>
+          {step === 'name' ? (
+            <>
+              <Text style={styles.title}>{strings.childProfileNameTitle}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={strings.childProfileNamePlaceholder}
+                placeholderTextColor={colors.textLight}
+                value={name}
+                onChangeText={setName}
+                autoFocus
+                maxLength={30}
+                returnKeyType="next"
+                onSubmitEditing={handleNameNext}
+              />
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={handleNameNext}
+                accessibilityRole="button"
               >
-                {AGES.map(age => (
-                  <TouchableOpacity key={age} style={styles.pickerItem} onPress={() => scrollToAge(age)}>
-                    <Text style={[styles.pickerText, age === selectedAge && styles.pickerTextSelected]}>
-                      {age}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-            <TouchableOpacity style={styles.primaryBtn} onPress={() => handleFinish(false)} accessibilityRole="button">
-              <Text style={styles.primaryBtnText}>{strings.childProfileFinish}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.skipBtn} onPress={() => handleFinish(true)} accessibilityRole="button">
-              <Text style={styles.skipBtnText}>{strings.childProfileSkip}</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+                <Text style={styles.primaryBtnText}>
+                  {strings.childProfileNext}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={handleNameNext}
+                accessibilityRole="button"
+              >
+                <Text style={styles.skipBtnText}>
+                  {strings.childProfileSkip}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.title}>{strings.childProfileAgeTitle}</Text>
+              <View style={styles.pickerWrap}>
+                <View style={styles.pickerHighlight} pointerEvents="none" />
+                <ScrollView
+                  ref={scrollRef}
+                  style={styles.picker}
+                  showsVerticalScrollIndicator={false}
+                  snapToInterval={ITEM_HEIGHT}
+                  decelerationRate="fast"
+                  contentContainerStyle={{ paddingVertical: ITEM_HEIGHT * 2 }}
+                  onMomentumScrollEnd={(e) => {
+                    const idx = Math.round(
+                      e.nativeEvent.contentOffset.y / ITEM_HEIGHT
+                    );
+                    setSelectedAge(
+                      AGES[Math.max(0, Math.min(idx, AGES.length - 1))]
+                    );
+                  }}
+                  onScrollBeginDrag={() => {}}
+                >
+                  {AGES.map((age) => (
+                    <TouchableOpacity
+                      key={age}
+                      style={styles.pickerItem}
+                      onPress={() => scrollToAge(age)}
+                    >
+                      <Text
+                        style={[
+                          styles.pickerText,
+                          age === selectedAge && styles.pickerTextSelected,
+                        ]}
+                      >
+                        {age}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              {selectedAge > 6 && (
+                <View style={styles.ageWarning} accessibilityRole="text">
+                  <Ionicons
+                    name="information-circle"
+                    size={16}
+                    color={colors.warningIcon}
+                  />
+                  <Text style={styles.ageWarningText}>
+                    {strings.childProfileAgeWarning}
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={() => handleFinish(false)}
+                accessibilityRole="button"
+              >
+                <Text style={styles.primaryBtnText}>
+                  {strings.childProfileFinish}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={() => handleFinish(true)}
+                accessibilityRole="button"
+              >
+                <Text style={styles.skipBtnText}>
+                  {strings.childProfileSkip}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };

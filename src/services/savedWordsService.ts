@@ -11,8 +11,16 @@
 
 import { getApp } from '@react-native-firebase/app';
 import {
-  getFirestore, doc, setDoc, deleteDoc,
-  collection, query, orderBy, onSnapshot, getDocs,
+  getFirestore,
+  doc,
+  setDoc,
+  deleteDoc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  getDocs,
+  FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import { SavedWord } from '../utils/achievementStore';
 import { isValidWord } from '../utils/wordValidator';
@@ -22,9 +30,15 @@ export { isValidWord };
 const db = () => getFirestore(getApp());
 
 /** Persist a saved word to Firestore. */
-export const saveWordToFirestore = async (uid: string, word: string): Promise<void> => {
+export const saveWordToFirestore = async (
+  uid: string,
+  word: string
+): Promise<void> => {
   if (!isValidWord(word)) {
-    console.error('[savedWordsService] saveWordToFirestore: invalid word format:', word);
+    console.error(
+      '[savedWordsService] saveWordToFirestore: invalid word format:',
+      word
+    );
     return;
   }
   try {
@@ -36,7 +50,10 @@ export const saveWordToFirestore = async (uid: string, word: string): Promise<vo
 };
 
 /** Remove a saved word from Firestore. */
-export const removeWordFromFirestore = async (uid: string, word: string): Promise<void> => {
+export const removeWordFromFirestore = async (
+  uid: string,
+  word: string
+): Promise<void> => {
   try {
     const ref = doc(db(), 'users', uid, 'savedWords', word);
     await deleteDoc(ref);
@@ -51,15 +68,23 @@ export const removeWordFromFirestore = async (uid: string, word: string): Promis
  */
 export const subscribeToSavedWords = (
   uid: string,
-  onUpdate: (words: SavedWord[]) => void,
+  onUpdate: (words: SavedWord[]) => void
 ): (() => void) => {
   const ref = collection(db(), 'users', uid, 'savedWords');
   const q = query(ref, orderBy('savedAt', 'desc'));
   return onSnapshot(
     q,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (snap) => { onUpdate(snap.docs.map((d: any) => d.data() as SavedWord)); },
-    (e) => { console.error('[savedWordsService] onSnapshot:', e); },
+    (snap) => {
+      onUpdate(
+        snap.docs.map(
+          (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) =>
+            d.data() as SavedWord
+        )
+      );
+    },
+    (e) => {
+      console.error('[savedWordsService] onSnapshot:', e);
+    }
   );
 };
 
@@ -67,13 +92,16 @@ export const subscribeToSavedWords = (
  * One-shot fetch of all saved words (newest first).
  * Used by HomeScreen on focus — doesn't need real-time updates.
  */
-export const loadSavedWordsFromFirestore = async (uid: string): Promise<SavedWord[]> => {
+export const loadSavedWordsFromFirestore = async (
+  uid: string
+): Promise<SavedWord[]> => {
   try {
     const ref = collection(db(), 'users', uid, 'savedWords');
     const q = query(ref, orderBy('savedAt', 'desc'));
     const snap = await getDocs(q);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return snap.docs.map((d: any) => d.data() as SavedWord);
+    return snap.docs.map(
+      (d: FirebaseFirestoreTypes.QueryDocumentSnapshot) => d.data() as SavedWord
+    );
   } catch (e) {
     console.error('[savedWordsService] loadSavedWordsFromFirestore:', e);
     return [];

@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getApp } from '@react-native-firebase/app';
-import { getFirestore, doc, onSnapshot } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  onSnapshot,
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
 
 // 📖 What this does:
 // Live-subscribes to /users/{uid} so the Settings/Profile headers reflect a username change
@@ -13,22 +18,27 @@ export interface UserProfile {
 }
 
 export const useUserProfile = (uid: string | undefined): UserProfile => {
-  const [profile, setProfile] = useState<UserProfile>({ username: '', displayName: '' });
+  const [profile, setProfile] = useState<UserProfile>({
+    username: '',
+    displayName: '',
+  });
 
   useEffect(() => {
-    if (!uid) return;
+    if (!uid) {
+      return;
+    }
     try {
-      const ref = doc(getFirestore(getApp()), 'users', uid) as any;
+      const ref = doc(getFirestore(getApp()), 'users', uid);
       const unsub = onSnapshot(
         ref,
-        (snap: any) => {
+        (snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
           const data = snap.data() ?? {};
           setProfile({
             username: data.username ?? '',
             displayName: data.displayName ?? '',
           });
         },
-        (err: Error) => console.error('[useUserProfile] onSnapshot:', err),
+        (err: Error) => console.error('[useUserProfile] onSnapshot:', err)
       );
       return () => unsub();
     } catch (e) {
