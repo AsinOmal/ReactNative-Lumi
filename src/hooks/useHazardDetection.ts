@@ -72,6 +72,16 @@ export const useHazardDetection = ({
         )
       );
 
+      if (__DEV__) {
+        // Surface what the classifier sees so we can tune HAZARD_KEYWORDS
+        // against Apple's actual taxonomy without rebuilding native.
+        console.log(
+          '[HazardDetection] labels:',
+          labels.slice(0, 8).join(', ') || '(none)',
+          matched ? `→ MATCHED: ${matched}` : ''
+        );
+      }
+
       if (matched) {
         setCurrentHazard(matched);
         // Start cooldown so re-classify doesn't immediately re-trigger after dismiss

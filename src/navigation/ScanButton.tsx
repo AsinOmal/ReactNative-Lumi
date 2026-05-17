@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { buttonGradientColors } from '../constants/skeuomorphicTokens';
 import { usePulseLoop } from '../hooks/usePulseLoop';
+import { playUI } from '../utils/uiSound';
 import { styles } from './MainTabNavigatorStyles';
 
 export const ScanButton = () => {
@@ -20,7 +21,10 @@ export const ScanButton = () => {
   return (
     <Animated.View style={{ transform: [{ scale: pulse }] }}>
       <TouchableOpacity
-        onPress={() => (navigation as any).navigate('Scan')}
+        onPress={() => {
+          playUI('tap');
+          (navigation as any).navigate('Scan');
+        }}
         activeOpacity={0.85}
         style={styles.scanBtnShadow}
         accessibilityLabel="Open scanner"

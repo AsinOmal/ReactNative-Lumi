@@ -23,14 +23,17 @@ service cloud.firestore {
 
     // ── Admin config ──────────────────────────────────────────────────────────
     // Feature flags, game constants, banner, moderation — mobile reads at boot.
-    // Broadcasts sub-path is admin-only (Cloud Function uses Admin SDK).
     match /adminConfig/{document} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
+    }
 
-      match /notifications/broadcasts/{broadcastId} {
-        allow read, write: if isAdmin();
-      }
+    // Broadcasts live at /adminConfig/notifications/broadcasts/{id} (a
+    // subcollection of the 'notifications' doc). Must be a top-level rule
+    // because the parent /adminConfig/{document} rule only governs that single
+    // doc layer — nested matches would require a different actual data shape.
+    match /adminConfig/notifications/broadcasts/{broadcastId} {
+      allow read, write: if isAdmin();
     }
 
     // ── Packs ─────────────────────────────────────────────────────────────────

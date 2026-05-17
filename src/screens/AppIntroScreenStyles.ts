@@ -39,6 +39,25 @@ export const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
   },
+  // Alphabet glyph swap on the language slide — 'A' for English, 'අ' for Sinhala.
+  langGlyph: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 58,
+    color: '#FFFFFF',
+    lineHeight: 64,
+    includeFontPadding: false,
+  },
+  // Maname's vertical metrics include large top padding to make room for
+  // vowel signs that combine with consonants. For a single bare letter like
+  // 'අ' that padding pushes the glyph low and clips its bottom against the
+  // tile border. Tighter lineHeight + negative top margin pulls it back to
+  // visual centre without resizing the tile itself.
+  langGlyphSinhala: {
+    fontFamily: 'Maname-Regular',
+    fontSize: 72,
+    lineHeight: 72,
+    marginTop: -14,
+  },
   title: {
     fontFamily: 'Fredoka-SemiBold',
     fontSize: 26,

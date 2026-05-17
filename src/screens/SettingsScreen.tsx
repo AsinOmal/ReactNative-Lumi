@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StatusBar, Switch } from 'react-native';
+import { View, Text, ScrollView, StatusBar, Switch, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useNavigation,
@@ -11,6 +12,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth, signOut } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getProgress, getStreak } from '../utils/achievementStore';
 import { colors } from '../constants/colors';
 import { useLanguageStore } from '../store/useLanguageStore';
@@ -24,7 +26,7 @@ import { EditUsernameModal } from '../components/settings/EditUsernameModal';
 import { styles } from './SettingsScreenStyles';
 
 export const SettingsScreen = () => {
-  const { user } = useAuthStore();
+  const { user, childName } = useAuthStore();
   const profile = useUserProfile(user?.uid);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -37,8 +39,15 @@ export const SettingsScreen = () => {
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [usernameVisible, setUsernameVisible] = useState(false);
 
+  // childName wins because profile.username is auto-seeded from the Google
+  // display name on first sign-in — without childName first, the kid-facing
+  // header would always show the parent's Google account name.
   const headerName =
-    profile.username || profile.displayName || user?.displayName || 'Explorer';
+    childName ||
+    profile.username ||
+    profile.displayName ||
+    user?.displayName ||
+    'Explorer';
 
   useFocusEffect(
     React.useCallback(() => {
@@ -58,6 +67,33 @@ export const SettingsScreen = () => {
     } catch (e) {
       console.error('[SettingsScreen] signOut:', e);
     }
+  };
+
+  // Dev-only "full reset": wipes every AsyncStorage key (intro flag, language,
+  // purchases, ambient mute, banner dismissals, screen-time, PIN lockout, etc.)
+  // AND revokes the Google session so the next launch goes through onboarding
+  // + auth from scratch. Useful for replaying intro flows during testing.
+  const handleDevFullLogout = () => {
+    Alert.alert(
+      'Dev: Full Logout',
+      'This wipes ALL local data (intro flag, language, purchases, mute, banners, streaks) and signs you out. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Wipe & sign out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.clear();
+              await GoogleSignin.signOut().catch(() => {});
+              await signOut(getAuth(getApp()));
+            } catch (e) {
+              console.error('[SettingsScreen] devFullLogout:', e);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -151,6 +187,20 @@ export const SettingsScreen = () => {
             danger
           />
         </View>
+
+        {__DEV__ && (
+          <>
+            <Text style={styles.sectionLabel}>Developer</Text>
+            <View style={styles.section}>
+              <SettingsRow
+                iconName="trash-bin-outline"
+                label="Full logout (wipe local state)"
+                onPress={handleDevFullLogout}
+                danger
+              />
+            </View>
+          </>
+        )}
       </ScrollView>
 
       <FeedbackModal

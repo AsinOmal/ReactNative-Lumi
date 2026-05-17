@@ -209,6 +209,32 @@ export async function getStreak(): Promise<number> {
 }
 
 /**
+ * Snapshot of all device-local stats for syncing to Firestore after each
+ * scan. Reads everything in parallel so the caller can fire-and-forget
+ * the network write without blocking the UI.
+ */
+export async function getStatsSnapshot(): Promise<{
+  streakCount: number;
+  lastScanDate: string;
+  totalWordsFound: number;
+  spellCorrections: number;
+}> {
+  const [streakCount, lastScanDate, scannedWords, spellCorrections] =
+    await Promise.all([
+      getJSON<number>(KEYS.streakCount, 0),
+      getJSON<string>(KEYS.lastScanDate, ''),
+      getJSON<string[]>(KEYS.scannedWords, []),
+      getJSON<number>(KEYS.spellCorrections, 0),
+    ]);
+  return {
+    streakCount,
+    lastScanDate,
+    totalWordsFound: scannedWords.length,
+    spellCorrections,
+  };
+}
+
+/**
  * Update streak based on today's date.
  * - If already recorded today → no change
  * - If last scan was yesterday → increment

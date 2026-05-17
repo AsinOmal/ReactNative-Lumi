@@ -168,3 +168,37 @@ export const fetchActiveBanner = async (): Promise<BannerConfig | null> => {
     return null;
   }
 };
+
+/**
+ * Live subscription to the admin banner doc. Calls back with the parsed
+ * BannerConfig whenever it changes (publish, edit, deactivate, expire).
+ * Why a subscription instead of one-shot on boot: an admin publishing a new
+ * banner should reach already-open clients within seconds, not on next launch.
+ */
+export const subscribeActiveBanner = (
+  onChange: (banner: BannerConfig | null) => void
+): (() => void) => {
+  const db = getFirestore(getApp());
+  return onSnapshot(
+    doc(db, 'adminConfig', 'banner'),
+    (snap) => {
+      if (!snap.exists()) {
+        onChange(null);
+        return;
+      }
+      const d = snap.data();
+      const expiresAt: Date = d?.expiresAt?.toDate() ?? new Date(0);
+      if (!d?.isActive || expiresAt < new Date()) {
+        onChange(null);
+        return;
+      }
+      onChange({
+        message: d?.message ?? '',
+        accentColor: d?.accentColor ?? '#7B3FC4',
+        expiresAt,
+        isActive: true,
+      });
+    },
+    (e) => console.warn('[remoteContentService] subscribeActiveBanner:', e)
+  );
+};

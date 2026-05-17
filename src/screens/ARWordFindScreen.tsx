@@ -23,6 +23,7 @@ import { GameLoadingOverlay } from '../components/ar/GameLoadingOverlay';
 import { GameOverModal } from '../components/ar/GameOverModal';
 import { WordFindScene } from '../components/ar/WordFindScene';
 import { useARGameLoop } from '../hooks/useARGameLoop';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { styles } from './ARWordFindScreenStyles';
 
 const ALL_WORDS = Object.keys(MODEL_REGISTRY);
@@ -45,6 +46,7 @@ const fmt = (s: number) =>
 
 // 📖 Orchestrates the AR Word Hunt game. Delegates timer/score to useARGameLoop.
 export const ARWordFindScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const [randomizedPositions] = useState(() => shuffleArray(POSITIONS));
   const [wordQueue] = useState<string[]>(() => shuffleArray(ALL_WORDS));

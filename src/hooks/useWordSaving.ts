@@ -8,7 +8,12 @@
 // AsyncStorage is authoritative — Firestore catches up on next connection.
 
 import { useState, useCallback } from 'react';
-import { recordScan, removeScan, getProgress } from '../utils/achievementStore';
+import {
+  recordScan,
+  removeScan,
+  getProgress,
+  getStatsSnapshot,
+} from '../utils/achievementStore';
 import { Achievement } from '../utils/achievementRegistry';
 import { MatchResult } from '../utils/wordMatcher';
 import { useAuthStore } from '../store/useAuthStore';
@@ -17,6 +22,7 @@ import {
   saveWordToFirestore,
   removeWordFromFirestore,
 } from '../services/savedWordsService';
+import { syncStatsToFirestore } from '../services/statsService';
 import { recordScanToday } from '../services/notificationService';
 
 interface UseWordSavingProps {
@@ -61,6 +67,12 @@ export const useWordSaving = ({
           triggerWord: activeWord,
         }).catch(() => {});
       });
+      // Mirror streak / words-found / spell-corrections to Firestore. Reads
+      // the fresh AsyncStorage snapshot (post-recordScan) so the server copy
+      // always reflects the latest local state.
+      getStatsSnapshot()
+        .then((stats) => syncStatsToFirestore(user.uid, stats))
+        .catch(() => {});
     }
 
     if (newAchievements.length > 0) {

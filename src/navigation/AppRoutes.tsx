@@ -28,9 +28,8 @@ import { ScanScreen } from '../screens/ScanScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { AppIntroScreen } from '../screens/AppIntroScreen';
 import { ChildProfileScreen } from '../screens/ChildProfileScreen';
-import { hasSeenOnboarding, getChildInfoSeen } from '../utils/onboardingStore';
+import { hasSeenOnboarding } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
-import { useLanguageStore } from '../store/useLanguageStore';
 import { useStrings } from '../hooks/useStrings';
 import {
   createStackNavigator,
@@ -52,9 +51,8 @@ const SPRING = {
 };
 
 export const AppRoutes = () => {
-  const { user } = useAuthStore();
+  const { user, hydrated, childProfileSeen, introSeen } = useAuthStore();
   const { isParentUnlocked } = useParentalControlsStore();
-  const introSeen = useLanguageStore((s) => s.introSeen);
   const strings = useStrings();
   const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
   const { initializing, suspendedError } = useBootstrapSession();
@@ -63,20 +61,21 @@ export const AppRoutes = () => {
   useDevRemoteModelsSync();
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showChildProfile, setShowChildProfile] = useState(false);
 
   useEffect(() => {
-    Promise.all([hasSeenOnboarding(), getChildInfoSeen()]).then(
-      ([seen, childSeen]) => {
-        setShowOnboarding(!seen);
-        setShowChildProfile(!childSeen);
-        setOnboardingReady(true);
-      }
-    );
+    hasSeenOnboarding().then((seen) => {
+      setShowOnboarding(!seen);
+      setOnboardingReady(true);
+    });
     scheduleStreakReminder();
   }, []);
 
-  if (initializing || !onboardingReady) {
+  // Wait for Firestore hydration before deciding the child-profile / intro gates —
+  // otherwise we'd flash the wrong screen for half a second while loadChildProfile
+  // is still in-flight.
+  const waitingForBootstrap = !!user && !hydrated;
+
+  if (initializing || !onboardingReady || waitingForBootstrap) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color="#5B2DC0" />
@@ -102,13 +101,17 @@ export const AppRoutes = () => {
   if (!user) {
     return <LoginScreen />;
   }
-  // Show the intro guide once after the main onboarding completes.
+  // Show the intro guide once after the main onboarding completes. Server-driven
+  // (users/{uid}.introSeen) so it survives sign-out/in on the same account but
+  // re-shows for a different account on the same device.
   if (!introSeen) {
     return <AppIntroScreen />;
   }
-  // Collect child name/age once after the intro guide.
-  if (showChildProfile) {
-    return <ChildProfileScreen onComplete={() => setShowChildProfile(false)} />;
+  // Collect child name/age once. Server-driven (users/{uid}.childProfileSeen)
+  // so a different account on the same device sees this fresh, but a user who
+  // chose to skip both fields doesn't get re-prompted forever.
+  if (!childProfileSeen) {
+    return <ChildProfileScreen onComplete={() => {}} />;
   }
 
   if (appConfig?.maintenanceMode) {

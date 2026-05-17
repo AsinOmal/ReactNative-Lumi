@@ -20,6 +20,7 @@ import { TimerBar } from '../components/scanAndCount/TimerBar';
 import { useScanAndCount } from '../hooks/useScanAndCount';
 import { useAuthStore } from '../store/useAuthStore';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { shuffleArray } from '../utils/arrayUtils';
 import { styles } from './ScanAndCountScreenStyles';
 
@@ -38,6 +39,7 @@ const SPAWN_POSITIONS: [number, number, number][] = [
 ];
 
 export const ScanAndCountScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const timedMode =

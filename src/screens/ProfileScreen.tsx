@@ -27,7 +27,7 @@ const STATS = [
 ];
 
 export const ProfileScreen = () => {
-  const { user } = useAuthStore();
+  const { user, childName } = useAuthStore();
   const profile = useUserProfile(user?.uid);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -37,8 +37,15 @@ export const ProfileScreen = () => {
   const [showPin, setShowPin] = useState(false);
   const [pinError, setPinError] = useState(false);
 
+  // childName wins — profile.username is auto-seeded from the Google display
+  // name on first sign-in, so otherwise the kid-facing header would always
+  // show the parent's account name.
   const headerName =
-    profile.username || profile.displayName || user?.displayName || 'Seeker';
+    childName ||
+    profile.username ||
+    profile.displayName ||
+    user?.displayName ||
+    'Seeker';
 
   const handleSignOut = async () => {
     try {

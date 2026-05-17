@@ -2,8 +2,8 @@
  * State-aware CTA region for PackDetailScreen.
  *
  * Bundled packs always show "View in AR". Free packs swap between download /
- * progress / play+delete / retry. Premium is handled by the screen's early
- * lock return — never reaches this component.
+ * progress / play+delete / retry. Unpurchased premium is handled by the screen's
+ * early lock return; purchased premium falls through and behaves like a free pack.
  */
 
 import React from 'react';

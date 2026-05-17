@@ -23,6 +23,7 @@ import { PlaygroundScreen } from '../screens/PlaygroundScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { colors } from '../constants/colors';
 import { ScanButton } from './ScanButton';
+import { playUI } from '../utils/uiSound';
 import { styles } from './MainTabNavigatorStyles';
 
 const LEFT_TABS = [
@@ -68,6 +69,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
     const iconColor = isFocused ? colors.primary : colors.tabInactive;
 
     const onPress = () => {
+      playUI('tab');
       const event = navigation.emit({
         type: 'tabPress',
         target: route.key,

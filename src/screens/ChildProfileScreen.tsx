@@ -1,7 +1,7 @@
 // 📖 What this does:
 // Post-onboarding screen that collects the child's name and age.
 // Step 1 = name (TextInput, skippable), Step 2 = age picker (3-16, skippable).
-// Saves to Firestore via updateChildProfile and marks childInfoSeen in AsyncStorage.
+// Saves to Firestore via updateChildProfile (which also sets childProfileSeen).
 // Both steps are optional — skipping saves null values for that field.
 
 import React, { useState, useRef } from 'react';
@@ -18,8 +18,8 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuthStore } from '../store/useAuthStore';
 import { updateChildProfile } from '../services/userService';
-import { markChildInfoSeen } from '../utils/onboardingStore';
 import { useStrings } from '../hooks/useStrings';
+import { playUI } from '../utils/uiSound';
 import { colors } from '../constants/colors';
 import { styles } from './ChildProfileScreenStyles';
 
@@ -38,24 +38,28 @@ export const ChildProfileScreen: React.FC<Props> = ({ onComplete }) => {
   const [selectedAge, setSelectedAge] = useState<number>(6);
   const scrollRef = useRef<ScrollView>(null);
 
-  const handleNameNext = () => setStep('age');
+  const handleNameNext = () => {
+    playUI('tap');
+    setStep('age');
+  };
 
   const handleFinish = async (skipAge = false) => {
+    playUI('tap');
     const finalName = name.trim() || null;
     const finalAge = skipAge ? null : selectedAge;
     try {
       if (user) {
         await updateChildProfile(user.uid, finalName, finalAge);
       }
-      setChildProfile(finalName, finalAge);
+      setChildProfile(finalName, finalAge, true);
     } catch {
       /* non-blocking — profile is a nice-to-have */
     }
-    await markChildInfoSeen();
     onComplete();
   };
 
   const scrollToAge = (age: number) => {
+    playUI('tap');
     const idx = AGES.indexOf(age);
     scrollRef.current?.scrollTo({ y: idx * ITEM_HEIGHT, animated: true });
     setSelectedAge(age);

@@ -21,6 +21,7 @@ import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useWriteAndScan } from '../hooks/useWriteAndScan';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { WriteAndScanRevealScene } from '../components/ar/WriteAndScanRevealScene';
 import { DifficultyPicker } from '../components/writescan/DifficultyPicker';
 import { CountdownOverlay } from '../components/writescan/CountdownOverlay';
@@ -31,6 +32,7 @@ import { styles } from './WriteAndScanScreenStyles';
 const AR_UNMOUNT_DELAY_MS = 350;
 
 export const WriteAndScanScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const {
     phase,

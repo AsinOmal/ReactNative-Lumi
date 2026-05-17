@@ -94,7 +94,10 @@ class LumiVisionOCR: NSObject {
   // ── Hazard Classification ─────────────────────────────────────────────────
   // Runs VNClassifyImageRequest on the full frame (no crop — hazard detection
   // works better on the full scene than just the scan reticle area).
-  // Returns a JSON array of label strings with confidence > 0.5.
+  // Returns label strings with confidence > 0.3. The threshold was 0.5 originally
+  // but Apple's classifier rarely peaks that high on real-world household scenes,
+  // so the alert never fired. 0.3 still filters out clear noise (most random
+  // labels score < 0.1) while letting hazards like knives/candles cross.
   @objc
   func classifyFrameForHazards(
     _ imagePath: String,
@@ -118,10 +121,16 @@ class LumiVisionOCR: NSObject {
       }
 
       let observations = request.results as? [VNClassificationObservation] ?? []
-      // Return only high-confidence labels to avoid noise triggering alerts
       let labels = observations
-        .filter { $0.confidence > 0.5 }
+        .filter { $0.confidence > 0.3 }
         .map { $0.identifier }
+
+      #if DEBUG
+      // Dev-only: log the top 5 observations so we can see what Apple's
+      // taxonomy is returning for a given scene, and tune HAZARD_KEYWORDS.
+      let top = observations.prefix(5).map { "\($0.identifier)=\(String(format: "%.2f", $0.confidence))" }
+      NSLog("[LumiVisionOCR] classify top5: \(top.joined(separator: ", "))")
+      #endif
 
       resolve(labels)
     }

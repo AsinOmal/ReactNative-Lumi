@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../constants/colors';
 import { buttonGradientColors } from '../../constants/skeuomorphicTokens';
 import { usePulseLoop } from '../../hooks/usePulseLoop';
+import { playUI } from '../../utils/uiSound';
 import { WordIllustration } from './WordIllustration';
 import { styles } from './DailyWordBannerStyles';
 
@@ -92,7 +93,10 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
       {!isFound && (
         <Animated.View style={{ transform: [{ scale: pulse }] }}>
           <TouchableOpacity
-            onPress={() => (navigation as any).navigate('Scan')}
+            onPress={() => {
+              playUI('tap');
+              (navigation as any).navigate('Scan');
+            }}
             activeOpacity={0.85}
             accessibilityLabel={`Find today's word: ${display}`}
             accessibilityRole="button"

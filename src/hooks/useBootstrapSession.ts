@@ -25,23 +25,27 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { usePackDownloadStore } from '../store/usePackDownloadStore';
-import {
-  createUserIfNew,
-  isUserSuspended,
-  loadChildProfile,
-} from '../services/userService';
+import { createUserIfNew, isUserSuspended } from '../services/userService';
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
   fetchActiveBanner,
+  subscribeActiveBanner,
 } from '../services/remoteContentService';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { usePurchaseStore } from '../store/usePurchaseStore';
+import { useAmbientStore } from '../store/useAmbientStore';
+import { startAmbient, stopAmbient } from '../utils/ambientSound';
 import { fetchPacks } from '../services/packService';
 import {
   registerFcmToken,
   setupTokenRefresh,
+  setupForegroundMessageHandler,
 } from '../services/notificationService';
+import {
+  clearLocalUserState,
+  hydrateUserOnSignIn,
+} from '../services/localStateService';
 
 interface BootstrapResult {
   initializing: boolean;
@@ -49,8 +53,14 @@ interface BootstrapResult {
 }
 
 export const useBootstrapSession = (): BootstrapResult => {
-  const { initializing, setUser, setInitializing, setChildProfile } =
-    useAuthStore();
+  const {
+    initializing,
+    setUser,
+    setInitializing,
+    setHydrated,
+    setChildProfile,
+    setIntroSeen,
+  } = useAuthStore();
   const { loadSettings, unloadSettings, mergeGlobalBlocklist } =
     useParentalControlsStore();
   const { loadRemoteModels, setRemoteContent } = useRemoteContentStore();
@@ -59,6 +69,8 @@ export const useBootstrapSession = (): BootstrapResult => {
   useEffect(() => {
     let activeUid: string | null = null;
     let unsubTokenRefresh: (() => void) | null = null;
+    let unsubBanner: (() => void) | null = null;
+    let unsubForegroundFcm: (() => void) | null = null;
     const authInstance = getAuth(getApp());
     const unsub = onAuthStateChanged(authInstance, async (userState) => {
       // Capture this callback's session identity; any later await checks this
@@ -72,9 +84,21 @@ export const useBootstrapSession = (): BootstrapResult => {
       }
 
       if (!userState) {
+        // Wipe device-local user-scoped state so the next user signing in on
+        // this device doesn't inherit streaks, saved words, achievements, or
+        // skip the child-profile prompt.
+        setHydrated(false);
+        setChildProfile(null, null, false);
+        setIntroSeen(false);
+        await clearLocalUserState();
         setSuspendedError(false);
         unloadSettings();
         unsubTokenRefresh?.();
+        unsubBanner?.();
+        unsubBanner = null;
+        unsubForegroundFcm?.();
+        unsubForegroundFcm = null;
+        stopAmbient();
         return;
       }
 
@@ -87,6 +111,11 @@ export const useBootstrapSession = (): BootstrapResult => {
       usePurchaseStore
         .getState()
         .loadFromStorage()
+        .catch(() => {});
+      useAmbientStore
+        .getState()
+        .loadFromStorage()
+        .then(() => startAmbient())
         .catch(() => {});
 
       try {
@@ -111,12 +140,31 @@ export const useBootstrapSession = (): BootstrapResult => {
       registerFcmToken(userState.uid).catch(() => {});
       unsubTokenRefresh?.();
       unsubTokenRefresh = setupTokenRefresh(userState.uid);
+      unsubForegroundFcm?.();
+      unsubForegroundFcm = setupForegroundMessageHandler();
+
+      // Live banner subscription — admin publishes propagate without cold boot.
+      unsubBanner?.();
+      unsubBanner = subscribeActiveBanner((activeBanner) => {
+        setRemoteContent({ activeBanner });
+      });
 
       loadSettings(userState.uid);
 
-      loadChildProfile(userState.uid)
-        .then(({ childName, childAge }) => setChildProfile(childName, childAge))
-        .catch(() => {});
+      // Hydrate auth-store gates AND mirror Firestore data into AsyncStorage
+      // so streaks/saved-words/achievements display correctly even though the
+      // local store was just wiped on sign-out.
+      try {
+        const data = await hydrateUserOnSignIn(userState.uid);
+        if (sessionUid !== activeUid) {
+          return;
+        }
+        setChildProfile(data.childName, data.childAge, data.childProfileSeen);
+        setIntroSeen(data.introSeen);
+      } catch (e) {
+        console.warn('[useBootstrapSession] hydrate:', e);
+      }
+      setHydrated(true);
       if (sessionUid !== activeUid) {
         return;
       }
@@ -160,6 +208,9 @@ export const useBootstrapSession = (): BootstrapResult => {
     return () => {
       unsub();
       unsubTokenRefresh?.();
+      unsubBanner?.();
+      unsubForegroundFcm?.();
+      stopAmbient();
     };
   }, []);
 

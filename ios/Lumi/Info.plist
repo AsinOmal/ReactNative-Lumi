@@ -47,7 +47,7 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Lumi uses Face ID to verify parent identity before accessing parental controls.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Fredoka-Bold.ttf</string>
@@ -58,6 +58,7 @@
 		<string>SpicyRice-Regular.ttf</string>
 		<string>Catchy-Melody.ttf</string>
 		<string>Ionicons.ttf</string>
+		<string>Maname-Regular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

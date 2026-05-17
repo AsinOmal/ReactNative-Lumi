@@ -21,10 +21,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { PlacementScene } from '../components/ar/PlacementScene';
 import { useARPlacement } from '../hooks/useARPlacement';
 import { useStrings } from '../hooks/useStrings';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { colors } from '../constants/colors';
 import { styles } from './ARPlacementScreenStyles';
 
 export const ARPlacementScreen = () => {
+  useAmbientPauseOnFocus();
   const strings = useStrings();
   const insets = useSafeAreaInsets();
   const route = useRoute();

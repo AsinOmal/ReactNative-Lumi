@@ -20,6 +20,7 @@ import { getPackAccent } from '../constants/packAccents';
 import { colors } from '../constants/colors';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { usePurchaseStore } from '../store/usePurchaseStore';
 import { SkyScene } from '../components/scenes/SkyScene';
 import { PackDetailCTA } from '../components/library/PackDetailCTA';
 import { styles } from './PackDetailScreenStyles';
@@ -32,6 +33,7 @@ export const PackDetailScreen = () => {
   const { pack } = route.params as { pack: Pack };
   const accent = getPackAccent(pack.id);
   const language = useLanguageStore((s) => s.language);
+  const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
 
   // Per-pack hero background takes precedence over the animated SkyScene.
   // Falling back to SkyScene keeps unmigrated packs looking correct.
@@ -48,7 +50,7 @@ export const PackDetailScreen = () => {
       <SkyScene paused={!isFocused}>{children}</SkyScene>
     );
 
-  if (pack.isPremium) {
+  if (pack.isPremium && !isPurchased) {
     return (
       <Background>
         <StatusBar barStyle="light-content" />

@@ -3,7 +3,35 @@ import { colors } from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   container: { gap: 16, paddingHorizontal: 16 },
-  logoRow: { alignItems: 'center', marginBottom: 4, marginTop: 5 },
+  // logoRow is the centered WoodenSign band; the mute toggle floats over its
+  // left edge as an absolute overlay so it doesn't shift the sign off-centre.
+  logoRow: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    marginTop: 5,
+  },
+  // White disc with a soft drop shadow — readable against the parallax sky
+  // background and visually weighted enough to feel like a primary control.
+  muteButton: {
+    position: 'absolute',
+    left: 4,
+    top: '50%',
+    marginTop: -22,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#3D2008',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.22,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(196,138,74,0.35)',
+  },
 
   headerCard: {
     borderRadius: 28,

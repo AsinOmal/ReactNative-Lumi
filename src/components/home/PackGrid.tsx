@@ -50,7 +50,7 @@ export const PackGrid: React.FC<Props> = ({ packs, loading }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { gap: 12 },
-  row: { flexDirection: 'row', gap: 12 },
+  container: { gap: 20 },
+  row: { flexDirection: 'row', gap: 20 },
   cell: { flex: 1 },
 });

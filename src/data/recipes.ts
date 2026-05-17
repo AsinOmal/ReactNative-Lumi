@@ -6,12 +6,16 @@
  *  - Keep ingredients between 2–4 per recipe — 5+ models + distractors gets crowded in AR.
  *  - requiredPackIds tells the screen which packs the child needs (used in Phase 8 paywall).
  *    For now all free-tier packs, so no locking is enforced yet.
+ *
+ * Curated to 5 recipes: a child shouldn't have to scroll through a long list,
+ * and 5 covers the three flavour profiles (fruit, vegetable, mixed) with one
+ * fallback each, plus a "rainbow" variety pick.
  */
 
 import { Recipe } from '../types/makeAMeal';
 
 export const RECIPES: Recipe[] = [
-  // ── Fruit Recipes ────────────────────────────────────────────────────────────
+  // ── Fruit ────────────────────────────────────────────────────────────────────
   {
     id: 'fruit_salad',
     name: 'Fruit Salad',
@@ -36,32 +40,8 @@ export const RECIPES: Recipe[] = [
       { word: 'orange', quantity: 1 },
     ],
   },
-  {
-    id: 'berry_bowl',
-    name: 'Berry Bowl',
-    emoji: '🫐',
-    description: 'Sweet berries and citrus in a bowl!',
-    requiredPackIds: ['fruits'],
-    ingredients: [
-      { word: 'cherry', quantity: 1 },
-      { word: 'strawberry', quantity: 1 },
-      { word: 'lemon', quantity: 1 },
-    ],
-  },
-  {
-    id: 'citrus_splash',
-    name: 'Citrus Splash',
-    emoji: '🍋',
-    description: 'Zingy, refreshing and full of vitamin C!',
-    requiredPackIds: ['fruits'],
-    ingredients: [
-      { word: 'lemon', quantity: 1 },
-      { word: 'orange', quantity: 1 },
-      { word: 'watermelon', quantity: 1 },
-    ],
-  },
 
-  // ── Vegetable Recipes ─────────────────────────────────────────────────────────
+  // ── Vegetable ────────────────────────────────────────────────────────────────
   {
     id: 'veggie_stir_fry',
     name: 'Veggie Stir Fry',
@@ -86,32 +66,8 @@ export const RECIPES: Recipe[] = [
       { word: 'onion', quantity: 1 },
     ],
   },
-  {
-    id: 'soup_base',
-    name: 'Vegetable Soup',
-    emoji: '🍲',
-    description: 'A warm and cosy bowl of veggie soup!',
-    requiredPackIds: ['vegetables'],
-    ingredients: [
-      { word: 'potato', quantity: 1 },
-      { word: 'carrot', quantity: 1 },
-      { word: 'onion', quantity: 1 },
-    ],
-  },
-  {
-    id: 'spicy_mix',
-    name: 'Spicy Mix',
-    emoji: '🌶️',
-    description: 'For the brave chefs who like it hot!',
-    requiredPackIds: ['vegetables'],
-    ingredients: [
-      { word: 'chili', quantity: 1 },
-      { word: 'eggplant', quantity: 1 },
-      { word: 'tomato', quantity: 1 },
-    ],
-  },
 
-  // ── Mixed Recipes ─────────────────────────────────────────────────────────────
+  // ── Mixed ────────────────────────────────────────────────────────────────────
   {
     id: 'rainbow_plate',
     name: 'Rainbow Plate',
@@ -123,19 +79,6 @@ export const RECIPES: Recipe[] = [
       { word: 'corn', quantity: 1 },
       { word: 'strawberry', quantity: 1 },
       { word: 'grape', quantity: 1 },
-    ],
-  },
-  {
-    id: 'harvest_basket',
-    name: 'Harvest Basket',
-    emoji: '🧺',
-    description: 'The best of the autumn harvest!',
-    requiredPackIds: ['fruits', 'vegetables'],
-    ingredients: [
-      { word: 'pumpkin', quantity: 1 },
-      { word: 'apple', quantity: 1 },
-      { word: 'potato', quantity: 1 },
-      { word: 'corn', quantity: 1 },
     ],
   },
 ];

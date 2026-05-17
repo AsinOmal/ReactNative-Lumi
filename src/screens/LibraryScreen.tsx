@@ -1,19 +1,46 @@
 import React from 'react';
-import { Text, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import {
+  Text,
+  ScrollView,
+  StatusBar,
+  View,
+  Image,
+  ImageBackground,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePackStore } from '../store/usePackStore';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { PackGrid } from '../components/home/PackGrid';
 import { ImageBackdrop } from '../components/scenes/ImageBackdrop';
 import { colors } from '../constants/colors';
-import {
-  buttonGradientColors,
-  shadowHeader,
-} from '../constants/skeuomorphicTokens';
+import { styles } from './LibraryScreenStyles';
+
+// Faint decoration icons live behind the scrollview — three quiet shapes,
+// pointerEvents="none" so they never block scroll/tap.
+const Decorations: React.FC = () => (
+  <View style={styles.decorLayer} pointerEvents="none">
+    <Ionicons
+      name="book"
+      size={64}
+      color={colors.textDark}
+      style={styles.decorBook}
+    />
+    <Ionicons
+      name="star"
+      size={38}
+      color={colors.accentAmber}
+      style={styles.decorStar}
+    />
+    <Ionicons
+      name="bookmark"
+      size={42}
+      color={colors.textDark}
+      style={styles.decorMark}
+    />
+  </View>
+);
 
 export const LibraryScreen = () => {
   const insets = useSafeAreaInsets();
@@ -28,95 +55,66 @@ export const LibraryScreen = () => {
 
   const freePacks = packs.filter((p) => !p.isPremium);
   const premiumPacks = packs.filter((p) => p.isPremium);
+  const showPremium =
+    premiumPacks.length > 0 && appConfig?.premiumPacksEnabled !== false;
 
   return (
     <ImageBackdrop
       source={require('../assets/backgrounds/library-screen-bg.png')}
     >
       <StatusBar barStyle="dark-content" />
+      <Decorations />
 
-      <LinearGradient
-        colors={buttonGradientColors.header}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
+      <ImageBackground
+        source={require('../assets/backgrounds/library-screen-header.png')}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}
+        imageStyle={styles.headerImage}
+        resizeMode="cover"
       >
-        <MaterialCommunityIcons
-          name="bookshelf"
-          size={180}
-          color="rgba(255,255,255,0.08)"
-          style={styles.watermark}
-        />
-        <Text style={styles.title}>My Library</Text>
-        <View style={styles.countRow}>
-          <Ionicons name="star" size={14} color={colors.accentYellow} />
-          <Text style={styles.subtitle}>{packs.length} packs available</Text>
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>My Library</Text>
+          <View style={styles.countRow}>
+            <Ionicons name="star" size={18} color={colors.accentYellow} />
+            <Text style={styles.subtitle}>
+              {packs.length} packs available
+            </Text>
+          </View>
         </View>
-      </LinearGradient>
+        <Image
+          source={require('../assets/images/library-screen-icon.png')}
+          style={styles.icon}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
+      </ImageBackground>
 
       <ScrollView
         style={styles.body}
         contentContainerStyle={[
           styles.scroll,
-          { paddingBottom: insets.bottom + 100 },
+          { paddingBottom: insets.bottom + 160 },
         ]}
         showsVerticalScrollIndicator={false}
       >
         {freePacks.length > 0 && (
           <>
-            <View style={styles.sectionRow}>
-              <Ionicons name="star" size={18} color={colors.accentYellow} />
+            <View style={styles.sectionPill}>
+              <Ionicons name="star" size={16} color={colors.accentYellow} />
               <Text style={styles.sectionLabel}>Free Packs</Text>
             </View>
             <PackGrid packs={freePacks} loading={loading} />
           </>
         )}
-        {premiumPacks.length > 0 &&
-          appConfig?.premiumPacksEnabled !== false && (
-            <>
-              <View style={styles.sectionRow}>
-                <Ionicons name="star" size={18} color={colors.accentAmber} />
-                <Text style={styles.sectionLabel}>Premium Packs</Text>
-              </View>
-              <PackGrid packs={premiumPacks} loading={false} />
-            </>
-          )}
+        {showPremium && (
+          <>
+            <View style={styles.sectionPill}>
+              <Ionicons name="star" size={16} color={colors.accentAmber} />
+              <Text style={styles.sectionLabel}>Premium Packs</Text>
+            </View>
+            <PackGrid packs={premiumPacks} loading={false} />
+          </>
+        )}
       </ScrollView>
     </ImageBackdrop>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 24,
-    paddingBottom: 32,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    overflow: 'hidden',
-    ...shadowHeader,
-  },
-  watermark: { position: 'absolute', right: -24, bottom: -20 },
-  title: { fontFamily: 'Fredoka-Bold', fontSize: 40, color: colors.textDark },
-  countRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 2,
-  },
-  subtitle: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 16,
-    color: colors.textMid,
-  },
-  body: { flex: 1 },
-  scroll: { paddingHorizontal: 16, paddingTop: 24, gap: 12 },
-  sectionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 8,
-  },
-  sectionLabel: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 22,
-    color: colors.textDark,
-  },
-});

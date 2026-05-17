@@ -8,6 +8,7 @@ import {
   woodBorderInner,
   woodBorderOuter,
 } from '../../constants/skeuomorphicTokens';
+import { playUI } from '../../utils/uiSound';
 
 interface LumiButtonProps {
   onPress: () => void;
@@ -15,9 +16,15 @@ interface LumiButtonProps {
   icon?: string; // Ionicons icon name (optional)
 }
 
+// Tap SFX lives at the button component (not at each caller) so every screen
+// using LumiButton — login, onboarding, intro — gets consistent audio feedback
+// without each caller having to remember to wire it.
 export const LumiButton = ({ onPress, title, icon }: LumiButtonProps) => (
   <TouchableOpacity
-    onPress={onPress}
+    onPress={() => {
+      playUI('tap');
+      onPress();
+    }}
     activeOpacity={0.8}
     className="w-full mb-6"
     accessibilityLabel={title}

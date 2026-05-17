@@ -113,3 +113,34 @@ export const setupTokenRefresh = (uid: string): (() => void) => {
     }
   });
 };
+
+// 📖 What this does:
+// FCM only auto-displays push notifications when the app is backgrounded or
+// killed. With the app in the foreground, messaging().onMessage() fires but
+// nothing is shown to the user. We bridge that gap by re-displaying the
+// payload through notifee so admin broadcasts still surface as a banner.
+// Returns an unsubscribe fn — call it on sign-out.
+export const setupForegroundMessageHandler = (): (() => void) => {
+  return messaging().onMessage(async (remoteMessage) => {
+    try {
+      const title = remoteMessage.notification?.title ?? '';
+      const body = remoteMessage.notification?.body ?? '';
+      if (!title && !body) {
+        return;
+      }
+      await notifee.createChannel({
+        id: 'broadcasts',
+        name: 'Announcements',
+        importance: AndroidImportance.DEFAULT,
+      });
+      await notifee.displayNotification({
+        title,
+        body,
+        android: { channelId: 'broadcasts', pressAction: { id: 'default' } },
+        ios: { sound: 'default' },
+      });
+    } catch (e) {
+      console.error('[notificationService] foreground display failed:', e);
+    }
+  });
+};

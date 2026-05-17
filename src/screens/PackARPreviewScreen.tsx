@@ -21,9 +21,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ARWordScene } from '../components/ar/ARWordScene';
 import type { Pack } from '../types/pack';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { styles } from './PackARPreviewScreenStyles';
 
 export const PackARPreviewScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const route = useRoute();
   const { pack } = route.params as { pack: Pack };

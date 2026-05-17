@@ -14,6 +14,8 @@ import { DailyWordBanner } from './DailyWordBanner';
 import { WoodenSign } from './WoodenSign';
 import { colors } from '../../constants/colors';
 import { buttonGradientColors } from '../../constants/skeuomorphicTokens';
+import { useAmbientStore } from '../../store/useAmbientStore';
+import { playUI } from '../../utils/uiSound';
 import { styles } from './HomeHeaderSectionStyles';
 
 const WORD_GOAL = 10;
@@ -42,11 +44,33 @@ export const HomeHeaderSection: React.FC<Props> = ({
 }) => {
   const navigation = useNavigation();
   const progressRatio = Math.min(wordCount / WORD_GOAL, 1);
+  const muted = useAmbientStore((s) => s.muted);
+  const toggleMute = useAmbientStore((s) => s.toggleMute);
+
+  const handleMutePress = () => {
+    playUI('tap');
+    toggleMute();
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.logoRow}>
         <WoodenSign />
+        <TouchableOpacity
+          style={styles.muteButton}
+          onPress={handleMutePress}
+          accessibilityLabel={
+            muted ? 'Unmute background music' : 'Mute background music'
+          }
+          accessibilityRole="button"
+          hitSlop={10}
+        >
+          <Ionicons
+            name={muted ? 'volume-mute' : 'volume-medium'}
+            size={22}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
       </View>
 
       <LinearGradient
@@ -107,7 +131,10 @@ export const HomeHeaderSection: React.FC<Props> = ({
         </View>
         <TouchableOpacity
           style={styles.trophyWrap}
-          onPress={onTrophyPress}
+          onPress={() => {
+            playUI('tap');
+            onTrophyPress();
+          }}
           accessibilityLabel="View achievements"
           accessibilityRole="button"
         >
@@ -122,7 +149,10 @@ export const HomeHeaderSection: React.FC<Props> = ({
       <TouchableOpacity
         style={styles.progressBanner}
         activeOpacity={0.88}
-        onPress={onProgressPress}
+        onPress={() => {
+          playUI('tap');
+          onProgressPress();
+        }}
         accessibilityLabel="Words found, tap to see collection"
         accessibilityRole="button"
       >

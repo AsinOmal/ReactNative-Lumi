@@ -3,7 +3,8 @@
 // 4 slides (Scan, Playground, Parent Dashboard, Language) + a Skip link.
 // On the Language slide the user picks English or Sinhala, which controls
 // whether Sinhala word labels appear throughout the app.
-// Persists introSeen + language preference to AsyncStorage via useLanguageStore.
+// Persists language preference to AsyncStorage (device-level) and the
+// introSeen flag to /users/{uid} (per-user, survives sign-out).
 
 import React, { useRef, useState } from 'react';
 import {
@@ -16,7 +17,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useLanguageStore, type AppLanguage } from '../store/useLanguageStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { markIntroSeenInFirestore } from '../services/userService';
 import { useStrings } from '../hooks/useStrings';
+import { playUI } from '../utils/uiSound';
 import { styles, SLIDE_W } from './AppIntroScreenStyles';
 
 interface Slide {
@@ -29,7 +33,8 @@ export const AppIntroScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
   const strings = useStrings();
-  const { setLanguage, markIntroSeen, language } = useLanguageStore();
+  const { setLanguage, language } = useLanguageStore();
+  const { user, setIntroSeen } = useAuthStore();
 
   const contentSlides: Slide[] = [
     {
@@ -55,7 +60,10 @@ export const AppIntroScreen: React.FC = () => {
 
   const finish = () => {
     setLanguage(selected);
-    markIntroSeen();
+    setIntroSeen(true);
+    if (user) {
+      markIntroSeenInFirestore(user.uid).catch(() => {});
+    }
     // AppRoutes re-renders on introSeen change — no explicit navigate needed.
   };
 
@@ -75,7 +83,10 @@ export const AppIntroScreen: React.FC = () => {
 
       <TouchableOpacity
         style={[styles.skip, { top: insets.top + 8 }]}
-        onPress={finish}
+        onPress={() => {
+          playUI('tap');
+          finish();
+        }}
       >
         <Text style={styles.skipText}>{strings.INTRO_SKIP}</Text>
       </TouchableOpacity>
@@ -101,7 +112,18 @@ export const AppIntroScreen: React.FC = () => {
         {/* Language slide */}
         <View style={styles.slide}>
           <View style={styles.iconWrap}>
-            <Ionicons name="language-outline" size={48} color="#FFF" />
+            {/* Show the alphabet glyph that represents the currently picked
+                language — keeps the screen consistent with what the toggle
+                does. The Ionicons 'language-outline' default reads as a
+                CJK glyph which is misleading for an EN/SI choice. */}
+            <Text
+              style={[
+                styles.langGlyph,
+                selected === 'si' && styles.langGlyphSinhala,
+              ]}
+            >
+              {selected === 'si' ? 'අ' : 'A'}
+            </Text>
           </View>
           <Text style={styles.title}>{strings.INTRO_LANG_TITLE}</Text>
           <Text style={styles.body}>{strings.INTRO_LANG_BODY}</Text>
@@ -111,7 +133,10 @@ export const AppIntroScreen: React.FC = () => {
                 styles.langBtn,
                 selected === 'en' && styles.langBtnActive,
               ]}
-              onPress={() => setSelected('en')}
+              onPress={() => {
+                playUI('tap');
+                setSelected('en');
+              }}
               accessibilityRole="radio"
               accessibilityState={{ selected: selected === 'en' }}
             >
@@ -129,7 +154,10 @@ export const AppIntroScreen: React.FC = () => {
                 styles.langBtn,
                 selected === 'si' && styles.langBtnActive,
               ]}
-              onPress={() => setSelected('si')}
+              onPress={() => {
+                playUI('tap');
+                setSelected('si');
+              }}
               accessibilityRole="radio"
               accessibilityState={{ selected: selected === 'si' }}
             >
@@ -164,7 +192,10 @@ export const AppIntroScreen: React.FC = () => {
         </View>
         <TouchableOpacity
           style={styles.cta}
-          onPress={next}
+          onPress={() => {
+            playUI('tap');
+            next();
+          }}
           activeOpacity={0.85}
         >
           <Text style={styles.ctaText}>

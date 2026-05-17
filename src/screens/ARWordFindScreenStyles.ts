@@ -79,9 +79,9 @@ export const styles = StyleSheet.create({
   targetEmoji: { fontSize: 52 },
   targetWord: { fontFamily: 'Fredoka-Bold', fontSize: 30, color: '#FFF' },
   targetSinhala: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.6)',
+    fontFamily: 'Maname-Regular',
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.75)',
     marginTop: 2,
   },
 

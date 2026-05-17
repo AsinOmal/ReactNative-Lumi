@@ -76,9 +76,12 @@ export const updateChildProfile = async (
   childAge: number | null
 ): Promise<void> => {
   try {
+    // childProfileSeen is the gate flag — set even on skip so a user who
+    // skips both fields doesn't get re-prompted on every launch.
     await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, {
       childName,
       childAge,
+      childProfileSeen: true,
     });
   } catch (e) {
     console.error('[userService] updateChildProfile:', e);
@@ -88,16 +91,42 @@ export const updateChildProfile = async (
 
 export const loadChildProfile = async (
   uid: string
-): Promise<{ childName: string | null; childAge: number | null }> => {
+): Promise<{
+  childName: string | null;
+  childAge: number | null;
+  childProfileSeen: boolean;
+}> => {
   try {
     const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
     const data = snap.data() as any;
     return {
       childName: data?.childName ?? null,
       childAge: data?.childAge ?? null,
+      childProfileSeen: data?.childProfileSeen === true,
     };
   } catch {
-    return { childName: null, childAge: null };
+    return { childName: null, childAge: null, childProfileSeen: false };
+  }
+};
+
+// Used by AppRoutes to decide whether to show AppIntroScreen. Persists across
+// sign-out + sign-in on the same account so the user only sees the tour once.
+export const markIntroSeenInFirestore = async (uid: string): Promise<void> => {
+  try {
+    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, {
+      introSeen: true,
+    });
+  } catch (e) {
+    console.error('[userService] markIntroSeenInFirestore:', e);
+  }
+};
+
+export const loadIntroSeen = async (uid: string): Promise<boolean> => {
+  try {
+    const snap = await getDoc(doc(getFirestore(getApp()), 'users', uid) as any);
+    return (snap.data() as any)?.introSeen === true;
+  } catch {
+    return false;
   }
 };
 

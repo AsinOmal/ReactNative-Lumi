@@ -30,6 +30,7 @@ import { MealCelebrationOverlay } from '../components/makeAmeal/MealCelebrationO
 
 import { useMakeAMealStore } from '../store/useMakeAMealStore';
 import { useMakeAMeal } from '../hooks/useMakeAMeal';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { loadGameSounds, releaseGameSounds } from '../utils/gameSound';
 import { shuffleArray } from '../utils/arrayUtils';
 import { Recipe } from '../types/makeAMeal';
@@ -46,6 +47,7 @@ const MEAL_POSITIONS: [number, number, number][] = [
 ];
 
 export const MakeAMealScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const {
     activeRecipe,

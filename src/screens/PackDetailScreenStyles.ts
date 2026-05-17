@@ -43,8 +43,8 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   wordSinhala: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 12,
+    fontFamily: 'Maname-Regular',
+    fontSize: 14,
     color: colors.textMuted,
     marginTop: 1,
   },

@@ -13,6 +13,7 @@ import { useScanOCR } from '../hooks/useScanOCR';
 import { useWordSaving } from '../hooks/useWordSaving';
 import { useHazardDetection } from '../hooks/useHazardDetection';
 import { useModelCache } from '../hooks/useModelCache';
+import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { wishWord } from '../utils/wishlistStore';
 import { decidePackGate } from '../utils/packUtils';
@@ -28,6 +29,7 @@ import { styles } from './ScanScreenStyles';
 // 📖 Orchestrator for Scan Mode. Heavy logic lives in useScanOCR (camera) and
 // useWordSaving (Firestore). Rendering delegated to ScanCameraLayer / ScanOverlayLayer.
 export const ScanScreen = () => {
+  useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const [mode, setMode] = useState<ScanMode>('scan');
   const [activeWord, setActiveWord] = useState<string>('apple');

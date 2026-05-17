@@ -168,10 +168,8 @@ export const PlaygroundScreen = () => {
                     {game.title}
                   </Text>
                   {game.available && (
-                    <View
-                      style={[styles.playBtn, { backgroundColor: game.accent }]}
-                    >
-                      <Ionicons name="play" size={14} color="#FFF" />
+                    <View style={styles.playBtn}>
+                      <Ionicons name="play" size={16} color="#FFF" />
                     </View>
                   )}
                   {!game.available && (

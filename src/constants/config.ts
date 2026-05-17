@@ -82,4 +82,8 @@ export const config = {
   REMOTE_MODELS_CACHE_KEY: '@lumi/remote_models_cache',
   // AR tap-to-place: seconds before "no surface found" timeout
   AR_PLACEMENT_TIMEOUT_MS: 15000,
+
+  // Ambient music volume: mid of the requested 50–60% range. Tuned to sit
+  // beneath UI taps and any spoken audio without feeling absent.
+  AMBIENT_VOLUME: 0.55,
 };
