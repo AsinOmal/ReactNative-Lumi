@@ -6,16 +6,15 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  ImageBackground,
   ImageSourcePropType,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../constants/colors';
 import { ImageBackdrop } from '../components/scenes/ImageBackdrop';
-import { buttonGradientColors } from '../constants/skeuomorphicTokens';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { styles } from './PlaygroundScreenStyles';
 
@@ -86,22 +85,33 @@ export const PlaygroundScreen = () => {
     >
       <StatusBar barStyle="dark-content" />
 
-      {/* Coral → orange gradient — wave bottom, gamepad watermark */}
-      <LinearGradient
-        colors={buttonGradientColors.header}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
+      {/* Shared header treatment with LibraryScreen — same panoramic cloudy
+          backdrop, title block on the left, scene-specific art on the right.
+          Visual consistency across the two top-level catalog screens. */}
+      <ImageBackground
+        source={require('../assets/backgrounds/library-screen-header.png')}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}
+        imageStyle={styles.headerImage}
+        resizeMode="cover"
       >
-        <MaterialCommunityIcons
-          name="gamepad-variant-outline"
-          size={190}
-          color="rgba(255,255,255,0.08)"
-          style={styles.watermark}
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>Playground</Text>
+          <View style={styles.countRow}>
+            <Ionicons
+              name="game-controller"
+              size={18}
+              color={colors.accentYellow}
+            />
+            <Text style={styles.subtitle}>Pick a game to play!</Text>
+          </View>
+        </View>
+        <Image
+          source={require('../assets/images/play-screen-icon.png')}
+          style={styles.headerIcon}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
         />
-        <Text style={styles.title}>Playground</Text>
-        <Text style={styles.subtitle}>Pick a game to play!</Text>
-      </LinearGradient>
+      </ImageBackground>
 
       <ScrollView
         style={styles.body}

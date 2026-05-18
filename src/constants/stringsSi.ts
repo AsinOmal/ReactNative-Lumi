@@ -153,6 +153,13 @@ export const stringsSi = {
   INTRO_LANG_SINHALA: 'සිංහල',
   INTRO_LANG_DISCLAIMER:
     'අපගේ ස්කෑනරය English වචන කියවයි — ස්කෑන් කිරීම English ලෙසම පවතී! Sinhala ලේබල් ඉගෙනීම සඳහා සමඟ දිස්වේ.',
+  INTRO_STEP_LABEL: (n: number) => `පියවර ${n}`,
+  INTRO_SCAN_PILL_TAP: 'ස්කෑන් කිරීමට ස්පර්ශ කරන්න',
+  INTRO_SCAN_PILL_POINT: 'වචනයකට යොමු කරන්න',
+  INTRO_PLAY_PILL_HUNT: 'AR වචන දඩයම',
+  INTRO_PLAY_PILL_COOK: 'උයන්න සහ ගණන්',
+  INTRO_FAMILY_PILL_TIME: 'තිර කාලය',
+  INTRO_FAMILY_PILL_ACTIVITY: 'ක්‍රියාකාරකම',
 
   // Premium Pack Gate
   PREMIUM_GATE_FOUND: (word: string) => `ඔබ "${word}" සොයා ගත්තා!`,
@@ -197,4 +204,62 @@ export const stringsSi = {
   AR_PLACEMENT_TIMEOUT_SUB:
     'මතුපිට හොඳින් ආලෝකමත් බවත් ඉතා දුරින් නොවන බවත් සහතික කරන්න.',
   AR_PLACEMENT_TRY_AGAIN: 'නැවත උත්සාහ කරන්න',
+
+  // Auth — Login / Register / Verify / Forgot
+  AUTH_TAGLINE: 'වචන ජීවමාන කරන්න.',
+  AUTH_LOGIN_TITLE: 'ආයුබෝවන්, ආපසු සාදරයෙන් පිළිගනිමු',
+  AUTH_LOGIN_SUBTITLE: 'ඔබේ දිගට යාම පවත්වා ගැනීමට පිවිසෙන්න',
+  AUTH_REGISTER_TITLE: 'ගිණුමක් සාදන්න',
+  AUTH_REGISTER_SUBTITLE:
+    'වැඩිහිටි විද්‍යුත් තැපැලක් උපාංග අතර ඔබේ ප්‍රගතිය ආරක්ෂා කරයි',
+  AUTH_CONTINUE_GOOGLE: 'Google සමඟ ඉදිරියට',
+  AUTH_CONTINUE_EMAIL: 'විද්‍යුත් තැපෑලෙන් ඉදිරියට',
+  AUTH_OR: 'හෝ',
+  AUTH_EMAIL_PLACEHOLDER: 'විද්‍යුත් තැපෑල',
+  AUTH_PASSWORD_PLACEHOLDER: 'මුරපදය',
+  AUTH_PASSWORD_CONFIRM_PLACEHOLDER: 'මුරපදය තහවුරු කරන්න',
+  AUTH_DISPLAY_NAME_PLACEHOLDER: 'දෙමාපියාගේ නම (අතිරේක)',
+  AUTH_SIGN_IN_CTA: 'පිවිසෙන්න',
+  AUTH_CREATE_ACCOUNT_CTA: 'ගිණුම සාදන්න',
+  AUTH_FORGOT_PASSWORD: 'මුරපදය අමතකද?',
+  AUTH_NO_ACCOUNT: 'අලුත්ද?',
+  AUTH_HAS_ACCOUNT: 'දැනටමත් ගිණුමක් තිබේද?',
+  AUTH_REGISTER_LINK: 'ගිණුමක් සාදන්න',
+  AUTH_SIGN_IN_LINK: 'පිවිසෙන්න',
+  AUTH_TERMS_FOOTER:
+    'ඉදිරියට යාමෙන්, ඔබ අපගේ නියමයන් සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ.',
+
+  // Email verification
+  VERIFY_TITLE: 'ඔබේ විද්‍යුත් තැපැල් පෙට්ටිය පරීක්ෂා කරන්න',
+  VERIFY_BODY: 'අපි තහවුරු කිරීමේ සබැඳියක් යවා ඇත',
+  VERIFY_HINT: 'විද්‍යුත් තැපෑලේ ඇති සබැඳිය ටැප් කර පසුව මෙහි ආපසු එන්න.',
+  VERIFY_CHECK_CTA: 'මම තහවුරු කළා — මට ඇතුළු වීමට ඉඩ දෙන්න',
+  VERIFY_RESEND_CTA: 'විද්‍යුත් තැපෑල නැවත යවන්න',
+  VERIFY_RESEND_COOLDOWN: (s: number) => `තත්පර ${s}කින් නැවත යවන්න`,
+  VERIFY_RESENT_TOAST: 'තහවුරු කිරීමේ විද්‍යුත් තැපෑල නැවත යැවුවා',
+  VERIFY_NOT_YET: 'තවම තහවුරු කර නැත — ඔබේ පෙට්ටිය සහ ස්පෑම් පරීක්ෂා කරන්න',
+  VERIFY_USE_DIFFERENT: 'වෙනත් ගිණුමක් භාවිතා කරන්න',
+
+  // Forgot password
+  FORGOT_TITLE: 'මුරපදය යළි පිහිටුවන්න',
+  FORGOT_BODY:
+    'ඔබේ විද්‍යුත් තැපෑල ඇතුළත් කරන්න, අපි යළි පිහිටුවීමේ සබැඳියක් එවන්නෙමු.',
+  FORGOT_SEND_CTA: 'යළි පිහිටුවීමේ සබැඳිය යවන්න',
+  FORGOT_SENT:
+    'සබැඳිය සඳහා ඔබේ පෙට්ටිය පරීක්ෂා කරන්න. ලැබුණේ නැත්ද? ස්පෑම් පෙට්ටිය බලන්න.',
+  FORGOT_BACK_TO_LOGIN: 'පිවිසුම් තිරයට ආපසු',
+
+  // Auth error messages
+  AUTH_ERR_INVALID_EMAIL:
+    'එම විද්‍යුත් තැපෑල නිවැරදි බවක් නොපෙනේ — පරීක්ෂා කරන්න.',
+  AUTH_ERR_USER_NOT_FOUND: 'එම විද්‍යුත් තැපෑලට ගිණුමක් හමු නොවීය.',
+  AUTH_ERR_WRONG_PASSWORD: 'වැරදි මුරපදයකි — නැවත උත්සාහ කරන්න.',
+  AUTH_ERR_EMAIL_IN_USE: 'එම විද්‍යුත් තැපෑලට දැනටමත් ගිණුමක් ඇත.',
+  AUTH_ERR_WEAK_PASSWORD:
+    'මුරපදය දුර්වලයි — අවම වශයෙන් අක්ෂර 6ක් භාවිතා කරන්න.',
+  AUTH_ERR_PASSWORDS_MISMATCH: 'මුරපද ගැලපෙන්නේ නැත.',
+  AUTH_ERR_NETWORK: 'ජාල දෝෂයකි — ඔබේ සම්බන්ධතාව පරීක්ෂා කරන්න.',
+  AUTH_ERR_TOO_MANY:
+    'ඉතා බොහෝ උත්සාහයන් — මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න.',
+  AUTH_ERR_GENERIC: 'යමක් වැරදී ඇත. නැවත උත්සාහ කරන්න.',
 };

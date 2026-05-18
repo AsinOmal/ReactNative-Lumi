@@ -148,6 +148,13 @@ export const strings = {
   INTRO_LANG_SINHALA: 'සිංහල',
   INTRO_LANG_DISCLAIMER:
     'Our scanner reads English words — that part stays English! Sinhala labels are shown alongside for learning.',
+  INTRO_STEP_LABEL: (n: number) => `Step ${n}`,
+  INTRO_SCAN_PILL_TAP: 'Tap to scan',
+  INTRO_SCAN_PILL_POINT: 'Point at a word',
+  INTRO_PLAY_PILL_HUNT: 'AR Word Hunt',
+  INTRO_PLAY_PILL_COOK: 'Cook & count',
+  INTRO_FAMILY_PILL_TIME: 'Screen time',
+  INTRO_FAMILY_PILL_ACTIVITY: 'Activity',
 
   // Premium Pack Gate
   PREMIUM_GATE_FOUND: (word: string) => `You found "${word}"!`,
@@ -192,4 +199,56 @@ export const strings = {
   AR_PLACEMENT_TIMEOUT_SUB:
     'Make sure the surface is well-lit and not too far away.',
   AR_PLACEMENT_TRY_AGAIN: 'Try Again',
+
+  // Auth — Login / Register / Verify / Forgot
+  AUTH_TAGLINE: 'Bring words to life.',
+  AUTH_LOGIN_TITLE: 'Welcome back',
+  AUTH_LOGIN_SUBTITLE: 'Sign in to keep your streak going',
+  AUTH_REGISTER_TITLE: 'Create your account',
+  AUTH_REGISTER_SUBTITLE: 'A grown-up email keeps progress safe across devices',
+  AUTH_CONTINUE_GOOGLE: 'Continue with Google',
+  AUTH_CONTINUE_EMAIL: 'Continue with email',
+  AUTH_OR: 'or',
+  AUTH_EMAIL_PLACEHOLDER: 'Email',
+  AUTH_PASSWORD_PLACEHOLDER: 'Password',
+  AUTH_PASSWORD_CONFIRM_PLACEHOLDER: 'Confirm password',
+  AUTH_DISPLAY_NAME_PLACEHOLDER: "Parent's name (optional)",
+  AUTH_SIGN_IN_CTA: 'Sign in',
+  AUTH_CREATE_ACCOUNT_CTA: 'Create account',
+  AUTH_FORGOT_PASSWORD: 'Forgot password?',
+  AUTH_NO_ACCOUNT: 'New here?',
+  AUTH_HAS_ACCOUNT: 'Already have an account?',
+  AUTH_REGISTER_LINK: 'Create an account',
+  AUTH_SIGN_IN_LINK: 'Sign in',
+  AUTH_TERMS_FOOTER: 'By continuing you agree to our Terms and Privacy Policy.',
+
+  // Email verification
+  VERIFY_TITLE: 'Check your inbox',
+  VERIFY_BODY: 'We sent a verification link to',
+  VERIFY_HINT: 'Tap the link in the email, then come back here.',
+  VERIFY_CHECK_CTA: "I've verified — let me in",
+  VERIFY_RESEND_CTA: 'Resend email',
+  VERIFY_RESEND_COOLDOWN: (s: number) => `Resend in ${s}s`,
+  VERIFY_RESENT_TOAST: 'Verification email re-sent',
+  VERIFY_NOT_YET: 'Still not verified — check your inbox & spam',
+  VERIFY_USE_DIFFERENT: 'Use a different account',
+
+  // Forgot password
+  FORGOT_TITLE: 'Reset password',
+  FORGOT_BODY: "Enter your email and we'll send you a reset link.",
+  FORGOT_SEND_CTA: 'Send reset link',
+  FORGOT_SENT:
+    "Check your inbox for the reset link. Didn't get it? Check spam.",
+  FORGOT_BACK_TO_LOGIN: 'Back to sign in',
+
+  // Auth error messages (Firebase code → friendly text)
+  AUTH_ERR_INVALID_EMAIL: 'That email address looks off — please check it.',
+  AUTH_ERR_USER_NOT_FOUND: 'No account found with that email.',
+  AUTH_ERR_WRONG_PASSWORD: 'Wrong password — try again.',
+  AUTH_ERR_EMAIL_IN_USE: 'An account with that email already exists.',
+  AUTH_ERR_WEAK_PASSWORD: 'Password is too weak — try at least 6 characters.',
+  AUTH_ERR_PASSWORDS_MISMATCH: "Passwords don't match.",
+  AUTH_ERR_NETWORK: 'Network error — check your connection.',
+  AUTH_ERR_TOO_MANY: 'Too many attempts — try again in a few minutes.',
+  AUTH_ERR_GENERIC: 'Something went wrong. Please try again.',
 };

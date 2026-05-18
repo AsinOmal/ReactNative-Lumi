@@ -4,27 +4,74 @@ import { colors } from '../constants/colors';
 export const SLIDE_W = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.skyBottom },
+  // Root bg switched from skyBottom (blue) to white so the safe-area regions
+  // above the status bar and below the home indicator don't show a hard blue
+  // strip where the panoramic image doesn't reach.
+  root: { flex: 1, backgroundColor: '#FFFFFF' },
+  // Panoramic bg image sized to span every slide. translateX is bound to the
+  // ScrollView's scrollX (driven natively) so the image slides at the same
+  // rate as the carousel — each slide reveals a different region of the art.
+  panoramicBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    height: '100%',
+  },
+  // Translucent white wash above the panorama — softens the busy artwork so
+  // dark-brown title/body text reads cleanly on every slide. Stops at root's
+  // padding box, so safe areas stay clean white via the root bg.
+  bgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.28)',
+  },
+  // Skip wrapped in its own cream pill — matches the textPanel treatment so
+  // the action reads as a deliberate UI control rather than floating text.
   skip: {
     position: 'absolute',
     top: 0,
     right: 16,
     zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,248,231,0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(230,213,187,0.9)',
+    shadowColor: '#3D2008',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
   },
   skipText: {
-    fontFamily: 'Fredoka-Medium',
-    fontSize: 15,
-    color: colors.textMid,
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 14,
+    color: colors.primary,
   },
   scroll: { flex: 1 },
+  // Content (media + textPanel) is centered as a single block. space-between
+  // left a huge sky gap between hero and card on tall devices; center keeps
+  // them visually tied together regardless of screen height.
   slide: {
     width: SLIDE_W,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+  },
+  // Fixed-size media slot so anything inside (hero art, icon chip, language
+  // glyph) lands centered in the same box. Without this the title shifts up
+  // on icon-only slides because the chip is smaller than the hero images.
+  slideMedia: {
+    width: 260,
+    height: 260,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
   },
   iconWrap: {
     width: 100,
@@ -39,36 +86,99 @@ export const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
   },
-  // Alphabet glyph swap on the language slide — 'A' for English, 'අ' for Sinhala.
-  langGlyph: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 58,
-    color: '#FFFFFF',
-    lineHeight: 64,
-    includeFontPadding: false,
+  // Hero art swap — when a slide has its own illustration, the icon chip
+  // disappears and the image fills the same visual slot at a larger scale so
+  // the slide reads as a poster, not a label.
+  heroArt: {
+    width: 260,
+    height: 260,
+    marginBottom: 20,
   },
-  // Maname's vertical metrics include large top padding to make room for
-  // vowel signs that combine with consonants. For a single bare letter like
-  // 'අ' that padding pushes the glyph low and clips its bottom against the
-  // tile border. Tighter lineHeight + negative top margin pulls it back to
-  // visual centre without resizing the tile itself.
-  langGlyphSinhala: {
-    fontFamily: 'Maname-Regular',
-    fontSize: 72,
-    lineHeight: 72,
-    marginTop: -14,
+  // Opt-in size bump for slides whose artwork reads small at the default 260px
+  // slot (e.g. Made-for-Families uses two figures + a UI card, so individual
+  // elements shrink). Overflowing the slideMedia box is intentional — the
+  // surrounding layout doesn't clip, and the art still lands above the panel.
+  heroArtLg: {
+    width: 320,
+    height: 320,
   },
-  title: {
-    fontFamily: 'Fredoka-SemiBold',
-    fontSize: 26,
-    color: colors.textDark,
-    textAlign: 'center',
+  // Cream-tinted card at the bottom of each slide. Wraps step badge, title,
+  // body, and optional feature pills — the visual centerpiece of the slide.
+  textPanel: {
+    width: '100%',
+    backgroundColor: 'rgba(255,248,231,0.92)',
+    borderRadius: 28,
+    paddingTop: 22,
+    paddingBottom: 22,
+    paddingHorizontal: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(230,213,187,0.85)',
+    shadowColor: '#3D2008',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
+    elevation: 6,
+    alignItems: 'center',
+  },
+  // "Step N" badge above the title — orange pill, white text.
+  stepBadge: {
+    backgroundColor: colors.primary,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 14,
     marginBottom: 10,
   },
+  stepText: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 12,
+    color: '#FFFFFF',
+    letterSpacing: 0.4,
+  },
+  // Two-column feature-pill row under the body — quick visual hints of what
+  // the user will do. Soft cream-tinted with a primary-orange icon chip.
+  pillRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 14,
+    width: '100%',
+  },
+  featurePill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#EFE2C9',
+  },
+  featurePillIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255,154,46,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featurePillText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 12,
+    color: colors.textDark,
+    flex: 1,
+  },
+  title: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 28,
+    color: colors.textDark,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
   body: {
-    fontFamily: 'Fredoka-Regular',
+    fontFamily: 'Fredoka-Medium',
     fontSize: 16,
-    color: colors.textMid,
+    color: colors.textDark,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -94,18 +204,38 @@ export const styles = StyleSheet.create({
     color: colors.textDark,
   },
   langBtnTextActive: { color: colors.white },
+  // Same cream pill treatment as textPanel so the warning reads cleanly
+  // against the grass/landscape backdrop instead of fading into it.
   disclaimer: {
-    marginTop: 16,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,154,46,0.12)',
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,248,231,0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(230,213,187,0.85)',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    shadowColor: '#3D2008',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 3,
   },
   disclaimerText: {
-    fontFamily: 'Fredoka-Regular',
+    fontFamily: 'Fredoka-Medium',
     fontSize: 13,
-    color: colors.textMid,
-    textAlign: 'center',
+    color: colors.textDark,
+    textAlign: 'left',
     lineHeight: 18,
+    flex: 1,
+  },
+  // Reserved-but-invisible disclaimer state for English. The View still
+  // occupies its natural height (so the rest of the slide doesn't shift),
+  // but it reads as empty space to the user.
+  disclaimerHidden: {
+    opacity: 0,
   },
   // Dots + CTA
   footer: {
