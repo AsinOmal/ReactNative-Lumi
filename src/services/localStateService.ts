@@ -18,7 +18,6 @@ import { loadChildProfile, loadIntroSeen } from './userService';
 
 // Per-user keys to wipe on sign-out. We deliberately keep:
 //   - @lumi/language          (device-level setting, not user data)
-//   - hasSeenOnboarding       (first-launch language picker, device-level)
 //   - lumi_model_cache        (just "recently viewed" — wiping anyway below
 //                              since it's per-account browsing history)
 const PER_USER_KEYS = [

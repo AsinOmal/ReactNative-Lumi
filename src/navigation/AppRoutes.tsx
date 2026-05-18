@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuthStore } from '../store/useAuthStore';
@@ -26,10 +26,8 @@ import { MakeAMealScreen } from '../screens/MakeAMealScreen';
 import { ScanAndCountScreen } from '../screens/ScanAndCountScreen';
 import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
 import { ScanScreen } from '../screens/ScanScreen';
-import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { AppIntroScreen } from '../screens/AppIntroScreen';
 import { ChildProfileScreen } from '../screens/ChildProfileScreen';
-import { hasSeenOnboarding } from '../utils/onboardingStore';
 import { scheduleStreakReminder } from '../services/notificationService';
 import { useStrings } from '../hooks/useStrings';
 import {
@@ -60,14 +58,8 @@ export const AppRoutes = () => {
   const appConfig = useRemoteContentStore((s) => s.appConfig);
   useRemoteConfig(!!user);
   useDevRemoteModelsSync();
-  const [onboardingReady, setOnboardingReady] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    hasSeenOnboarding().then((seen) => {
-      setShowOnboarding(!seen);
-      setOnboardingReady(true);
-    });
     scheduleStreakReminder();
   }, []);
 
@@ -76,7 +68,7 @@ export const AppRoutes = () => {
   // is still in-flight.
   const waitingForBootstrap = !!user && !hydrated;
 
-  if (initializing || !onboardingReady || waitingForBootstrap) {
+  if (initializing || waitingForBootstrap) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color="#5B2DC0" />
@@ -96,9 +88,6 @@ export const AppRoutes = () => {
     );
   }
 
-  if (showOnboarding && appConfig?.newUserOnboarding !== false) {
-    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
-  }
   if (!user) {
     return <AuthNavigator />;
   }

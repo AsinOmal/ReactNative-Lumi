@@ -54,7 +54,7 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
       const snap = await getDocs(
         collection(getFirestore(getApp()), 'users', uid, 'purchases')
       );
-      const remoteIds = snap.docs.map((d) => d.id);
+      const remoteIds = snap.docs.map((d: { id: string }) => d.id);
       if (remoteIds.length === 0) {
         return;
       }

@@ -102,7 +102,7 @@ export const ScanScreen = () => {
     async (word?: string) => {
       const target = word ?? matchResult?.word ?? activeWord;
 
-      const gate = decidePackGate(target, packs, isDownloaded);
+      const gate = decidePackGate(target, packs, isDownloaded, isPurchased);
       if (gate.status === 'gated' && gate.pack) {
         if (uid) {
           logActivityEvent(uid, {
@@ -111,8 +111,11 @@ export const ScanScreen = () => {
             flagged: false,
           });
         }
+        // Read isPremium (the visible admin toggle), not packType. A paid
+        // pack with packType: 'bundled' must still hit the paywall, not the
+        // download gate.
         const isPremiumUnpurchased =
-          gate.pack.packType === 'premium' && !isPurchased(gate.pack.id);
+          gate.pack.isPremium && !isPurchased(gate.pack.id);
         const screen = isPremiumUnpurchased ? 'PremiumPackGate' : 'PackGate';
         (navigation as any).navigate(screen, { word: target, pack: gate.pack });
         return;

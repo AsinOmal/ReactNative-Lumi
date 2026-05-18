@@ -27,19 +27,34 @@ export interface PackGateDecision {
 }
 
 /**
- * Routing decision for a word entering AR: available iff unowned, bundled, or
- * downloaded for the current assetVersion.
+ * Routing decision for a word entering AR. Order of checks:
+ *   1. No owning pack → available (legacy/dev words pre-dating Phase 10).
+ *   2. Premium + not purchased → gated regardless of packType. This is the
+ *      most important rule: admin's "Premium Pack" toggle is the visible
+ *      source of truth, and the packType dropdown can legitimately be left
+ *      as 'bundled' for packs whose assets happen to ship in the binary —
+ *      we never want a paid pack to slip through just because that field
+ *      wasn't set.
+ *   3. Bundled → available (no download needed).
+ *   4. Otherwise → available iff downloaded for the current assetVersion.
  */
 export function decidePackGate(
   word: string,
   packs: Pack[],
-  isDownloaded: (packId: string, assetVersion: string) => boolean
+  isDownloaded: (packId: string, assetVersion: string) => boolean,
+  isPurchased: (packId: string) => boolean
 ): PackGateDecision {
   const pack = getPackForWord(word, packs);
+  if (!pack) {
+    return { status: 'available', pack: null };
+  }
+  if (pack.isPremium && !isPurchased(pack.id)) {
+    return { status: 'gated', pack };
+  }
   // Legacy Firestore docs that pre-date Phase 10 have no `packType`. Treat the
   // missing case as 'bundled' (the safe fallback documented in src/types/pack.ts).
-  const packType = pack?.packType ?? 'bundled';
-  if (!pack || packType === 'bundled') {
+  const packType = pack.packType ?? 'bundled';
+  if (packType === 'bundled') {
     return { status: 'available', pack };
   }
   const ok = isDownloaded(pack.id, pack.assetVersion ?? '1.0.0');
