@@ -47,6 +47,12 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
   const lastCandidateRef = useRef<string | null>(null);
   const consecutiveCountRef = useRef(0);
   const firstCandidateResultRef = useRef<MatchResult | null>(null);
+  // Tracks the most-recently-logged word so we don't re-fire logActivityEvent
+  // every frame the user holds the camera steady on the same word. Without
+  // this, a 5-second hold at SCAN_INTERVAL_MS = 500ms emits ~10 duplicate
+  // activity-log entries — distorts analytics ("moon, moon, apple, apple…").
+  // Reset whenever the OCR sees a different candidate (or no candidate).
+  const loggedWordRef = useRef<string | null>(null);
 
   const lastUnknownCandidateRef = useRef<string | null>(null);
   const unknownConsecutiveRef = useRef(0);
@@ -119,6 +125,9 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
         lastCandidateRef.current = matched?.word ?? null;
         consecutiveCountRef.current = matched ? 1 : 0;
         firstCandidateResultRef.current = matched;
+        // Candidate just changed — clear the "already-logged" guard so the
+        // next confirmation fires a fresh log entry.
+        loggedWordRef.current = null;
       }
 
       if (
@@ -129,7 +138,9 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
         // Log every confirmed match for parent activity log (flagged or not).
         // Blocked words: log silently, show nothing to the child.
         const isBlocked = mergedBlocklist.has(matched.word);
-        if (user) {
+        // Suppress duplicate logs for the same held word — only the first
+        // confirmation per candidate writes to Firestore.
+        if (user && loggedWordRef.current !== matched.word) {
           logActivityEvent(user.uid, {
             word: matched.word,
             flagged: isBlocked,
@@ -137,6 +148,7 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
           }).catch(() => {
             // Fire-and-forget — don't stall the scan loop on a Firestore write error
           });
+          loggedWordRef.current = matched.word;
         }
 
         if (!isBlocked) {

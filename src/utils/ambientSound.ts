@@ -26,16 +26,30 @@ Sound.setCategory('Playback', true);
 let sound: Sound | null = null;
 let isMuted = false;
 let isActive = false; // caller has asked us to be playing (vs. naturally stopped)
+// Tracks whether the underlying AVAudioPlayer is currently playing. Without
+// this, calling startAmbient() while the sound is already playing (e.g. the
+// user returns from a "loud" screen while bootstrap's first play is still
+// running) layers a second play() on top — react-native-sound on iOS doesn't
+// dedupe this internally, so the user hears two streams.
+let isPlaying = false;
+let loadInFlight: Promise<Sound | null> | null = null;
 let appStateSub: { remove: () => void } | null = null;
 
+// Cache the in-flight load promise so two parallel startAmbient() calls don't
+// each spawn a new Sound instance — without this, both promises hit the
+// "sound is still null" branch and create two leaking AVAudioPlayers.
 const ensureLoaded = (): Promise<Sound | null> => {
   if (sound) {
     return Promise.resolve(sound);
   }
-  return new Promise((resolve) => {
+  if (loadInFlight) {
+    return loadInFlight;
+  }
+  loadInFlight = new Promise((resolve) => {
     const s = new Sound(
       require('../assets/audio/sfx/ambient-1.mp3'),
       (err: unknown) => {
+        loadInFlight = null;
         if (err) {
           console.warn('[ambientSound] load failed:', err);
           resolve(null);
@@ -46,30 +60,39 @@ const ensureLoaded = (): Promise<Sound | null> => {
         sound = s;
         if (__DEV__) {
           console.log(
-            `[ambientSound] loaded: duration=${s.getDuration().toFixed(1)}s, volume=${config.AMBIENT_VOLUME}`
+            `[ambientSound] loaded: duration=${s
+              .getDuration()
+              .toFixed(1)}s, volume=${config.AMBIENT_VOLUME}`
           );
         }
         resolve(s);
       }
     );
   });
+  return loadInFlight;
 };
 
 const handleAppStateChange = (next: AppStateStatus) => {
-  if (!isActive || isMuted || !sound) {
+  if (!isActive || !sound) {
     return;
   }
   if (next === 'active') {
-    sound.play();
-  } else {
+    if (!isPlaying) {
+      sound.play();
+      isPlaying = true;
+    }
+  } else if (isPlaying) {
     sound.pause();
+    isPlaying = false;
   }
 };
 
 export const startAmbient = async (): Promise<void> => {
   isActive = true;
   if (__DEV__) {
-    console.log(`[ambientSound] startAmbient called, isMuted=${isMuted}`);
+    console.log(
+      `[ambientSound] startAmbient called, isMuted=${isMuted} isPlaying=${isPlaying}`
+    );
   }
   // Load and play even when muted — muting just zeroes the volume. If we
   // early-returned on mute, a cold start with a persisted mute=true would
@@ -80,11 +103,23 @@ export const startAmbient = async (): Promise<void> => {
     return;
   }
   s.setVolume(isMuted ? 0 : config.AMBIENT_VOLUME);
+  // Guard against double-play: returning from a "loud" screen fires
+  // startAmbient via the useFocusEffect cleanup, but if the user backgrounded
+  // and foregrounded the app meanwhile, isPlaying may already be true.
+  // Without this guard we'd layer a second play head on top.
+  if (isPlaying) {
+    if (!appStateSub) {
+      appStateSub = AppState.addEventListener('change', handleAppStateChange);
+    }
+    return;
+  }
   s.play((ok: boolean) => {
+    isPlaying = false;
     if (__DEV__ && !ok) {
       console.warn('[ambientSound] playback callback reported failure');
     }
   });
+  isPlaying = true;
   if (!appStateSub) {
     appStateSub = AppState.addEventListener('change', handleAppStateChange);
   }
@@ -92,7 +127,10 @@ export const startAmbient = async (): Promise<void> => {
 
 export const stopAmbient = (): void => {
   isActive = false;
-  sound?.pause();
+  if (isPlaying) {
+    sound?.pause();
+    isPlaying = false;
+  }
   appStateSub?.remove();
   appStateSub = null;
 };
