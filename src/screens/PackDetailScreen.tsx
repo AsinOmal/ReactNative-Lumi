@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ImageBackground,
+  Image,
   StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +18,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { Pack } from '../types/pack';
 import { getPackAccent } from '../constants/packAccents';
-import { colors } from '../constants/colors';
+import { strings as enStrings } from '../constants/strings';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { usePurchaseStore } from '../store/usePurchaseStore';
@@ -51,6 +52,15 @@ export const PackDetailScreen = () => {
     );
 
   if (pack.isPremium && !isPurchased) {
+    // Hero source — prefers the gate art (typically the most polished asset),
+    // falls back to the cover. Both are admin-uploaded so this gracefully
+    // degrades for packs that only have one of them.
+    const heroUri = pack.gateImageUrl ?? pack.coverImageUrl;
+    const valuePills = [
+      { icon: 'cube-outline', label: `${pack.wordCount} 3D models` },
+      { icon: 'locate-outline', label: 'AR Word Hunt' },
+      { icon: 'language-outline', label: 'Sinhala labels' },
+    ];
     return (
       <Background>
         <StatusBar barStyle="light-content" />
@@ -71,21 +81,59 @@ export const PackDetailScreen = () => {
         </LinearGradient>
         <ScrollView
           contentContainerStyle={[
-            styles.scroll,
-            { paddingBottom: insets.bottom + 40 },
+            styles.lockScroll,
+            { paddingBottom: insets.bottom + 32 },
           ]}
+          showsVerticalScrollIndicator={false}
         >
+          {/* Hero block — the art is the "why you want this". Lock chip
+              floats top-right so the value of the pack is what the eye lands
+              on first, not the lock itself. */}
+          <View style={styles.lockHeroWrap}>
+            {heroUri ? (
+              <Image
+                source={{ uri: heroUri }}
+                style={styles.lockHeroImg}
+                resizeMode="cover"
+              />
+            ) : (
+              <LinearGradient
+                colors={[accent, `${accent}99`]}
+                style={styles.lockHeroImg}
+              >
+                <Ionicons
+                  name="cube-outline"
+                  size={72}
+                  color="rgba(255,255,255,0.85)"
+                />
+              </LinearGradient>
+            )}
+            <View style={styles.lockChip}>
+              <Ionicons name="lock-closed" size={14} color="#FFF" />
+              <Text style={styles.lockChipText}>Locked</Text>
+            </View>
+          </View>
+
           <View style={styles.lockCard}>
-            <Ionicons
-              name="lock-closed"
-              size={52}
-              color={colors.primaryLight}
-            />
-            <Text style={styles.lockTitle}>This pack is locked</Text>
+            <Text style={styles.lockTitle}>{pack.name}</Text>
             <Text style={styles.lockBody}>
-              Unlock {pack.name} to scan, discover, and play with all{' '}
-              {pack.wordCount} 3D models!
+              Unlock all {pack.wordCount} 3D models and play together in AR.
             </Text>
+
+            <View style={styles.pillRow}>
+              {valuePills.map((p) => (
+                <View key={p.label} style={styles.valuePill}>
+                  <Ionicons name={p.icon} size={16} color={accent} />
+                  <Text style={styles.valuePillText} numberOfLines={1}>
+                    {p.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.lockWordsLabel}>
+              <Text style={styles.lockWordsLabelText}>What&apos;s inside</Text>
+            </View>
             <View style={styles.chipRow}>
               {pack.words.slice(0, 6).map((w) => (
                 <View key={w} style={styles.chip}>
@@ -102,6 +150,7 @@ export const PackDetailScreen = () => {
                 </View>
               )}
             </View>
+
             <TouchableOpacity
               style={[styles.unlockBtn, { backgroundColor: accent }]}
               activeOpacity={0.85}
@@ -114,9 +163,12 @@ export const PackDetailScreen = () => {
                 })
               }
             >
-              <Ionicons name="star" size={20} color={colors.accentYellow} />
-              <Text style={styles.unlockBtnText}>Unlock {pack.name}</Text>
+              <Ionicons name="lock-open-outline" size={20} color="#FFF" />
+              <Text style={styles.unlockBtnText}>
+                Unlock — {enStrings.PACK_PRICE}
+              </Text>
             </TouchableOpacity>
+            <Text style={styles.unlockHint}>One-time purchase</Text>
           </View>
         </ScrollView>
       </Background>

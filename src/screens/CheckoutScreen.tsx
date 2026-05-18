@@ -1,17 +1,18 @@
 // 📖 What this does:
-// Mock card-entry checkout for premium pack purchases.
-// Four states: idle → processing (2s) → success → error.
-// On success the pack is added to usePurchaseStore (persisted) and the
-// Firestore /users/{uid}/purchases/{packId} doc is written.
+// Confirmation sheet for premium pack purchases. Replaces the older card-entry
+// form — since this is a simulated payment, asking the user to type a fake
+// card number is friction, not security. Three states: idle → processing →
+// success. On success the pack is added to usePurchaseStore (persisted) and
+// the Firestore /users/{uid}/purchases/{packId} doc is written.
 // Designed to be swapped for real StoreKit / Google Play IAP at publish time.
 
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
   StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ import {
   PaymentError,
 } from '../services/mockPurchaseService';
 import { useStrings } from '../hooks/useStrings';
+import { getPackAccent } from '../constants/packAccents';
 import { colors } from '../constants/colors';
 import { styles } from './CheckoutScreenStyles';
 
@@ -33,34 +35,15 @@ export const CheckoutScreen = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { pack } = useRoute().params as { pack: Pack };
+  const accent = getPackAccent(pack.id);
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
   const [state, setState] = useState<CheckoutState>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const isValid =
-    cardNumber.replace(/\s/g, '').length === 16 &&
-    expiry.length >= 4 &&
-    cvv.length >= 3;
-
-  const formatCard = (v: string) =>
-    v
-      .replace(/\D/g, '')
-      .slice(0, 16)
-      .replace(/(.{4})/g, '$1 ')
-      .trim();
-
-  const formatExpiry = (v: string) => {
-    const digits = v.replace(/\D/g, '').slice(0, 4);
-    return digits.length > 2
-      ? `${digits.slice(0, 2)} / ${digits.slice(2)}`
-      : digits;
-  };
+  const heroUri = pack.coverImageUrl ?? pack.gateImageUrl;
 
   const handlePurchase = async () => {
-    if (!isValid || state !== 'idle') {
+    if (state !== 'idle' && state !== 'error') {
       return;
     }
     setState('processing');
@@ -79,7 +62,7 @@ export const CheckoutScreen = () => {
   if (state === 'success') {
     return (
       <View style={[styles.centered, { paddingTop: insets.top }]}>
-        <Ionicons name="checkmark-circle" size={72} color={colors.primary} />
+        <Ionicons name="checkmark-circle" size={88} color={accent} />
         <Text style={styles.successTitle}>{strings.CHECKOUT_SUCCESS}</Text>
         <Text style={styles.successSub}>
           {strings.CHECKOUT_UNLOCK_BENEFIT(pack.wordCount)}
@@ -91,68 +74,102 @@ export const CheckoutScreen = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
       <StatusBar barStyle="dark-content" />
+
       <TouchableOpacity
         style={styles.backBtn}
         onPress={() => navigation.goBack()}
         accessibilityRole="button"
+        accessibilityLabel="Close checkout"
       >
-        <Ionicons name="chevron-back" size={26} color={colors.textDark} />
+        <Ionicons name="close" size={26} color={colors.textDark} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{strings.CHECKOUT_TITLE}</Text>
-      <Text style={styles.packName}>{pack.name}</Text>
-      <Text style={styles.price}>{strings.PACK_PRICE}</Text>
-      <Text style={styles.simNotice}>{strings.CHECKOUT_SIMULATED_NOTICE}</Text>
+      <View style={styles.sheet}>
+        <View style={styles.heroWrap}>
+          {heroUri ? (
+            <Image
+              source={{ uri: heroUri }}
+              style={styles.heroImg}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={[styles.heroImg, { backgroundColor: accent }]}>
+              <Ionicons
+                name="cube-outline"
+                size={48}
+                color="rgba(255,255,255,0.9)"
+              />
+            </View>
+          )}
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder={strings.CHECKOUT_CARD_NUMBER}
-        placeholderTextColor={colors.textLight}
-        keyboardType="numeric"
-        value={cardNumber}
-        onChangeText={(v) => setCardNumber(formatCard(v))}
-        maxLength={19}
-      />
-      <View style={styles.row}>
-        <TextInput
-          style={[styles.input, styles.inputHalf]}
-          placeholder={strings.CHECKOUT_EXPIRY}
-          placeholderTextColor={colors.textLight}
-          keyboardType="numeric"
-          value={expiry}
-          onChangeText={(v) => setExpiry(formatExpiry(v))}
-          maxLength={7}
-        />
-        <TextInput
-          style={[styles.input, styles.inputHalf]}
-          placeholder={strings.CHECKOUT_CVV}
-          placeholderTextColor={colors.textLight}
-          keyboardType="numeric"
-          value={cvv}
-          onChangeText={(v) => setCvv(v.replace(/\D/g, '').slice(0, 4))}
-          maxLength={4}
-          secureTextEntry
-        />
+        <Text style={styles.title}>{strings.CHECKOUT_TITLE}</Text>
+        <Text style={styles.packName}>{pack.name}</Text>
+
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>One-time price</Text>
+          <Text style={styles.priceValue}>{strings.PACK_PRICE}</Text>
+        </View>
+
+        <View style={styles.bullets}>
+          <View style={styles.bulletRow}>
+            <Ionicons name="checkmark-circle" size={20} color={accent} />
+            <Text style={styles.bulletText}>
+              {pack.wordCount} new 3D models scannable in AR
+            </Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <Ionicons name="checkmark-circle" size={20} color={accent} />
+            <Text style={styles.bulletText}>
+              Unlocks permanently on this account
+            </Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <Ionicons name="checkmark-circle" size={20} color={accent} />
+            <Text style={styles.bulletText}>
+              Works on all your signed-in devices
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.simNotice}>
+          {strings.CHECKOUT_SIMULATED_NOTICE}
+        </Text>
+
+        {state === 'error' && <Text style={styles.errorText}>{errorMsg}</Text>}
+
+        <TouchableOpacity
+          style={[
+            styles.ctaBtn,
+            { backgroundColor: accent },
+            state === 'processing' && styles.ctaDisabled,
+          ]}
+          onPress={handlePurchase}
+          disabled={state === 'processing'}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+        >
+          {state === 'processing' ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Ionicons name="lock-open-outline" size={20} color="#fff" />
+              <Text style={styles.ctaText}>
+                {strings.PREMIUM_GATE_CTA(strings.PACK_PRICE)}
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.cancelBtn}
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          disabled={state === 'processing'}
+        >
+          <Text style={styles.cancelText}>Cancel</Text>
+        </TouchableOpacity>
       </View>
-
-      {state === 'error' && <Text style={styles.errorText}>{errorMsg}</Text>}
-
-      <TouchableOpacity
-        style={[
-          styles.ctaBtn,
-          (!isValid || state === 'processing') && styles.ctaDisabled,
-        ]}
-        onPress={handlePurchase}
-        disabled={!isValid || state === 'processing'}
-        activeOpacity={0.85}
-        accessibilityRole="button"
-      >
-        {state === 'processing' ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.ctaText}>{strings.CHECKOUT_CTA}</Text>
-        )}
-      </TouchableOpacity>
     </View>
   );
 };

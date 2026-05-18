@@ -6,7 +6,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import type { Pack } from '../../types/pack';
 import { getPackGradient, getPackIcon } from '../../constants/packAccents';
 import { colors } from '../../constants/colors';
+import { strings } from '../../constants/strings';
 import { usePackDownloadStore } from '../../store/usePackDownloadStore';
+import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { playUI } from '../../utils/uiSound';
 import { DownloadBadge } from './DownloadBadge';
 
@@ -19,8 +21,12 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
   const dlStatus = usePackDownloadStore((s) => s.packs[pack.id]?.status);
+  const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
   // Bundled (or legacy/undefined-typed) packs are already available — no badge.
   const showBadge = !!pack.packType && pack.packType !== 'bundled';
+  // Premium + not yet purchased → cover is dimmed and a centered price chip
+  // signals "tap to unlock" instead of the easily-missed corner padlock.
+  const showLockedOverlay = pack.isPremium && !isPurchased;
 
   const handlePress = () => {
     playUI('tap');
@@ -57,9 +63,22 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
               </View>
             </LinearGradient>
           )}
-          {pack.isPremium && (
+          {showLockedOverlay && (
+            <>
+              <View style={styles.lockedDim} pointerEvents="none" />
+              <View style={styles.lockedChipWrap} pointerEvents="none">
+                <View style={styles.lockedChip}>
+                  <Ionicons name="lock-closed" size={14} color="#FFF" />
+                  <Text style={styles.lockedChipText}>
+                    {strings.PACK_PRICE}
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+          {pack.isPremium && isPurchased && (
             <View style={styles.lockBadge}>
-              <Ionicons name="lock-closed" size={14} color="#FFF" />
+              <Ionicons name="checkmark" size={14} color="#FFF" />
             </View>
           )}
           {showBadge && <DownloadBadge status={dlStatus} />}
@@ -127,9 +146,43 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(34,197,94,0.92)',
     borderRadius: 12,
     padding: 4,
+  },
+  // Dark wash over the cover when premium + unpurchased — reads as "locked"
+  // without removing the art entirely (kid still sees what they're unlocking).
+  lockedDim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.42)',
+  },
+  // Flex-centered wrapper — guarantees the chip is dead-centre regardless of
+  // its actual width (price strings can be variable length). The earlier
+  // fixed-translate version drifted left because the negative offsets were
+  // hand-tuned to one price label.
+  lockedChipWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockedChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  lockedChipText: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 14,
+    color: '#FFFFFF',
   },
   footer: { padding: 10, gap: 5 },
   packProgressTrack: {

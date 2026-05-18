@@ -108,9 +108,16 @@ export const useBootstrapSession = (): BootstrapResult => {
         .getState()
         .loadFromStorage()
         .catch(() => {});
+      // AsyncStorage is the instant local cache; Firestore is the source of
+      // truth so a reinstall or new-device sign-in still restores premium
+      // entitlements. Both run in parallel — the later one wins via merge.
       usePurchaseStore
         .getState()
         .loadFromStorage()
+        .catch(() => {});
+      usePurchaseStore
+        .getState()
+        .syncFromFirestore(sessionUid)
         .catch(() => {});
       useAmbientStore
         .getState()

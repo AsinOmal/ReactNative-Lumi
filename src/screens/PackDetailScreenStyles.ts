@@ -53,12 +53,50 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textMid,
   },
-  // Premium lock card
+  // Premium lock scroll — no extra padding on the sides, the card and hero
+  // handle their own margin so the hero can sit flush against the card.
+  lockScroll: { paddingTop: 16, gap: 0 },
+  // Hero wrapper for the lock branch — holds the cover art + floating lock
+  // chip. 16:10ish aspect so the image reads as a poster, not a tile.
+  lockHeroWrap: {
+    marginHorizontal: 16,
+    borderRadius: 24,
+    overflow: 'hidden',
+    aspectRatio: 1.5,
+    backgroundColor: colors.primaryLight,
+  },
+  lockHeroImg: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Floating "Locked" chip in top-right of hero — small enough not to
+  // overpower the art but always visible.
+  lockChip: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  lockChipText: {
+    fontFamily: 'Fredoka-Bold',
+    fontSize: 12,
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
+  },
+  // Lock card — sits below the hero, holds the value pills + CTA.
   lockCard: {
     backgroundColor: colors.backgroundCard,
     borderRadius: 28,
     margin: 16,
-    padding: 28,
+    padding: 24,
     alignItems: 'center',
     gap: 12,
     shadowColor: colors.primary,
@@ -75,10 +113,51 @@ export const styles = StyleSheet.create({
   },
   lockBody: {
     fontFamily: 'Fredoka-Regular',
-    fontSize: 18,
+    fontSize: 16,
     color: colors.textMid,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 22,
+  },
+  // Three-column value-prop row — bullets the appeal without burying it in
+  // a paragraph. Each pill is flex:1 so they fill the card evenly.
+  pillRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 6,
+    width: '100%',
+  },
+  valuePill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    backgroundColor: '#FFF8E7',
+    borderWidth: 1,
+    borderColor: '#EFE2C9',
+  },
+  valuePillText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 11,
+    color: colors.textDark,
+    flex: 1,
+  },
+  lockWordsLabel: {
+    marginTop: 8,
+  },
+  lockWordsLabelText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 13,
+    color: colors.textMid,
+    letterSpacing: 0.5,
+  },
+  unlockHint: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 13,
+    color: colors.textMid,
+    marginTop: 4,
   },
   chipRow: {
     flexDirection: 'row',
