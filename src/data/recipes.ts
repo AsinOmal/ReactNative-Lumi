@@ -22,6 +22,7 @@ export const RECIPES: Recipe[] = [
     emoji: '🥗',
     description: 'A fresh mix of your favourite fruits!',
     requiredPackIds: ['fruits'],
+    image: require('../assets/images/meals/fruit-salad.png'),
     ingredients: [
       { word: 'apple', quantity: 1 },
       { word: 'banana', quantity: 1 },
@@ -34,6 +35,7 @@ export const RECIPES: Recipe[] = [
     emoji: '🍹',
     description: 'Taste the tropics in every bite!',
     requiredPackIds: ['fruits'],
+    image: require('../assets/images/meals/tropical-mix.png'),
     ingredients: [
       { word: 'mango', quantity: 1 },
       { word: 'pineapple', quantity: 1 },
@@ -48,6 +50,7 @@ export const RECIPES: Recipe[] = [
     emoji: '🥘',
     description: 'Crunchy veggies cooked in a hot wok!',
     requiredPackIds: ['vegetables'],
+    image: require('../assets/images/meals/veggie-stir-fry.png'),
     ingredients: [
       { word: 'broccoli', quantity: 1 },
       { word: 'carrot', quantity: 1 },
@@ -60,6 +63,7 @@ export const RECIPES: Recipe[] = [
     emoji: '🥙',
     description: 'Fresh from the garden to your plate!',
     requiredPackIds: ['vegetables'],
+    image: require('../assets/images/meals/garden-salad.png'),
     ingredients: [
       { word: 'cucumber', quantity: 1 },
       { word: 'tomato', quantity: 1 },
@@ -74,6 +78,7 @@ export const RECIPES: Recipe[] = [
     emoji: '🌈',
     description: 'Every colour of the rainbow on one plate!',
     requiredPackIds: ['fruits', 'vegetables'],
+    image: require('../assets/images/meals/rainbow-plate.png'),
     ingredients: [
       { word: 'carrot', quantity: 1 },
       { word: 'corn', quantity: 1 },

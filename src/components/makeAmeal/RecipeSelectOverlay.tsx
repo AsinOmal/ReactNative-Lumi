@@ -1,99 +1,124 @@
 // 📖 What this does:
-// Full-screen recipe picker shown when Make a Meal first opens (gamePhase = 'select').
-// Renders on top of a black background — ViroARSceneNavigator is not yet mounted
-// at this point, so there's no camera/AR resource contention.
+// Full-screen recipe picker shown when Make a Meal first opens (gamePhase =
+// 'select'). Renders on top of a black background — ViroARSceneNavigator
+// isn't mounted yet, so there's no camera / AR resource contention.
 //
-// Each card shows the recipe name, description, and the ingredient emojis so
-// the child knows what they're looking for before they start.
+// Layout follows the LibraryScreen / PlaygroundScreen pattern: a cloudy
+// panorama header with title block + scene-specific hero art, then a 2-column
+// grid below on the warm meal backdrop. The previous dark-wood-only treatment
+// hid the dark-brown title text — this header gives the title a cream sky to
+// sit on so it always reads.
 
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  ImageBackground,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Recipe } from '../../types/makeAMeal';
 import { RECIPES } from '../../data/recipes';
+import { colors } from '../../constants/colors';
 import { styles } from './RecipeSelectOverlayStyles';
 
-const RECIPE_ICON_COLORS = [
-  '#FF6B6B',
-  '#4ECDC4',
-  '#F59E0B',
-  '#7C3AED',
-  '#4A90D9',
-  '#F97316',
-  '#10B981',
-  '#EC4899',
-  '#06B6D4',
-];
+const BODY_BG = require('../../assets/backgrounds/make-a-meal-bg.png');
+const HEADER_BG = require('../../assets/backgrounds/library-screen-header.png');
+const HEADER_ICON = require('../../assets/images/make-a-meal-art.png');
 
 interface Props {
   onSelect: (recipe: Recipe) => void;
   onBack: () => void;
 }
 
-export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => (
-  <View style={styles.overlay}>
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.backBtn}
-        onPress={onBack}
-        accessibilityLabel="Go back"
-        accessibilityRole="button"
-      >
-        <Ionicons name="chevron-back" size={22} color="#FFF" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Make a Meal</Text>
-      <Text style={styles.subtitle}>Pick a recipe to cook!</Text>
-    </View>
+export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => {
+  const insets = useSafeAreaInsets();
+  return (
+    <ImageBackground source={BODY_BG} style={styles.overlay} resizeMode="cover">
+      {/* Translucent cream veil over the wood so card titles + chip text stay
+          readable. Matches the ImageBackdrop veil used by Library/Playground. */}
+      <View style={styles.bodyVeil} pointerEvents="none" />
 
-    <ScrollView
-      contentContainerStyle={styles.scroll}
-      showsVerticalScrollIndicator={false}
-    >
-      {RECIPES.map((recipe, idx) => (
+      <ImageBackground
+        source={HEADER_BG}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}
+        imageStyle={styles.headerImage}
+        resizeMode="cover"
+      >
         <TouchableOpacity
-          key={recipe.id}
-          style={styles.card}
-          onPress={() => onSelect(recipe)}
-          activeOpacity={0.8}
-          accessibilityLabel={recipe.name}
-          accessibilityHint="Double tap to select this recipe"
+          style={[styles.backBtn, { top: insets.top + 14 }]}
+          onPress={onBack}
+          accessibilityLabel="Go back"
           accessibilityRole="button"
         >
-          <View
-            style={[
-              styles.recipeIconCircle,
-              {
-                backgroundColor:
-                  RECIPE_ICON_COLORS[idx % RECIPE_ICON_COLORS.length],
-              },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="silverware-fork-knife"
-              size={28}
-              color="#FFF"
-            />
-          </View>
-          <View style={styles.cardBody}>
-            <Text style={styles.cardName}>{recipe.name}</Text>
-            <Text style={styles.cardDesc}>{recipe.description}</Text>
-            <View style={styles.ingredientsRow}>
-              {recipe.ingredients.map(({ word }) => (
-                <View key={word} style={styles.ingredientChip}>
-                  <MaterialCommunityIcons
-                    name="cube-outline"
-                    size={12}
-                    color="#C4B5FD"
-                  />
-                  <Text style={styles.ingredientText}>{word}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#C4B5FD" />
+          <Ionicons name="chevron-back" size={22} color="#3D2008" />
         </TouchableOpacity>
-      ))}
-    </ScrollView>
-  </View>
-);
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>Make a Meal</Text>
+          <View style={styles.countRow}>
+            <Ionicons name="restaurant" size={18} color={colors.accentYellow} />
+            <Text style={styles.subtitle}>Pick a recipe to cook!</Text>
+          </View>
+        </View>
+        <Image
+          source={HEADER_ICON}
+          style={styles.headerIcon}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
+      </ImageBackground>
+
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.grid}>
+          {RECIPES.map((recipe) => (
+            <TouchableOpacity
+              key={recipe.id}
+              style={styles.card}
+              onPress={() => onSelect(recipe)}
+              activeOpacity={0.85}
+              accessibilityLabel={recipe.name}
+              accessibilityHint="Double tap to select this recipe"
+              accessibilityRole="button"
+            >
+              <View style={styles.cardImageWrap}>
+                {recipe.image ? (
+                  <Image
+                    source={recipe.image}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="silverware-fork-knife"
+                    size={56}
+                    color="#C48A4A"
+                  />
+                )}
+              </View>
+              <Text style={styles.cardName} numberOfLines={1}>
+                {recipe.name}
+              </Text>
+              <View style={styles.cardChip}>
+                <MaterialCommunityIcons
+                  name="cube-outline"
+                  size={12}
+                  color="#7A4A1F"
+                />
+                <Text style={styles.cardChipText}>
+                  {recipe.ingredients.length} ingredients
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </ImageBackground>
+  );
+};
