@@ -9,7 +9,8 @@ import { useRemoteConfig } from '../hooks/useRemoteConfig';
 import { useDevRemoteModelsSync } from '../hooks/useDevRemoteModelsSync';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { ScreenTimeLimitModal } from '../components/ScreenTimeLimitModal';
-import { LoginScreen } from '../screens/LoginScreen';
+import { AuthNavigator } from './AuthNavigator';
+import { EmailVerificationScreen } from '../screens/EmailVerificationScreen';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { SavedWordsScreen } from '../screens/SavedWordsScreen';
@@ -99,7 +100,14 @@ export const AppRoutes = () => {
     return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
   }
   if (!user) {
-    return <LoginScreen />;
+    return <AuthNavigator />;
+  }
+  // Email/password users start with emailVerified=false. Block app entry until
+  // they click the link. Google users are pre-verified so this gate no-ops for
+  // them. Without this, an unverified parent could write/read Firestore using
+  // a typo'd email and never recover the account if they lost the password.
+  if (!user.emailVerified) {
+    return <EmailVerificationScreen />;
   }
   // Show the intro guide once after the main onboarding completes. Server-driven
   // (users/{uid}.introSeen) so it survives sign-out/in on the same account but
