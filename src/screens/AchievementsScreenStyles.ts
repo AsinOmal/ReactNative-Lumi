@@ -95,6 +95,17 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   iconCircleLocked: { backgroundColor: '#F1F5F9' },
+  // Used when a custom PNG badge replaces the icon glyph — no tinted disc
+  // behind it, so the badge artwork is the visual centerpiece.
+  iconCircleClear: { backgroundColor: 'transparent' },
+  // PNG badges are designed to fill the circle area (slight overflow OK
+  // since the outer card has padding). Larger than the 30px glyph because
+  // illustrated badges read smaller at the same nominal size.
+  iconImage: {
+    width: 58,
+    height: 58,
+    resizeMode: 'contain',
+  },
 
   cardTitle: {
     fontFamily: 'Fredoka-Bold',

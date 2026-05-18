@@ -4,7 +4,7 @@
 // Extracted from AchievementsScreen so the screen stays under 150 lines.
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { Achievement } from '../../utils/achievementRegistry';
@@ -19,25 +19,35 @@ export const AchievementCard: React.FC<Props> = ({
   achievement: a,
   isUnlocked,
 }) => {
+  const renderBadge = () => {
+    if (!isUnlocked) {
+      return <Ionicons name="lock-closed" size={22} color="#CBD5E1" />;
+    }
+    // Custom PNG badge takes precedence when provided — falls back to the
+    // MaterialCommunityIcons glyph for achievements without art yet.
+    if (a.image) {
+      return <Image source={a.image} style={styles.iconImage} />;
+    }
+    return (
+      <MaterialCommunityIcons name={a.iconName} size={30} color={a.iconColor} />
+    );
+  };
+
   const content = (
     <>
       <View
         style={[
           styles.iconCircle,
-          isUnlocked
+          isUnlocked && !a.image
             ? { backgroundColor: a.iconColor + '22' }
-            : styles.iconCircleLocked,
+            : null,
+          // When a custom image badge is used the tinted circle reads as
+          // extra noise — let the badge sit on the bare cream face.
+          isUnlocked && a.image ? styles.iconCircleClear : null,
+          !isUnlocked ? styles.iconCircleLocked : null,
         ]}
       >
-        {isUnlocked ? (
-          <MaterialCommunityIcons
-            name={a.iconName}
-            size={30}
-            color={a.iconColor}
-          />
-        ) : (
-          <Ionicons name="lock-closed" size={22} color="#CBD5E1" />
-        )}
+        {renderBadge()}
       </View>
       <Text
         style={[styles.cardTitle, !isUnlocked && styles.cardTitleLocked]}

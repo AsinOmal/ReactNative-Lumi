@@ -1,7 +1,13 @@
 /**
  * achievementRegistry.ts
  * Static list of all achievements in Lumi.
+ *
+ * `image` is the preferred visual — a custom PNG badge designed for this
+ * achievement. `iconName` + `iconColor` are the fallback used by older share
+ * captures and any code path that hasn't been migrated to images yet.
  */
+
+import type { ImageSourcePropType } from 'react-native';
 
 export interface Achievement {
   id: string;
@@ -9,6 +15,7 @@ export interface Achievement {
   description: string;
   iconName: string;
   iconColor: string;
+  image?: ImageSourcePropType;
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
@@ -18,6 +25,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#F59E0B',
     title: 'First Discovery',
     description: 'Saved your very first word!',
+    image: require('../assets/images/achievements/first-scan.png'),
   },
   {
     id: 'word_trio',
@@ -25,6 +33,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#4A90D9',
     title: 'Word Trio',
     description: 'Found 3 different words.',
+    image: require('../assets/images/achievements/word-trio.png'),
   },
   {
     id: 'half_pack',
@@ -32,6 +41,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#4ECDC4',
     title: 'Halfway There',
     description: 'Discovered 5 fruits!',
+    image: require('../assets/images/achievements/half-pack.png'),
   },
   {
     id: 'pack_master',
@@ -39,6 +49,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#F97316',
     title: 'Pack Master',
     description: 'Found all 10 fruits!',
+    image: require('../assets/images/achievements/pack-master.png'),
   },
   {
     id: 'spell_hero',
@@ -46,6 +57,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#7C3AED',
     title: 'Spell Hero',
     description: 'Corrected 3 spelling mistakes.',
+    image: require('../assets/images/achievements/spell-hero.png'),
   },
   {
     id: 'perfect_scan',
@@ -53,6 +65,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#FF6B6B',
     title: 'Perfect Speller',
     description: 'Scanned a word with no mistakes!',
+    image: require('../assets/images/achievements/perfect-scan.png'),
   },
   {
     id: 'speed_scanner',
@@ -60,6 +73,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconColor: '#F59E0B',
     title: 'Speed Scanner',
     description: 'Found 3 words in one session!',
+    image: require('../assets/images/achievements/speed-scanner.png'),
   },
 ];
 

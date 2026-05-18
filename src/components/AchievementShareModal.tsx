@@ -8,6 +8,7 @@ import {
   Modal,
   Share,
   Alert,
+  Image,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -66,22 +67,32 @@ export const AchievementShareModal = ({
                 <Text style={styles.lumiSub}>Word Explorer</Text>
               </View>
 
-              {/* Badge */}
-              <View
-                style={[
-                  styles.badgeCircle,
-                  {
-                    borderColor: achievement.iconColor,
-                    backgroundColor: achievement.iconColor + '22',
-                  },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={achievement.iconName}
-                  size={52}
-                  color={achievement.iconColor}
+              {/* Badge — custom PNG when available, glyph fallback otherwise.
+                  The bordered/tinted circle is dropped for image badges so the
+                  artwork doesn't compete with a chrome ring around it. */}
+              {achievement.image ? (
+                <Image
+                  source={achievement.image}
+                  style={styles.badgeImage}
+                  resizeMode="contain"
                 />
-              </View>
+              ) : (
+                <View
+                  style={[
+                    styles.badgeCircle,
+                    {
+                      borderColor: achievement.iconColor,
+                      backgroundColor: achievement.iconColor + '22',
+                    },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={achievement.iconName}
+                    size={52}
+                    color={achievement.iconColor}
+                  />
+                </View>
+              )}
 
               {/* Text */}
               <Text style={styles.achievementTitle}>{achievement.title}</Text>
@@ -190,6 +201,11 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 4,
+  },
+  badgeImage: {
+    width: 130,
+    height: 130,
     marginBottom: 4,
   },
   achievementTitle: {
