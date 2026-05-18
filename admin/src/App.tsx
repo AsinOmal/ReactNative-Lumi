@@ -11,6 +11,11 @@ import { ModelEditorScreen } from './screens/ModelEditorScreen/ModelEditorScreen
 import { UsersScreen } from './screens/UsersScreen/UsersScreen';
 import { UserDetailScreen } from './screens/UserDetailScreen/UserDetailScreen';
 import { AnalyticsScreen } from './screens/AnalyticsScreen/AnalyticsScreen';
+import { SavedWordsAnalyticsScreen } from './screens/SavedWordsAnalyticsScreen/SavedWordsAnalyticsScreen';
+import { ScreenTimeAnalyticsScreen } from './screens/ScreenTimeAnalyticsScreen/ScreenTimeAnalyticsScreen';
+import { AchievementsAnalyticsScreen } from './screens/AchievementsAnalyticsScreen/AchievementsAnalyticsScreen';
+import { GamesAnalyticsScreen } from './screens/GamesAnalyticsScreen/GamesAnalyticsScreen';
+import { FlaggedEventsAnalyticsScreen } from './screens/FlaggedEventsAnalyticsScreen/FlaggedEventsAnalyticsScreen';
 import { ModerationScreen } from './screens/ModerationScreen/ModerationScreen';
 import { NotificationsScreen } from './screens/NotificationsScreen/NotificationsScreen';
 import { AppConfigScreen } from './screens/AppConfigScreen/AppConfigScreen';
@@ -49,6 +54,26 @@ export const App: React.FC = () => {
           <Route path={ROUTES.USERS} element={<UsersScreen />} />
           <Route path={ROUTES.USER_DETAIL} element={<UserDetailScreen />} />
           <Route path={ROUTES.ANALYTICS} element={<AnalyticsScreen />} />
+          <Route
+            path={ROUTES.ANALYTICS_SAVED_WORDS}
+            element={<SavedWordsAnalyticsScreen />}
+          />
+          <Route
+            path={ROUTES.ANALYTICS_SCREEN_TIME}
+            element={<ScreenTimeAnalyticsScreen />}
+          />
+          <Route
+            path={ROUTES.ANALYTICS_ACHIEVEMENTS}
+            element={<AchievementsAnalyticsScreen />}
+          />
+          <Route
+            path={ROUTES.ANALYTICS_GAMES}
+            element={<GamesAnalyticsScreen />}
+          />
+          <Route
+            path={ROUTES.ANALYTICS_FLAGGED_EVENTS}
+            element={<FlaggedEventsAnalyticsScreen />}
+          />
           <Route path={ROUTES.MODERATION} element={<ModerationScreen />} />
           <Route
             path={ROUTES.NOTIFICATIONS}

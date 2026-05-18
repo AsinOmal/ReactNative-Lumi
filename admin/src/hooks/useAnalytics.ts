@@ -24,6 +24,8 @@ export interface AnalyticsKpis {
   gamesPlayed: number;
   flaggedEvents: number;
   avgStreak: number;
+  wishlistRequests: number;
+  screenTimeTodayMin: number;
 }
 
 interface UseAnalyticsResult {
@@ -57,6 +59,8 @@ export const useAnalytics = (): UseAnalyticsResult => {
     gamesPlayed: 0,
     flaggedEvents: 0,
     avgStreak: 0,
+    wishlistRequests: 0,
+    screenTimeTodayMin: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -66,6 +70,7 @@ export const useAnalytics = (): UseAnalyticsResult => {
         const now = new Date();
         const MS_DAY = 86_400_000;
         const todayMs = new Date().setHours(0, 0, 0, 0);
+        const todayKey = new Date().toISOString().slice(0, 10);
 
         const [
           snap,
@@ -73,6 +78,8 @@ export const useAnalytics = (): UseAnalyticsResult => {
           achievementsUnlocked,
           gamesPlayed,
           flaggedEvents,
+          wishlistSnap,
+          screenTimeSnap,
         ] = await Promise.all([
           getDocs(collection(db, 'users')),
           safeCount(collectionGroup(db, 'savedWords')),
@@ -84,8 +91,27 @@ export const useAnalytics = (): UseAnalyticsResult => {
               where('flagged', '==', true)
             )
           ),
+          getDocs(collection(db, 'wishlist')).catch(() => null),
+          // ScreenTime docs are keyed by YYYY-MM-DD per user. Filtering a
+          // collectionGroup by doc id isn't a clean Firestore query, so we
+          // pull the whole group and filter client-side — fine because the
+          // collection is small (N users × recent days). Returns null on
+          // permission failure so the KPI degrades to 0 instead of crashing.
+          getDocs(collectionGroup(db, 'screenTime')).catch(() => null),
         ]);
         const users = snap.docs.map((d) => d.data() as DocumentData);
+        const wishlistRequests =
+          wishlistSnap?.docs.reduce(
+            (sum, d) => sum + ((d.data().requestCount as number) ?? 0),
+            0
+          ) ?? 0;
+        const screenTimeTodayMin =
+          screenTimeSnap?.docs
+            .filter((d) => d.id === todayKey)
+            .reduce(
+              (sum, d) => sum + ((d.data().totalMinutes as number) ?? 0),
+              0
+            ) ?? 0;
 
         // Seed 14-day buckets keyed by formatted date
         const buckets: Record<string, number> = {};
@@ -127,6 +153,8 @@ export const useAnalytics = (): UseAnalyticsResult => {
           gamesPlayed,
           flaggedEvents,
           avgStreak: users.length ? Math.round(totalStreak / users.length) : 0,
+          wishlistRequests,
+          screenTimeTodayMin,
         });
       } catch (e) {
         console.error('[useAnalytics] load failed:', e);

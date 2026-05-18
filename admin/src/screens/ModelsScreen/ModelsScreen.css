@@ -53,7 +53,10 @@
 }
 
 .models__row:last-child td { border-bottom: none; }
-.models__row:hover td { background: #FAFAFA; }
+/* Theme-aware row hover — the hardcoded #FAFAFA washed out in dark mode.
+   Translucent brand-indigo lifts the row in both themes without needing a
+   separate dark-mode override. */
+.models__row:hover td { background: rgba(99, 102, 241, 0.08); }
 
 .models__syllables {
   color: var(--color-text-muted);

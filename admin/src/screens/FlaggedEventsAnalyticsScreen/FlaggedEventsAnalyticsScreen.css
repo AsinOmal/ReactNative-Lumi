@@ -1,0 +1,105 @@
+.flagged-events { padding: 28px; max-width: 1024px; }
+
+.flagged-events__error {
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin: 16px 0;
+}
+
+.flagged-events__section {
+  margin-top: 24px;
+}
+
+.flagged-events__section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.flagged-events__section-sub {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 12px;
+}
+
+.flagged-events__card {
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.flagged-events__table { width: 100%; border-collapse: collapse; }
+
+.flagged-events__table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.flagged-events__row { border-bottom: 1px solid var(--color-border); }
+.flagged-events__row:last-child { border-bottom: none; }
+.flagged-events__row td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.flagged-events__rank {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  width: 40px;
+}
+
+.flagged-events__word {
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: lowercase;
+}
+
+.flagged-events__sub {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.flagged-events__date {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.flagged-events__uid {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.flagged-events__uid-link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.flagged-events__uid-link:hover {
+  text-decoration: underline;
+}
+
+.flagged-events__count {
+  display: inline-block;
+  background: #FEE2E2;
+  color: #B91C1C;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  min-width: 36px;
+  text-align: center;
+}

@@ -29,7 +29,10 @@ export const RecentActivityCard: React.FC<RecentActivityCardProps> = ({
         <p className="ra-card__title">Recent Scan Activity</p>
         <p className="ra-card__subtitle">Latest word scans across all users</p>
       </div>
-      <Link to={ROUTES.MODERATION} className="ra-card__view-all">
+      <Link
+        to={ROUTES.ANALYTICS_FLAGGED_EVENTS}
+        className="ra-card__view-all"
+      >
         View all <ArrowRight size={14} />
       </Link>
     </div>

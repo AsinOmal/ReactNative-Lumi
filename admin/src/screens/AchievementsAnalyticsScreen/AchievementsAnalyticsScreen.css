@@ -1,0 +1,81 @@
+.achievements-analytics { padding: 28px; max-width: 960px; }
+
+.achievements-analytics__error {
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin: 16px 0;
+}
+
+.achievements-analytics__card {
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-top: 20px;
+}
+
+.achievements-analytics__table { width: 100%; border-collapse: collapse; }
+
+.achievements-analytics__table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.achievements-analytics__row { border-bottom: 1px solid var(--color-border); }
+.achievements-analytics__row:last-child { border-bottom: none; }
+.achievements-analytics__row td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  vertical-align: top;
+}
+
+.achievements-analytics__rank {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  width: 40px;
+}
+
+.achievements-analytics__title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+.achievements-analytics__desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.achievements-analytics__sub {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.achievements-analytics__date {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.achievements-analytics__count {
+  display: inline-block;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  min-width: 36px;
+  text-align: center;
+}

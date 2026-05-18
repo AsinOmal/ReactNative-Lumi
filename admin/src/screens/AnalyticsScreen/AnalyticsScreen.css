@@ -26,6 +26,52 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  text-align: left;
+}
+
+/* Clickable variant — used when a KPI drills into a sub-screen. Resets the
+   <button> native chrome and adds a subtle lift on hover. The footer link
+   ("View details →") is the always-visible signal that the tile is
+   interactive — hover state confirms it. */
+.analytics__kpi--clickable {
+  cursor: pointer;
+  border: 1px solid transparent;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+/* Footer link inside clickable tiles. Sits below the label, pushed to the
+   bottom via margin-top: auto so the value/label stay top-aligned even when
+   the tile stretches taller alongside non-clickable siblings. */
+.analytics__kpi-link {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: 0.2px;
+}
+
+.analytics__kpi--clickable:hover .analytics__kpi-link {
+  gap: 6px;
+}
+
+.analytics__kpi--clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg, 0 8px 20px rgba(0, 0, 0, 0.08));
+  border-color: var(--color-primary-light, #ede9fe);
+}
+
+.analytics__kpi--clickable:active {
+  transform: translateY(0);
 }
 
 .analytics__kpi-value {

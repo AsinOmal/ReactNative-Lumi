@@ -118,6 +118,13 @@ service cloud.firestore {
       allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
     }
 
+    // Admin analytics: aggregate screen-time across all users via collectionGroup.
+    // The /users/{uid}/screenTime/* rule is owner-only, so this top-level rule
+    // is required for the admin's leaderboard / trend queries.
+    match /{path=**}/screenTime/{day} {
+      allow read: if isAdmin();
+    }
+
     // ── Community Wishlist ────────────────────────────────────────────────────
     // Any signed-in user can create/increment their word wish (merge writes only).
     // Admins can read the full collection to see most-requested words.
