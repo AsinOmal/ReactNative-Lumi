@@ -5,7 +5,15 @@ export const styles = StyleSheet.create({
   container: { flex: 1 },
   bg: { flex: 1 },
   body: { flex: 1 },
-  scroll: { paddingHorizontal: 16, paddingTop: 16, gap: 10 },
+  scroll: { paddingHorizontal: 16, paddingTop: 12, gap: 10 },
+  sectionLabel: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 12,
+    color: colors.textMid,
+    letterSpacing: 0.8,
+    marginTop: 4,
+    marginLeft: 4,
+  },
   wordRow: {
     backgroundColor: colors.backgroundCard,
     borderRadius: 18,
@@ -37,6 +45,19 @@ export const styles = StyleSheet.create({
     fontFamily: 'Fredoka-Regular',
     fontSize: 16,
     color: colors.textMid,
+  },
+  previewChip: {
+    backgroundColor: 'rgba(255,154,46,0.12)',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(255,154,46,0.25)',
+  },
+  previewChipText: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 11,
+    color: colors.primary,
   },
   lockScroll: { paddingTop: 16, gap: 0 },
   // Lock card — sits below the header, holds the value pills + CTA.
@@ -141,5 +162,12 @@ export const styles = StyleSheet.create({
     color: colors.textMid,
     marginTop: 4,
   },
-  ctaWrap: { marginHorizontal: 16, marginBottom: 32, marginTop: 8 },
+  ctaWrap: { marginHorizontal: 32, marginTop: 8 },
+  infoStrip: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 13,
+    color: colors.textMid,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
 });
