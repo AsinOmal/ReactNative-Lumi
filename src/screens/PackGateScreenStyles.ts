@@ -1,98 +1,111 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { colors } from '../constants/colors';
-
-const { height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   bg: { flex: 1 },
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 28,
+
+  closeBtn: {
+    position: 'absolute',
+    right: 20,
+    zIndex: 10,
   },
-  containerHero: {
-    flex: 1,
-    paddingHorizontal: 28,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 48,
-    paddingTop: height * 0.4,
-    gap: 14,
-  },
-  headingLight: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 28,
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-  subtextLight: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.85)',
-    textAlign: 'center',
-    paddingHorizontal: 8,
-    lineHeight: 22,
-  },
-  progressTextLight: {
-    fontFamily: 'Fredoka-Medium',
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
-  },
-  barTrackLight: {
-    width: '80%',
-    height: 8,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  dismissTextLight: {
-    fontFamily: 'Fredoka-Medium',
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  dismiss: {
-    alignSelf: 'flex-end',
-    padding: 8,
-  },
-  center: {
-    flex: 1,
+  closeBtnBg: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.35)',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 18,
   },
-  bubble: {
-    width: 168,
-    height: 168,
-    borderRadius: 84,
+
+  // Centred card overlay
+  cardWrap: {
+    position: 'absolute',
+    left: 24,
+    right: 24,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+  card: {
+    backgroundColor: 'rgba(255, 248, 235, 0.83)',
+    borderRadius: 28,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.72)',
+    paddingHorizontal: 24,
+    paddingTop: 22,
+    paddingBottom: 28,
+    alignItems: 'center',
+    gap: 8,
+    shadowColor: '#3D2008',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+
+  // Pack icon badge above title
+  badgeWrap: {
+    marginBottom: 4,
+  },
+  badgeCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  heading: {
+  badgeEmoji: {
+    fontSize: 32,
+  },
+  sparkleDot: {
+    position: 'absolute',
+    top: -2,
+    right: -4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FFF8E7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,200,50,0.4)',
+  },
+
+  foundTitle: {
     fontFamily: 'Fredoka-Bold',
     fontSize: 26,
     color: colors.textDark,
     textAlign: 'center',
   },
-  subtext: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 16,
+  belongsTo: {
+    fontFamily: 'Fredoka-Medium',
+    fontSize: 14,
     color: colors.textMid,
     textAlign: 'center',
-    paddingHorizontal: 8,
-    lineHeight: 22,
+    marginTop: -2,
   },
+  subtext: {
+    fontFamily: 'Fredoka-Regular',
+    fontSize: 14,
+    color: colors.textMid,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 8,
+  },
+
   progressBlock: {
     width: '100%',
     alignItems: 'center',
     gap: 10,
-    marginTop: 4,
+    marginVertical: 4,
   },
   progressText: {
     fontFamily: 'Fredoka-Medium',
@@ -102,45 +115,53 @@ export const styles = StyleSheet.create({
   barTrack: {
     width: '80%',
     height: 8,
-    backgroundColor: '#EEE',
+    backgroundColor: 'rgba(0,0,0,0.08)',
     borderRadius: 4,
     overflow: 'hidden',
   },
   barFill: {
     height: '100%',
     backgroundColor: colors.primary,
+    borderRadius: 4,
   },
+
   errorText: {
     fontFamily: 'Fredoka-Regular',
-    fontSize: 14,
+    fontSize: 13,
     color: '#C0392B',
     textAlign: 'center',
-    paddingHorizontal: 12,
   },
+
   cta: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 10,
     backgroundColor: colors.primary,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 28,
     marginTop: 8,
-  },
-  ctaDisabled: {
-    backgroundColor: colors.textMid,
+    alignSelf: 'stretch',
+    shadowColor: colors.primaryDark,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   ctaText: {
     fontFamily: 'Fredoka-SemiBold',
     fontSize: 17,
     color: '#FFFFFF',
   },
+
   dismissLink: {
-    paddingVertical: 10,
+    paddingVertical: 6,
+    alignItems: 'center',
   },
   dismissText: {
     fontFamily: 'Fredoka-Medium',
     fontSize: 15,
     color: colors.textMid,
+    opacity: 0.85,
   },
 });
