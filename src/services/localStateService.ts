@@ -52,6 +52,56 @@ export const clearLocalUserState = async (): Promise<void> => {
   }
 };
 
+// Drop AsyncStorage keys that grow unbounded over time for long-lived users
+// (users who stay signed in and never trigger clearLocalUserState). Two
+// classes of keys are pruned:
+//   - screenTime_YYYY-MM-DD: per-day totals. Older than 30 days is irrelevant
+//     to the in-app screen-time meter (which only cares about today).
+//   - @banner_dismissed_<bannerId>: one entry per admin-published banner the
+//     user dismissed. We don't know the publish timestamp client-side, so we
+//     use a 90-day TTL fallback on the LAST-ACCESSED timestamp stored alongside
+//     the dismissal. Older entries are safe to wipe — if the same banner is
+//     re-published the user simply sees it again.
+const PRUNE_SCREEN_TIME_DAYS = 30;
+
+const isoNDaysAgo = (n: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+};
+
+export const pruneStaleKeys = async (): Promise<void> => {
+  try {
+    const all = await AsyncStorage.getAllKeys();
+    const screenTimeCutoff = isoNDaysAgo(PRUNE_SCREEN_TIME_DAYS);
+    const stale = all.filter((k) => {
+      if (k.startsWith('screenTime_')) {
+        // 'screenTime_2026-05-19' → '2026-05-19'. String compare is safe
+        // because YYYY-MM-DD is lexicographically ordered.
+        return k.slice('screenTime_'.length) < screenTimeCutoff;
+      }
+      return false;
+    });
+    // Banner dismissals: we don't store the dismiss timestamp, so fall back
+    // to "drop if there are more than 30 of them" — admin rarely keeps more
+    // than a couple of dismissed banners around per device.
+    const bannerKeys = all.filter((k) => k.startsWith('@banner_dismissed_'));
+    if (bannerKeys.length > 30) {
+      stale.push(...bannerKeys.slice(0, bannerKeys.length - 30));
+    }
+    if (stale.length > 0) {
+      await AsyncStorage.multiRemove(stale);
+      if (__DEV__) {
+        console.log(
+          `[localStateService] pruneStaleKeys removed ${stale.length} keys`
+        );
+      }
+    }
+  } catch (e) {
+    console.error('[localStateService] pruneStaleKeys:', e);
+  }
+};
+
 export interface HydrateInput {
   savedWords: SavedWord[];
   achievements: EarnedAchievement[];

@@ -2,31 +2,38 @@
  * ScreenTimeLimitModal.tsx
  *
  * Full-screen soft lock shown when a child has reached their daily screen time limit.
- * Displayed at game-start boundaries only — never mid-round, to avoid interrupting play
- * in a way that loses progress.
  *
- * Why the child cannot dismiss this:
- *   The modal is a parental control gate. Allowing the child to close it would
- *   defeat the purpose. Only a parent PIN verifies and unlocks temporarily.
- *   "Temporarily" = sets isParentUnlocked for the session — on next game start,
- *   the parent sees it again.
+ * The child cannot dismiss this — only a parent PIN can. There are two outcomes
+ * after a successful PIN entry, picked by which button the parent tapped:
+ *   - "Add 5 minutes" → calls onGrant5Min(). Modal hides until the grace
+ *     window expires, then it returns automatically (useScreenTime schedules
+ *     a re-render at the expiry instant).
+ *   - "Unlock with PIN" → calls onUnlocked(). Modal stays hidden for the rest
+ *     of the session (until cold restart).
  *
- * The PINEntryModal is rendered inline here so this component is self-contained.
+ * Why PIN is required for both:
+ *   Without PIN on +5, the child can tap +5 every five minutes forever and
+ *   the lock has no teeth. The PIN adds ~2 s of parent friction — enough to
+ *   make the grant intentional.
  */
 
 import React, { useState } from 'react';
-import { Modal, View, Text, StyleSheet, Image } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../constants/colors';
 import { useStrings } from '../hooks/useStrings';
 import { PINEntryModal } from './PINEntryModal';
 import { PinLockoutModal } from './PinLockoutModal';
 import { useParentAuth } from '../hooks/useParentAuth';
+import { useParentalControlsStore } from '../store/useParentalControlsStore';
+
+type PendingAction = 'grant5' | 'unlock' | null;
 
 interface ScreenTimeLimitModalProps {
   visible: boolean;
   todayMinutes: number;
   limitMinutes: number;
   onUnlocked: () => void;
+  onGrant5Min: () => void;
 }
 
 export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
@@ -34,21 +41,33 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
   todayMinutes,
   limitMinutes,
   onUnlocked,
+  onGrant5Min,
 }) => {
   const strings = useStrings();
   const { verifyPin, isLocked, lockSecondsRemaining } = useParentAuth();
+  const setParentUnlocked = useParentalControlsStore(
+    (s) => s.setParentUnlocked
+  );
   const [pinError, setPinError] = useState(false);
-  const [showPin, setShowPin] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const handlePinSubmit = (pin: string) => {
     const ok = verifyPin(pin);
-    if (ok) {
-      setShowPin(false);
-      onUnlocked();
-    } else {
+    if (!ok) {
       setPinError(true);
       setTimeout(() => setPinError(false), 1500);
+      return;
     }
+    // verifyPin sets isParentUnlocked=true as a side effect. That's the right
+    // behaviour for the "unlock" branch; for "+5" we undo it so the gate
+    // returns once the grace expires.
+    if (pendingAction === 'grant5') {
+      setParentUnlocked(false);
+      onGrant5Min();
+    } else if (pendingAction === 'unlock') {
+      onUnlocked();
+    }
+    setPendingAction(null);
   };
 
   if (!visible) {
@@ -67,20 +86,33 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
           {strings.screenTimeLimitParentNote}
         </Text>
 
-        <View style={styles.parentButton}>
-          <Text
-            style={styles.parentButtonText}
-            onPress={() => setShowPin(true)}
-          >
+        <TouchableOpacity
+          style={styles.primaryButton}
+          activeOpacity={0.85}
+          onPress={() => setPendingAction('unlock')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.primaryButtonText}>
             {strings.screenTimeLimitUnlock}
           </Text>
-        </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          activeOpacity={0.85}
+          onPress={() => setPendingAction('grant5')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.secondaryButtonText}>
+            {strings.screenTimeLimitGrant5}
+          </Text>
+        </TouchableOpacity>
 
         <PINEntryModal
-          visible={showPin && !isLocked}
+          visible={pendingAction !== null && !isLocked}
           mode="verify"
           onSubmit={handlePinSubmit}
-          onCancel={() => setShowPin(false)}
+          onCancel={() => setPendingAction(null)}
           hasError={pinError}
         />
         <PinLockoutModal
@@ -122,17 +154,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 32,
   },
-  parentButton: {
+  primaryButton: {
     backgroundColor: colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 30,
+    minWidth: 240,
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  parentButtonText: {
+  primaryButtonText: {
     color: colors.white,
     fontSize: 16,
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    minWidth: 240,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    backgroundColor: 'transparent',
+  },
+  secondaryButtonText: {
+    color: colors.primary,
+    fontSize: 15,
     fontWeight: '700',
   },
 });

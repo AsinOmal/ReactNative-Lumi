@@ -6,6 +6,7 @@
  */
 
 import { MODEL_REGISTRY } from './modelRegistry';
+import { usePackStore } from '../store/usePackStore';
 import { SavedWord } from './achievementStore';
 
 /** Today's date as YYYY-MM-DD in local time */
@@ -26,13 +27,30 @@ function dateHash(dateStr: string): number {
   return hash;
 }
 
-const ALL_WORDS = Object.keys(MODEL_REGISTRY);
+// Build the hunt pool from the bundled registry PLUS every word in every
+// loaded pack — admin-uploaded packs (now including Fruits, after assets were
+// migrated to Storage) only exist in usePackStore, not in MODEL_REGISTRY.
+// Without this union, an empty MODEL_REGISTRY caused `idx = N % 0 = NaN` and
+// the banner rendered with word === undefined → charAt crash.
+function getHuntPool(): string[] {
+  const packs = usePackStore.getState().packs;
+  return [
+    ...new Set([
+      ...Object.keys(MODEL_REGISTRY),
+      ...packs.flatMap((p) => p.words),
+    ]),
+  ];
+}
 
 /** Returns today's hunt word (always the same word for the same calendar day) */
 export function getDailyWord(): string {
+  const pool = getHuntPool();
+  if (pool.length === 0) {
+    return '';
+  }
   const today = todayISO();
-  const idx = dateHash(today) % ALL_WORDS.length;
-  return ALL_WORDS[idx];
+  const idx = dateHash(today) % pool.length;
+  return pool[idx];
 }
 
 // 📖 What this does:

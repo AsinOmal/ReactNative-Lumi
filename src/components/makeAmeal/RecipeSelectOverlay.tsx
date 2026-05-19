@@ -27,7 +27,7 @@ import { colors } from '../../constants/colors';
 import { styles } from './RecipeSelectOverlayStyles';
 
 const BODY_BG = require('../../assets/backgrounds/make-a-meal-bg.png');
-const HEADER_BG = require('../../assets/backgrounds/library-screen-header.png');
+const HEADER_BG = require('../../assets/backgrounds/make-a-meal-header-bg.png');
 const HEADER_ICON = require('../../assets/images/make-a-meal-art.png');
 
 interface Props {

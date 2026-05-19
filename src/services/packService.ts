@@ -12,9 +12,12 @@ import {
 } from '@react-native-firebase/firestore';
 import type { Pack } from '../types/pack';
 
-// Fruits stays 'bundled' until its GLBs are uploaded to Firebase Storage and
-// confirmed working from file:// paths on device. Flip to 'free' in the
-// follow-up PR that removes the require() entries from MODEL_REGISTRY.
+// Fruits has been migrated to admin-uploaded assets: MODEL_REGISTRY entries
+// are commented out and the pack must download its GLBs from Firebase Storage
+// like any other 'free' pack. Existing Firestore docs created before this
+// change may still have packType: 'bundled' — fix them via the admin Packs
+// screen ("Pack Type" → Free) so the download flow + local file paths take
+// effect (URL streaming was unreliable and crashed on Place).
 const INITIAL_PACKS: Pack[] = [
   {
     id: 'fruits',
@@ -37,9 +40,9 @@ const INITIAL_PACKS: Pack[] = [
       'strawberry',
       'watermelon',
     ],
-    packType: 'bundled',
+    packType: 'free',
     assetVersion: '1.0.0',
-    estimatedSizeMB: 0,
+    estimatedSizeMB: 12,
   },
   {
     id: 'vegetables',

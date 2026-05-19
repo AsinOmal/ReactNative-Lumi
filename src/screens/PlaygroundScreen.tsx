@@ -12,7 +12,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../constants/colors';
 import { ImageBackdrop } from '../components/scenes/ImageBackdrop';
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
@@ -22,7 +21,7 @@ interface GameCard {
   key: string;
   title: string;
   desc: string;
-  iconName: string;
+  emoji: string;
   cover?: ImageSourcePropType;
   accent: string;
   available: boolean;
@@ -34,7 +33,7 @@ const GAMES: GameCard[] = [
     key: 'ARWordFind',
     title: 'AR Word Find',
     desc: 'Find 3D models hidden in your room!',
-    iconName: 'target',
+    emoji: '🔍',
     cover: require('../assets/coverarts/AR-Word-Find.png'),
     accent: colors.accentCoral,
     available: true,
@@ -43,7 +42,7 @@ const GAMES: GameCard[] = [
     key: 'MakeAMeal',
     title: 'Make a Meal',
     desc: 'Cook recipes with AR ingredients!',
-    iconName: 'silverware-fork-knife',
+    emoji: '🍳',
     cover: require('../assets/coverarts/Make-A-Meal.png'),
     accent: colors.accentOrange,
     available: true,
@@ -52,7 +51,7 @@ const GAMES: GameCard[] = [
     key: 'ScanAndCount',
     title: 'Scan & Count',
     desc: 'Count 3D models all around you!',
-    iconName: 'counter',
+    emoji: '🔢',
     cover: require('../assets/coverarts/Scan-Count-Mode.png'),
     accent: colors.accentMint,
     available: true,
@@ -61,7 +60,7 @@ const GAMES: GameCard[] = [
     key: 'WriteAndScan',
     title: 'Write & Scan',
     desc: 'See the model, write the word, scan to check!',
-    iconName: 'pencil-box-outline',
+    emoji: '✏️',
     cover: require('../assets/coverarts/Write-And-Scan.png'),
     accent: colors.accentYellow,
     available: true,
@@ -159,11 +158,7 @@ export const PlaygroundScreen = () => {
                     resizeMode="cover"
                   />
                 ) : (
-                  <MaterialCommunityIcons
-                    name={game.iconName}
-                    size={52}
-                    color="rgba(255,255,255,0.95)"
-                  />
+                  <Text style={styles.gameEmoji}>{game.emoji}</Text>
                 )}
               </View>
               <View style={styles.cardFooter}>

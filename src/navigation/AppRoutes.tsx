@@ -51,9 +51,16 @@ const SPRING = {
 
 export const AppRoutes = () => {
   const { user, hydrated, childProfileSeen, introSeen } = useAuthStore();
-  const { isParentUnlocked } = useParentalControlsStore();
+  const { isParentUnlocked, extendGrace, setParentUnlocked } =
+    useParentalControlsStore();
   const strings = useStrings();
-  const { isAtLimit, todayMinutes, dailyLimitMinutes } = useScreenTime();
+  const {
+    isAtLimit,
+    todayMinutes,
+    dailyLimitMinutes,
+    graceActive,
+    loaded: screenTimeReady,
+  } = useScreenTime();
   const { initializing, suspendedError } = useBootstrapSession();
   const appConfig = useRemoteContentStore((s) => s.appConfig);
   useRemoteConfig(!!user);
@@ -122,6 +129,18 @@ export const AppRoutes = () => {
     );
   }
 
+  // Final gate before MainTabs: never let the kid into the home screen until
+  // both the parent settings (dailyLimitMinutes) AND today's accumulated
+  // screen-time total are loaded. Without this, isAtLimit reads false during
+  // the async bootstrap window and the ScreenTimeLimitModal lets the kid past.
+  if (!screenTimeReady) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#5B2DC0" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -167,10 +186,11 @@ export const AppRoutes = () => {
         />
       </Stack.Navigator>
       <ScreenTimeLimitModal
-        visible={isAtLimit && !isParentUnlocked}
+        visible={isAtLimit && !isParentUnlocked && !graceActive}
         todayMinutes={todayMinutes}
         limitMinutes={dailyLimitMinutes}
-        onUnlocked={() => {}}
+        onUnlocked={() => setParentUnlocked(true)}
+        onGrant5Min={() => extendGrace(5 * 60 * 1000)}
       />
     </NavigationContainer>
   );

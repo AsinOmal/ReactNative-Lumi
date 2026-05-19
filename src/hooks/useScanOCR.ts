@@ -12,6 +12,7 @@ import {
   detectUnknownWord,
 } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
+import { unlinkPaths } from '../utils/packStorage';
 import { config } from '../constants/config';
 import { ScanMode } from '../types';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
@@ -117,6 +118,10 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
         enableShutterSound: false,
       });
       const text = await recognizeTextInImage(snapshot.path);
+      // Fire-and-forget: delete the JPEG that takePhoto wrote to tmp. Without
+      // this, sustained scanning leaks ~120 photos/minute into the app's
+      // sandbox until the OS evicts the tmp dir.
+      unlinkPaths([snapshot.path]).catch(() => {});
       const matched = matchWord(text, allSupportedWords);
 
       if (matched?.word === lastCandidateRef.current) {

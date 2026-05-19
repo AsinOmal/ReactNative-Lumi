@@ -24,7 +24,6 @@ interface Props {
 
 export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
   const navigation = useNavigation();
-  const display = word.charAt(0).toUpperCase() + word.slice(1);
   const [playFlip, setPlayFlip] = useState(false);
   const pulse = usePulseLoop();
 
@@ -33,6 +32,16 @@ export const DailyWordBanner: React.FC<Props> = ({ word, isFound }) => {
       setPlayFlip(true);
     }
   }, [isFound]);
+
+  // Defensive: if packs are still loading on first launch the daily-word
+  // pool may be empty and `word` arrives as undefined or ''. Hide the banner
+  // instead of crashing on charAt — it re-renders to the real banner once
+  // the pack store hydrates. Hooks must run before this early return so the
+  // hook-call count stays stable across re-renders (Rules of Hooks).
+  if (!word) {
+    return null;
+  }
+  const display = word.charAt(0).toUpperCase() + word.slice(1);
 
   const sparkleColor = isFound
     ? 'rgba(5,150,105,0.25)'

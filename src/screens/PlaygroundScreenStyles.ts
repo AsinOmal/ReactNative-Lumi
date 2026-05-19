@@ -66,6 +66,7 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
   },
   iconAreaImage: { width: "100%", height: "100%" },
+  gameEmoji: { fontSize: 52 },
   cardFooter: { padding: 12, gap: 6 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   cardTitle: {
