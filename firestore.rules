@@ -51,13 +51,15 @@ service cloud.firestore {
     // ── User profile ──────────────────────────────────────────────────────────
     // Users own their profile. Admins can read for moderation but not write
     // (admin writes go through the Admin SDK from Cloud Functions).
-    // The `suspended` field is admin-managed — users cannot alter it.
+    // `suspended` and `createdAt` are admin/server-managed — users cannot alter them.
+    // `fcmToken` is intentionally writable by the owner: the client registers the
+    // device token on sign-in and must persist it so Cloud Functions can send pushes.
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid);
       allow update: if isOwner(uid)
         && !request.resource.data.diff(resource.data).affectedKeys()
-              .hasAny(['suspended', 'fcmToken', 'createdAt']);
+              .hasAny(['suspended', 'createdAt']);
     }
 
     // ── User subcollections ───────────────────────────────────────────────────

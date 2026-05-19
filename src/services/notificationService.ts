@@ -74,17 +74,17 @@ export async function scheduleStreakReminder(): Promise<void> {
 }
 
 // 📖 What this does:
-// On iOS, getToken() throws messaging/unregistered until the device is registered for remote
-// messages via APNs. Newer @react-native-firebase versions no longer auto-register — we must
-// call registerDeviceForRemoteMessages() and request notification permission first.
-// requestPermission() is also iOS-only; on Android the Firebase Messaging SDK uses the system
-// notification permission granted at install/runtime by notifee.
+// On iOS, getToken() throws messaging/unregistered until the device has been registered via
+// registerDeviceForRemoteMessages(). We call it unconditionally — it is idempotent and safe
+// to call multiple times. requestPermission() is iOS-only; on Android, notifee handles the
+// system notification permission at install/runtime.
 export const registerFcmToken = async (uid: string): Promise<void> => {
   try {
     if (Platform.OS === 'ios') {
-      if (!messaging().isDeviceRegisteredForRemoteMessages) {
-        await messaging().registerDeviceForRemoteMessages();
-      }
+      // Always call registerDeviceForRemoteMessages — isDeviceRegisteredForRemoteMessages
+      // can return a stale true, causing getToken to throw messaging/unregistered.
+      // The call is safe to make multiple times.
+      await messaging().registerDeviceForRemoteMessages();
       const status = await messaging().requestPermission();
       const authorized =
         status === messaging.AuthorizationStatus.AUTHORIZED ||

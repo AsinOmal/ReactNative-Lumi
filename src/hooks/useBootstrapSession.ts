@@ -29,8 +29,6 @@ import { createUserIfNew, isUserSuspended } from '../services/userService';
 import {
   fetchRemotePacks,
   fetchGlobalBlocklist,
-  fetchActiveBanner,
-  subscribeActiveBanner,
 } from '../services/remoteContentService';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { usePurchaseStore } from '../store/usePurchaseStore';
@@ -45,6 +43,7 @@ import {
 import {
   clearLocalUserState,
   hydrateUserOnSignIn,
+  pruneStaleKeys,
 } from '../services/localStateService';
 
 interface BootstrapResult {
@@ -67,9 +66,13 @@ export const useBootstrapSession = (): BootstrapResult => {
   const [suspendedError, setSuspendedError] = useState(false);
 
   useEffect(() => {
+    // One-shot cleanup of AsyncStorage keys that grow unbounded across long
+    // sessions (per-day screenTime totals, per-banner dismissal markers).
+    // Fire-and-forget — never blocks bootstrap.
+    pruneStaleKeys().catch(() => {});
+
     let activeUid: string | null = null;
     let unsubTokenRefresh: (() => void) | null = null;
-    let unsubBanner: (() => void) | null = null;
     let unsubForegroundFcm: (() => void) | null = null;
     const authInstance = getAuth(getApp());
     const unsub = onAuthStateChanged(authInstance, async (userState) => {
@@ -94,8 +97,6 @@ export const useBootstrapSession = (): BootstrapResult => {
         setSuspendedError(false);
         unloadSettings();
         unsubTokenRefresh?.();
-        unsubBanner?.();
-        unsubBanner = null;
         unsubForegroundFcm?.();
         unsubForegroundFcm = null;
         stopAmbient();
@@ -150,12 +151,6 @@ export const useBootstrapSession = (): BootstrapResult => {
       unsubForegroundFcm?.();
       unsubForegroundFcm = setupForegroundMessageHandler();
 
-      // Live banner subscription — admin publishes propagate without cold boot.
-      unsubBanner?.();
-      unsubBanner = subscribeActiveBanner((activeBanner) => {
-        setRemoteContent({ activeBanner });
-      });
-
       loadSettings(userState.uid);
 
       // Hydrate auth-store gates AND mirror Firestore data into AsyncStorage
@@ -179,19 +174,14 @@ export const useBootstrapSession = (): BootstrapResult => {
       loadRemoteModels().catch(() => {});
 
       try {
-        const [remotePacks, blocklist, activeBanner] = await Promise.all([
+        const [remotePacks, blocklist] = await Promise.all([
           fetchRemotePacks(),
           fetchGlobalBlocklist(),
-          fetchActiveBanner(),
         ]);
         if (sessionUid !== activeUid) {
           return;
         }
-        setRemoteContent({
-          remotePacks,
-          globalBlocklist: blocklist,
-          activeBanner,
-        });
+        setRemoteContent({ remotePacks, globalBlocklist: blocklist });
         mergeGlobalBlocklist(blocklist);
       } catch (e) {
         console.warn('[useBootstrapSession] remote content fetch:', e);
@@ -215,7 +205,6 @@ export const useBootstrapSession = (): BootstrapResult => {
     return () => {
       unsub();
       unsubTokenRefresh?.();
-      unsubBanner?.();
       unsubForegroundFcm?.();
       stopAmbient();
     };
