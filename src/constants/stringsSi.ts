@@ -116,10 +116,18 @@ export const stringsSi = {
   packLocked: "ඇසුරුම අගුළු දමා ඇත",
   packLockedComingSoon: "ප්‍රිමියම් ඇසුරුම් ළඟදීම.",
   packGateHeading: "මෙම ඇසුරුම ගන්න",
-  packGateSubtext: "එකවරක් බාගෙන ඕෆ්ලයින් ක්‍රීඩා කරන්න.",
+  packGateSubtext: "ඇසුරුම බාගෙන ඕෆ්ලයින් ක්‍රීඩා කරන්න.",
   packGateCta: "බාගන්න",
   packGateDismiss: "දැන් නොවේ",
   packFoundFmt: (word: string) => `ඔබ "${word}" සොයා ගත්තා!`,
+  packDetailPreview: "පෙරදසුන", // TODO: native-speaker review
+  packDetailWordsSection: "මෙම ඇසුරුමේ වචන", // TODO: native-speaker review
+  packDetailNotDownloaded: "තවම බාගත කර නැත", // TODO: native-speaker review
+  packDetailDownloaded: "බාගත කර ඇත", // TODO: native-speaker review
+  packDetailReadyOffline: "ඕෆ්ලයින් ක්‍රීඩාවට සූදානම්", // TODO: native-speaker review
+  packGateBelongsTo: (packName: string) => `මෙම වචනය ${packName} ට අයිතිය.`, // TODO: native-speaker review
+  packGateCtaFmt: (packName: string) => `${packName} බාගන්න`, // TODO: native-speaker review
+  PREMIUM_GATE_CTA_PACK: (packName: string, price: string) => `${packName} අගුළු ඇරීමට · ${price}`, // TODO: native-speaker review
 
   // Onboarding
   onboardingSlide0Title: "Lumi වෙත සාදරයෙන් පිළිගනිමු!",

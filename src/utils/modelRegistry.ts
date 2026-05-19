@@ -1,18 +1,39 @@
 /**
- * Model Registry — maps each word to its local .glb asset, syllable
- * breakdown, and pronunciation audio file.
+ * Model Registry — single entry point for resolving a word to its 3D model,
+ * scale/position calibration, syllables, audio, and Sinhala label.
  *
- * Scale calculation methodology:
- *   actual_render_size = geometry_bbox * internal_matrix_scale
- *   viro_scale = target_size_meters / geometry_bbox (Viro applies scale on top of GLB transforms)
+ * All model + audio assets are admin-uploaded to Firebase Storage. Per-word
+ * metadata lives in Firestore at `/models/{word}` (see RemoteModelEntry).
+ * The in-binary `MODEL_REGISTRY` is intentionally empty — we removed ~77 MB
+ * of bundled fruits/vegetables/vehicles GLBs once admin upload was wired.
  *
- * Fruits — hand-calibrated on device (scale values are final):
- *   apple: bbox 82u / apple:0.0037  banana: 0.00065  cherry: 0.050  grape: 0.012
- *   lemon: 0.038  pineapple: 3.5  strawberry: 0.60  watermelon: 0.052
+ * Resolution order in getModel():
+ *   1. downloaded local file (file://... — fastest, offline-capable)
+ *   2. remote Firestore URL (streamed, still works without download)
+ *   3. bundled require() in MODEL_REGISTRY (legacy fallback, currently empty)
  *
- * ⚠️ Vegetables & Vehicles scales are PLACEHOLDER (0.5 default).
- *   Test each on device and update — wrong scale = model too large/small in AR.
- *   Audio files (.mp3) for vegetables and vehicles also need to be added to the iOS bundle.
+ * Calibration reference (preserved for the admin docs at /models/{word}):
+ *   Fruits — scale | positionY | positionZ
+ *     apple       0.0037  | 0 | -1.0
+ *     banana      0.00065 | 0 | -1.0
+ *     cherry      0.05    | 0 | -1.0
+ *     grape       0.012   | 0 | -1.0
+ *     lemon       0.038   | 0 | -1.0
+ *     mango       0.6     | 0 | -0.35
+ *     orange      0.6     | 0 | -0.35
+ *     pineapple   3.5     | 0 | -0.8
+ *     strawberry  0.6     | 0 | -1.0
+ *     watermelon  0.052   | 0 | -1.0
+ *   Vegetables + vehicles — uncalibrated (placeholder 0.1 / 0.5). Test each
+ *   on device before publishing.
+ *
+ * Cache invariants:
+ *   - `_entryCache` only stores SUCCESSFUL resolutions (no nulls). A null
+ *     would lock in stale "missing" state when packs are mid-hydration.
+ *   - LRU-bounded to MAX_CACHE — prevents unbounded growth across long
+ *     scanning sessions.
+ *   - invalidateModelCache(words) is called by usePackDownload on
+ *     complete/remove so a freshly-downloaded GLB swaps in immediately.
  */
 
 import { useRemoteContentStore } from '../store/useRemoteContentStore';
@@ -44,14 +65,6 @@ const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   sinhalaLabel: r.sinhalaLabel,
 });
 
-// In-memory cache: AR loops call getModel many times per frame. Invalidated
-// whenever a pack's downloaded state changes (see usePackDownload hook).
-const _entryCache = new Map<string, ModelEntry | null>();
-
-export function invalidateModelCache(words: string[]): void {
-  words.forEach((w) => _entryCache.delete(w.toLowerCase()));
-}
-
 const downloadedToEntry = (
   r: RemoteModelEntry,
   modelPath: string,
@@ -68,136 +81,97 @@ const downloadedToEntry = (
   sinhalaLabel: r.sinhalaLabel,
 });
 
-export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
-  // ── Fruits Pack ───────────────────────────────────────────────────────────
-  // TODO: verify all sinhalaLabel values with a native Sinhala speaker
-  apple: {
-    source: require('../assets/models/fruits/apple.glb'),
-    scale: [0.0037, 0.0037, 0.0037],
-    position: [0, 0, -1.0],
-    syllables: ['Ap', 'ple'],
-    audio: 'apple.mp3',
-    emoji: '🍎',
-    sinhalaLabel: 'ඇපල්',
-  },
-  banana: {
-    source: require('../assets/models/fruits/banana.glb'),
-    scale: [0.00065, 0.00065, 0.00065],
-    position: [0, 0, -1.0],
-    syllables: ['Ba', 'na', 'na'],
-    audio: 'banana.mp3',
-    emoji: '🍌',
-    sinhalaLabel: 'කෙසෙල්',
-  },
-  cherry: {
-    source: require('../assets/models/fruits/cherry.glb'),
-    scale: [0.05, 0.05, 0.05],
-    position: [0, 0, -1.0],
-    syllables: ['Cher', 'ry'],
-    audio: 'cherry.mp3',
-    emoji: '🍒',
-    sinhalaLabel: 'චෙරි',
-  },
-  grape: {
-    source: require('../assets/models/fruits/grape.glb'),
-    scale: [0.012, 0.012, 0.012],
-    position: [0, 0, -1.0],
-    syllables: ['Grape'],
-    audio: 'grape.mp3',
-    emoji: '🍇',
-    sinhalaLabel: 'මිදි',
-  },
-  lemon: {
-    source: require('../assets/models/fruits/lemon.glb'),
-    scale: [0.038, 0.038, 0.038],
-    position: [0, 0, -1.0],
-    syllables: ['Lem', 'on'],
-    audio: 'lemon.mp3',
-    emoji: '🍋',
-    sinhalaLabel: 'දෙහි',
-  },
-  mango: {
-    source: require('../assets/models/fruits/mango.glb'),
-    scale: [0.6, 0.6, 0.6],
-    position: [0, 0, -0.35],
-    syllables: ['Man', 'go'],
-    audio: 'mango.mp3',
-    emoji: '🥭',
-    sinhalaLabel: 'අඹ',
-  },
-  orange: {
-    source: require('../assets/models/fruits/orange.glb'),
-    scale: [0.6, 0.6, 0.6],
-    position: [0, 0, -0.35],
-    syllables: ['Or', 'ange'],
-    audio: 'orange.mp3',
-    emoji: '🍊',
-    sinhalaLabel: 'දොඩම්',
-  },
-  pineapple: {
-    source: require('../assets/models/fruits/pineapple.glb'),
-    scale: [3.5, 3.5, 3.5],
-    position: [0, 0, -0.8],
-    syllables: ['Pine', 'ap', 'ple'],
-    audio: 'pineapple.mp3',
-    emoji: '🍍',
-    sinhalaLabel: 'අන්නාසි',
-  },
-  strawberry: {
-    source: require('../assets/models/fruits/strawberry.glb'),
-    scale: [0.6, 0.6, 0.6],
-    position: [0, 0, -1.0],
-    syllables: ['Straw', 'ber', 'ry'],
-    audio: 'strawberry.mp3',
-    emoji: '🍓',
-    sinhalaLabel: 'ස්ට්‍රෝබෙරි',
-  },
-  watermelon: {
-    source: require('../assets/models/fruits/watermelon.glb'),
-    scale: [0.052, 0.052, 0.052],
-    position: [0, 0, -1.0],
-    syllables: ['Wa', 'ter', 'mel', 'on'],
-    audio: 'watermelon.mp3',
-    emoji: '🍉',
-    sinhalaLabel: 'ඉදි වට්ටක්කා',
-  },
+// Map preserves insertion order — used for the LRU eviction policy below.
+const _entryCache = new Map<string, ModelEntry>();
+// Practical ceiling for a long scan session. 50 is overkill for typical
+// usage (the active pack rarely exceeds 10 words) but bounds memory if a
+// kid pings through every pack they own.
+const MAX_CACHE = 50;
 
-  // ── Vegetables Pack ───────────────────────────────────────────────────────
-  // 🚧 DISABLED — scales uncalibrated, re-enable after on-device testing
-  // broccoli:   { source: require('../assets/models/vegetables/broccoli.glb'),     scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Broc', 'co', 'li'],       audio: 'broccoli.mp3',   emoji: '🥦' },
-  // carrot:     { source: require('../assets/models/vegetables/carrot.glb'),       scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Car', 'rot'],             audio: 'carrot.mp3',     emoji: '🥕' },
-  // chili:      { source: require('../assets/models/vegetables/chili_pepper.glb'), scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Chi', 'li'],              audio: 'chili.mp3',      emoji: '🌶️' },
-  // corn:       { source: require('../assets/models/vegetables/corn.glb'),         scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Corn'],                   audio: 'corn.mp3',       emoji: '🌽' },
-  // cucumber:   { source: require('../assets/models/vegetables/cucumber.glb'),     scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Cu', 'cum', 'ber'],       audio: 'cucumber.mp3',   emoji: '🥒' },
-  // eggplant:   { source: require('../assets/models/vegetables/eggplant.glb'),     scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Egg', 'plant'],           audio: 'eggplant.mp3',   emoji: '🍆' },
-  // onion:      { source: require('../assets/models/vegetables/onion.glb'),        scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['On', 'ion'],              audio: 'onion.mp3',      emoji: '🧅' },
-  // potato:     { source: require('../assets/models/vegetables/potato.glb'),       scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Po', 'ta', 'to'],         audio: 'potato.mp3',     emoji: '🥔' },
-  // pumpkin:    { source: require('../assets/models/vegetables/pumpkin.glb'),      scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Pump', 'kin'],            audio: 'pumpkin.mp3',    emoji: '🎃' },
-  // tomato:     { source: require('../assets/models/vegetables/tomato.glb'),       scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['To', 'ma', 'to'],         audio: 'tomato.mp3',     emoji: '🍅' },
-
-  // ── Vehicles Pack ─────────────────────────────────────────────────────────
-  // 🚧 DISABLED — scales uncalibrated, re-enable after on-device testing
-  // bicycle:    { source: require('../assets/models/vehicles/bicycle.glb'),    scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Bi', 'cy', 'cle'],         audio: 'bicycle.mp3',    emoji: '🚲' },
-  // boat:       { source: require('../assets/models/vehicles/boat.glb'),       scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Boat'],                    audio: 'boat.mp3',       emoji: '🚤' },
-  // bus:        { source: require('../assets/models/vehicles/bus.glb'),        scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Bus'],                     audio: 'bus.mp3',        emoji: '🚌' },
-  // car:        { source: require('../assets/models/vehicles/car.glb'),        scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Car'],                     audio: 'car.mp3',        emoji: '🚗' },
-  // helicopter: { source: require('../assets/models/vehicles/helicopter.glb'), scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['He', 'li', 'cop', 'ter'], audio: 'helicopter.mp3', emoji: '🚁' },
-  // plane:      { source: require('../assets/models/vehicles/plane.glb'),      scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Plane'],                   audio: 'plane.mp3',      emoji: '✈️' },
-  // rocket:     { source: require('../assets/models/vehicles/rocket.glb'),     scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Rock', 'et'],              audio: 'rocket.mp3',     emoji: '🚀' },
-  // tractor:    { source: require('../assets/models/vehicles/tractor.glb'),    scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Trac', 'tor'],             audio: 'tractor.mp3',    emoji: '🚜' },
-  // train:      { source: require('../assets/models/vehicles/train.glb'),      scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Train'],                   audio: 'train.mp3',      emoji: '🚂' },
-  // truck:      { source: require('../assets/models/vehicles/truck.glb'),      scale: [0.1, 0.1, 0.1], position: [0, 0, -1.0], syllables: ['Truck'],                   audio: 'truck.mp3',      emoji: '🚚' },
+const setCache = (key: string, value: ModelEntry): void => {
+  // Re-insert moves the key to the "most recently used" end of insertion
+  // order so eviction always drops the genuinely oldest entry.
+  _entryCache.delete(key);
+  _entryCache.set(key, value);
+  if (_entryCache.size > MAX_CACHE) {
+    const oldest = _entryCache.keys().next().value;
+    if (oldest !== undefined) {
+      _entryCache.delete(oldest);
+    }
+  }
 };
 
-/**
- * Three-tier resolution: (1) downloaded local GLB (file:// URI with assetVersion
- * cache-bust query string), (2) remote Firestore URL, (3) bundled require().
- * Cached in-memory; invalidated by the download hook on complete/remove.
- */
+export function invalidateModelCache(words: string[]): void {
+  words.forEach((w) => _entryCache.delete(w.toLowerCase()));
+}
+
+// Tier 1 — miscellaneous words bundled with the binary. Available offline on
+// first launch with no download or account required. Scale values are
+// placeholders — calibrate on device and update before App Store submission.
+export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
+  balloon: {
+    source: require('../assets/models/misc/balloon.glb'),
+    scale: [0.1, 0.1, 0.1],
+    position: [0, 0, -1.0],
+    syllables: ['bal', 'loon'],
+    audio: 'balloon.mp3',
+    emoji: '🎈',
+    sinhalaLabel: 'බැලූන්',
+  },
+  cat: {
+    source: require('../assets/models/misc/cat.glb'),
+    scale: [0.5, 0.5, 0.5],
+    position: [0, 0, -1.0],
+    syllables: ['cat'],
+    audio: 'cat.mp3',
+    emoji: '🐱',
+    sinhalaLabel: 'බළලා',
+  },
+  fish: {
+    source: require('../assets/models/misc/fish.glb'),
+    scale: [0.1, 0.1, 0.1],
+    position: [0, 0, -1.0],
+    syllables: ['fish'],
+    audio: 'fish.mp3',
+    emoji: '🐟',
+    sinhalaLabel: 'මාළුවා',
+  },
+  hat: {
+    source: require('../assets/models/misc/hat.glb'),
+    scale: [0.1, 0.1, 0.1],
+    position: [0, 0, -1.0],
+    syllables: ['hat'],
+    audio: 'hat.mp3',
+    emoji: '🎩',
+    sinhalaLabel: 'තොප්පිය',
+  },
+  ship: {
+    source: require('../assets/models/misc/ship.glb'),
+    scale: [0.00005, 0.00005, 0.00005],
+    position: [0, 0, -1.0],
+    syllables: ['ship'],
+    audio: 'ship.mp3',
+    emoji: '🚢',
+    sinhalaLabel: 'නෞකාව',
+  },
+  teddy: {
+    source: require('../assets/models/misc/teddy.glb'),
+    scale: [0.1, 0.1, 0.1],
+    position: [0, 0, -1.0],
+    syllables: ['ted', 'dy'],
+    audio: 'teddy.mp3',
+    emoji: '🧸',
+    sinhalaLabel: 'ටෙඩි',
+  },
+};
+
 export const getModel = (word: string): ModelEntry | null => {
   const key = word.toLowerCase();
-  if (_entryCache.has(key)) {
-    return _entryCache.get(key) ?? null;
+  const cached = _entryCache.get(key);
+  if (cached) {
+    // Touch the key so a frequently-used model resists eviction.
+    setCache(key, cached);
+    return cached;
   }
 
   const remote = useRemoteContentStore.getState().remoteModels[key];
@@ -222,6 +196,8 @@ export const getModel = (word: string): ModelEntry | null => {
     entry = MODEL_REGISTRY[key] ?? null;
   }
 
-  _entryCache.set(key, entry);
+  if (entry) {
+    setCache(key, entry);
+  }
   return entry;
 };

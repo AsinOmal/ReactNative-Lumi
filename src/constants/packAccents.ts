@@ -24,6 +24,14 @@ export const PACK_ICON: Record<string, string> = {
   space: 'rocket-launch',
 };
 
+export const PACK_EMOJI: Record<string, string> = {
+  fruits: '🍎',
+  vegetables: '🥦',
+  vehicles: '🚗',
+  dinosaurs: '🦕',
+  space: '🚀',
+};
+
 export const getPackAccent = (packId: string): string =>
   PACK_ACCENT[packId] ?? colors.primary;
 
@@ -32,3 +40,6 @@ export const getPackGradient = (packId: string): string[] =>
 
 export const getPackIcon = (packId: string): string =>
   PACK_ICON[packId] ?? 'cube-outline';
+
+export const getPackEmoji = (packId: string): string =>
+  PACK_EMOJI[packId] ?? '📦';
