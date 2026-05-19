@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -47,11 +48,10 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
       <View style={styles.card}>
         <View style={styles.header}>
           {pack.coverImageUrl ? (
-            <Image
-              source={{ uri: pack.coverImageUrl, cache: 'force-cache' }}
+            <FastImage
+              source={{ uri: pack.coverImageUrl }}
               style={StyleSheet.absoluteFill}
-              resizeMode="cover"
-              fadeDuration={0}
+              resizeMode={FastImage.resizeMode.cover}
             />
           ) : (
             <LinearGradient colors={gradient} style={StyleSheet.absoluteFill}>

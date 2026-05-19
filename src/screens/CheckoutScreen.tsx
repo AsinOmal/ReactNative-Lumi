@@ -12,9 +12,9 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   StatusBar,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -87,10 +87,10 @@ export const CheckoutScreen = () => {
       <View style={styles.sheet}>
         <View style={styles.heroWrap}>
           {heroUri ? (
-            <Image
+            <FastImage
               source={{ uri: heroUri }}
               style={styles.heroImg}
-              resizeMode="cover"
+              resizeMode={FastImage.resizeMode.cover}
             />
           ) : (
             <View style={[styles.heroImg, { backgroundColor: accent }]}>
