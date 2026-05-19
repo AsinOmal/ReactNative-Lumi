@@ -14,16 +14,16 @@ import {
   useRoute,
   useIsFocused,
 } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { Pack } from '../types/pack';
 import { getPackAccent } from '../constants/packAccents';
-import { strings as enStrings } from '../constants/strings';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { useStrings } from '../hooks/useStrings';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { usePurchaseStore } from '../store/usePurchaseStore';
 import { SkyScene } from '../components/scenes/SkyScene';
 import { PackDetailCTA } from '../components/library/PackDetailCTA';
+import { PackDetailHeader } from '../components/library/PackDetailHeader';
 import { styles } from './PackDetailScreenStyles';
 
 export const PackDetailScreen = () => {
@@ -33,6 +33,7 @@ export const PackDetailScreen = () => {
   const isFocused = useIsFocused();
   const { pack } = route.params as { pack: Pack };
   const accent = getPackAccent(pack.id);
+  const strings = useStrings();
   const language = useLanguageStore((s) => s.language);
   const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
 
@@ -41,7 +42,7 @@ export const PackDetailScreen = () => {
   const Background: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     pack.detailImageUrl ? (
       <ImageBackground
-        source={{ uri: pack.detailImageUrl }}
+        source={{ uri: pack.detailImageUrl, cache: 'force-cache' }}
         style={styles.bg}
         resizeMode="cover"
       >
@@ -52,10 +53,6 @@ export const PackDetailScreen = () => {
     );
 
   if (pack.isPremium && !isPurchased) {
-    // Hero source — prefers the gate art (typically the most polished asset),
-    // falls back to the cover. Both are admin-uploaded so this gracefully
-    // degrades for packs that only have one of them.
-    const heroUri = pack.gateImageUrl ?? pack.coverImageUrl;
     const valuePills = [
       { icon: 'cube-outline', label: `${pack.wordCount} 3D models` },
       { icon: 'locate-outline', label: 'AR Word Hunt' },
@@ -64,21 +61,12 @@ export const PackDetailScreen = () => {
     return (
       <Background>
         <StatusBar barStyle="light-content" />
-        <LinearGradient
-          colors={[accent, `${accent}CC`]}
-          style={[styles.header, { paddingTop: insets.top + 12 }]}
-        >
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation.goBack()}
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-          >
-            <Ionicons name="chevron-back" size={28} color="#FFF" />
-          </TouchableOpacity>
-          <Text style={styles.packName}>{pack.name}</Text>
-          <View style={{ width: 44 }} />
-        </LinearGradient>
+        <PackDetailHeader
+          pack={pack}
+          accent={accent}
+          insets={insets}
+          onBack={() => navigation.goBack()}
+        />
         <ScrollView
           contentContainerStyle={[
             styles.lockScroll,
@@ -86,34 +74,6 @@ export const PackDetailScreen = () => {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          {/* Hero block — the art is the "why you want this". Lock chip
-              floats top-right so the value of the pack is what the eye lands
-              on first, not the lock itself. */}
-          <View style={styles.lockHeroWrap}>
-            {heroUri ? (
-              <Image
-                source={{ uri: heroUri }}
-                style={styles.lockHeroImg}
-                resizeMode="cover"
-              />
-            ) : (
-              <LinearGradient
-                colors={[accent, `${accent}99`]}
-                style={styles.lockHeroImg}
-              >
-                <Ionicons
-                  name="cube-outline"
-                  size={72}
-                  color="rgba(255,255,255,0.85)"
-                />
-              </LinearGradient>
-            )}
-            <View style={styles.lockChip}>
-              <Ionicons name="lock-closed" size={14} color="#FFF" />
-              <Text style={styles.lockChipText}>Locked</Text>
-            </View>
-          </View>
-
           <View style={styles.lockCard}>
             <Text style={styles.lockTitle}>{pack.name}</Text>
             <Text style={styles.lockBody}>
@@ -165,7 +125,7 @@ export const PackDetailScreen = () => {
             >
               <Ionicons name="lock-open-outline" size={20} color="#FFF" />
               <Text style={styles.unlockBtnText}>
-                Unlock — {enStrings.PACK_PRICE}
+                Unlock — {strings.PACK_PRICE}
               </Text>
             </TouchableOpacity>
             <Text style={styles.unlockHint}>One-time purchase</Text>
@@ -178,21 +138,12 @@ export const PackDetailScreen = () => {
   return (
     <Background>
       <StatusBar barStyle="light-content" />
-      <LinearGradient
-        colors={[accent, `${accent}BB`]}
-        style={[styles.header, { paddingTop: insets.top + 12 }]}
-      >
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-        >
-          <Ionicons name="chevron-back" size={28} color="#FFF" />
-        </TouchableOpacity>
-        <Text style={styles.packName}>{pack.name}</Text>
-        <View style={{ width: 44 }} />
-      </LinearGradient>
+      <PackDetailHeader
+        pack={pack}
+        accent={accent}
+        insets={insets}
+        onBack={() => navigation.goBack()}
+      />
 
       <ScrollView
         style={styles.body}

@@ -4,21 +4,6 @@ import { colors } from '../constants/colors';
 export const styles = StyleSheet.create({
   container: { flex: 1 },
   bg: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-    gap: 8,
-  },
-  backBtn: { padding: 8, width: 44 },
-  packName: {
-    flex: 1,
-    textAlign: 'center',
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 28,
-    color: '#FFF',
-  },
   body: { flex: 1 },
   scroll: { paddingHorizontal: 16, paddingTop: 16, gap: 10 },
   wordRow: {
@@ -53,45 +38,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textMid,
   },
-  // Premium lock scroll — no extra padding on the sides, the card and hero
-  // handle their own margin so the hero can sit flush against the card.
   lockScroll: { paddingTop: 16, gap: 0 },
-  // Hero wrapper for the lock branch — holds the cover art + floating lock
-  // chip. 16:10ish aspect so the image reads as a poster, not a tile.
-  lockHeroWrap: {
-    marginHorizontal: 16,
-    borderRadius: 24,
-    overflow: 'hidden',
-    aspectRatio: 1.5,
-    backgroundColor: colors.primaryLight,
-  },
-  lockHeroImg: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  // Floating "Locked" chip in top-right of hero — small enough not to
-  // overpower the art but always visible.
-  lockChip: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 14,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-  },
-  lockChipText: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 12,
-    color: '#FFFFFF',
-    letterSpacing: 0.3,
-  },
-  // Lock card — sits below the hero, holds the value pills + CTA.
+  // Lock card — sits below the header, holds the value pills + CTA.
   lockCard: {
     backgroundColor: colors.backgroundCard,
     borderRadius: 28,
