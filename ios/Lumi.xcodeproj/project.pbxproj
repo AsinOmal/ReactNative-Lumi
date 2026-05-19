@@ -10,22 +10,16 @@
 		00E356F31AD99517003FC87E /* LumiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* LumiTests.m */; };
 		0353E3AEC6B916F4A37B97DE /* Pods_Lumi_LumiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A42C9004E87AC48AE5499CDC /* Pods_Lumi_LumiTests.framework */; };
 		060F4EE8000C4F5D98D7274F /* Fredoka-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D51DBDA73B6449A59DE15D31 /* Fredoka-Bold.ttf */; };
+		06C196EDDB6F4328B3E60C04 /* Maname-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */; };
 		07AD223A5EBB8F12EACD6004 /* Pods_Lumi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69951C02221BAA035AD917F /* Pods_Lumi.framework */; };
 		102B82C930D946CEB8C004D4 /* Catchy-Melody.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B83D5A8BEA544D28ACEC161A /* Catchy-Melody.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1877C91588535F84B186089E /* fish.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BC2F95672D5657CAB79A9E63 /* fish.mp3 */; };
+		190C2FB2667354D0A127AED0 /* hat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5293E0C9BA2A526390C6D022 /* hat.mp3 */; };
+		3690BB305E064CD695D9496E /* Maname-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */; };
 		3DA54C259B154B99AECE1FC2 /* Fredoka-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C20DFABE40B4785B268300C /* Fredoka-Regular.ttf */; };
-		442AEE7A2F6076C000E674A1 /* strawberry.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE772F6076C000E674A1 /* strawberry.mp3 */; };
-		442AEE7B2F6076C000E674A1 /* watermelon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE782F6076C000E674A1 /* watermelon.mp3 */; };
-		442AEE7C2F6076C000E674A1 /* apple.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE6F2F6076C000E674A1 /* apple.mp3 */; };
-		442AEE7D2F6076C000E674A1 /* pineapple.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE762F6076C000E674A1 /* pineapple.mp3 */; };
-		442AEE7E2F6076C000E674A1 /* lemon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE732F6076C000E674A1 /* lemon.mp3 */; };
-		442AEE7F2F6076C000E674A1 /* banana.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE702F6076C000E674A1 /* banana.mp3 */; };
-		442AEE802F6076C000E674A1 /* orange.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE752F6076C000E674A1 /* orange.mp3 */; };
-		442AEE812F6076C000E674A1 /* grape.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE722F6076C000E674A1 /* grape.mp3 */; };
-		442AEE822F6076C000E674A1 /* cherry.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE712F6076C000E674A1 /* cherry.mp3 */; };
-		442AEE832F6076C000E674A1 /* mango.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 442AEE742F6076C000E674A1 /* mango.mp3 */; };
 		44CA06202F5876BB0078D79E /* LumiVisionOCR.m in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */; };
 		44CA06212F5876BB0078D79E /* LumiVisionOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */; };
 		7F76C9C2CAF644C482FB2791 /* Fredoka-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */; };
@@ -33,9 +27,11 @@
 		8DB37A11B3754A85A1E155D7 /* Fredoka-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B7DBDFDCC3DF460ABDFBF666 /* Fredoka-SemiBold.ttf */; };
 		93F8CF13612048FF9D6163E9 /* Fredoka-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */; };
 		9C5351FDCCD4475DA9B6C7AD /* SpicyRice-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1314E620953B409993ED47A9 /* SpicyRice-Regular.ttf */; };
+		BA4D493EA6B15322A9E81187 /* cat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 394EB557A497549EA4B6E0C3 /* cat.mp3 */; };
+		CFE8F457EDE85E119FF3667C /* teddy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 149998AEC58F5C4FBF78E5D7 /* teddy.mp3 */; };
+		E2A67706D02857549CD9AC7B /* ship.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 64D696A68EA0577A932F89C3 /* ship.mp3 */; };
 		E5C3E271CEB5BBA954BA606B /* GoogleService-Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = 230D6605A428AC9107212170 /* GoogleService-Info.plist */; };
-		3690BB305E064CD695D9496E /* Maname-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */; };
-		06C196EDDB6F4328B3E60C04 /* Maname-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */; };
+		F4A8261C5E605823B8ACB8AE /* balloon.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1B3E0A0521254708A7C5046 /* balloon.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,24 +55,18 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Lumi/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Lumi/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Lumi/main.m; sourceTree = "<group>"; };
+		149998AEC58F5C4FBF78E5D7 /* teddy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = teddy.mp3; sourceTree = "<group>"; };
 		230D6605A428AC9107212170 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2565EC9BB2E14FA3A8A3B340 /* Fredoka-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Medium.ttf"; path = "../src/assets/fonts/Fredoka-Medium.ttf"; sourceTree = "<group>"; };
+		394EB557A497549EA4B6E0C3 /* cat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat.mp3; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Lumi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi.debug.xcconfig"; path = "Target Support Files/Pods-Lumi/Pods-Lumi.debug.xcconfig"; sourceTree = "<group>"; };
 		3C20DFABE40B4785B268300C /* Fredoka-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Regular.ttf"; path = "../src/assets/fonts/Fredoka-Regular.ttf"; sourceTree = "<group>"; };
-		442AEE6F2F6076C000E674A1 /* apple.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = apple.mp3; sourceTree = "<group>"; };
-		442AEE702F6076C000E674A1 /* banana.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = banana.mp3; sourceTree = "<group>"; };
-		442AEE712F6076C000E674A1 /* cherry.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cherry.mp3; sourceTree = "<group>"; };
-		442AEE722F6076C000E674A1 /* grape.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = grape.mp3; sourceTree = "<group>"; };
-		442AEE732F6076C000E674A1 /* lemon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lemon.mp3; sourceTree = "<group>"; };
-		442AEE742F6076C000E674A1 /* mango.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = mango.mp3; sourceTree = "<group>"; };
-		442AEE752F6076C000E674A1 /* orange.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = orange.mp3; sourceTree = "<group>"; };
-		442AEE762F6076C000E674A1 /* pineapple.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = pineapple.mp3; sourceTree = "<group>"; };
-		442AEE772F6076C000E674A1 /* strawberry.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = strawberry.mp3; sourceTree = "<group>"; };
-		442AEE782F6076C000E674A1 /* watermelon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = watermelon.mp3; sourceTree = "<group>"; };
 		44CA061E2F5876BB0078D79E /* LumiVisionOCR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LumiVisionOCR.m; sourceTree = "<group>"; };
 		44CA061F2F5876BB0078D79E /* LumiVisionOCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiVisionOCR.swift; sourceTree = "<group>"; };
+		5293E0C9BA2A526390C6D022 /* hat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = hat.mp3; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Lumi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi.release.xcconfig"; path = "Target Support Files/Pods-Lumi/Pods-Lumi.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-Lumi-LumiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi-LumiTests.debug.xcconfig"; path = "Target Support Files/Pods-Lumi-LumiTests/Pods-Lumi-LumiTests.debug.xcconfig"; sourceTree = "<group>"; };
+		64D696A68EA0577A932F89C3 /* ship.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ship.mp3; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Lumi/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Lumi-LumiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lumi-LumiTests.release.xcconfig"; path = "Target Support Files/Pods-Lumi-LumiTests/Pods-Lumi-LumiTests.release.xcconfig"; sourceTree = "<group>"; };
 		8BC8DAD2D85C44FBBC128487 /* Fredoka-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Light.ttf"; path = "../src/assets/fonts/Fredoka-Light.ttf"; sourceTree = "<group>"; };
@@ -84,9 +74,11 @@
 		A69951C02221BAA035AD917F /* Pods_Lumi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Lumi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7DBDFDCC3DF460ABDFBF666 /* Fredoka-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-SemiBold.ttf"; path = "../src/assets/fonts/Fredoka-SemiBold.ttf"; sourceTree = "<group>"; };
 		B83D5A8BEA544D28ACEC161A /* Catchy-Melody.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Catchy-Melody.ttf"; path = "../src/assets/fonts/Catchy-Melody.ttf"; sourceTree = "<group>"; };
+		BC2F95672D5657CAB79A9E63 /* fish.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fish.mp3; sourceTree = "<group>"; };
+		BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Maname-Regular.ttf"; path = "../src/assets/fonts/Maname-Regular.ttf"; sourceTree = "<group>"; };
 		D51DBDA73B6449A59DE15D31 /* Fredoka-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fredoka-Bold.ttf"; path = "../src/assets/fonts/Fredoka-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		BF5235ED7E1E4C5D8EAD9307 /* Maname-Regular.ttf */ = {isa = PBXFileReference; name = "Maname-Regular.ttf"; path = "../src/assets/fonts/Maname-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F1B3E0A0521254708A7C5046 /* balloon.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = balloon.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,18 +145,14 @@
 		442AEE792F6076C000E674A1 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				442AEE6F2F6076C000E674A1 /* apple.mp3 */,
-				442AEE702F6076C000E674A1 /* banana.mp3 */,
-				442AEE712F6076C000E674A1 /* cherry.mp3 */,
-				442AEE722F6076C000E674A1 /* grape.mp3 */,
-				442AEE732F6076C000E674A1 /* lemon.mp3 */,
-				442AEE742F6076C000E674A1 /* mango.mp3 */,
-				442AEE752F6076C000E674A1 /* orange.mp3 */,
-				442AEE762F6076C000E674A1 /* pineapple.mp3 */,
-				442AEE772F6076C000E674A1 /* strawberry.mp3 */,
-				442AEE782F6076C000E674A1 /* watermelon.mp3 */,
+				F1B3E0A0521254708A7C5046 /* balloon.mp3 */,
+				394EB557A497549EA4B6E0C3 /* cat.mp3 */,
+				BC2F95672D5657CAB79A9E63 /* fish.mp3 */,
+				5293E0C9BA2A526390C6D022 /* hat.mp3 */,
+				64D696A68EA0577A932F89C3 /* ship.mp3 */,
+				149998AEC58F5C4FBF78E5D7 /* teddy.mp3 */,
 			);
-			path = audio;
+			path = ../src/assets/audio;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -324,16 +312,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				442AEE7A2F6076C000E674A1 /* strawberry.mp3 in Resources */,
-				442AEE7B2F6076C000E674A1 /* watermelon.mp3 in Resources */,
-				442AEE7C2F6076C000E674A1 /* apple.mp3 in Resources */,
-				442AEE7D2F6076C000E674A1 /* pineapple.mp3 in Resources */,
-				442AEE7E2F6076C000E674A1 /* lemon.mp3 in Resources */,
-				442AEE7F2F6076C000E674A1 /* banana.mp3 in Resources */,
-				442AEE802F6076C000E674A1 /* orange.mp3 in Resources */,
-				442AEE812F6076C000E674A1 /* grape.mp3 in Resources */,
-				442AEE822F6076C000E674A1 /* cherry.mp3 in Resources */,
-				442AEE832F6076C000E674A1 /* mango.mp3 in Resources */,
+				F4A8261C5E605823B8ACB8AE /* balloon.mp3 in Resources */,
+				BA4D493EA6B15322A9E81187 /* cat.mp3 in Resources */,
+				1877C91588535F84B186089E /* fish.mp3 in Resources */,
+				190C2FB2667354D0A127AED0 /* hat.mp3 in Resources */,
+				E2A67706D02857549CD9AC7B /* ship.mp3 in Resources */,
+				CFE8F457EDE85E119FF3667C /* teddy.mp3 in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				060F4EE8000C4F5D98D7274F /* Fredoka-Bold.ttf in Resources */,

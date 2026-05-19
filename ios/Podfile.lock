@@ -1416,6 +1416,18 @@ PODS:
   - hermes-engine/Pre-built (0.73.3)
   - leveldb-library (1.22.6)
   - libevent (2.1.12)
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
+    - libwebp/webp
+  - libwebp/mux (1.5.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
   - lottie-ios (3.4.4)
   - lottie-react-native (5.1.6):
     - lottie-ios (~> 3.4.0)
@@ -2479,6 +2491,10 @@ PODS:
   - RecaptchaInterop (101.0.0)
   - RNCAsyncStorage (2.2.0):
     - React-Core
+  - RNFastImage (8.6.3):
+    - React-Core
+    - SDWebImage (~> 5.11.1)
+    - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (23.8.6):
     - Firebase/CoreOnly (= 12.8.0)
     - glog
@@ -2531,6 +2547,12 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - SDWebImage (5.11.1):
+    - SDWebImage/Core (= 5.11.1)
+  - SDWebImage/Core (5.11.1)
+  - SDWebImageWebPCoder (0.8.5):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.1)
   - ViroKit (1.0):
     - React
@@ -2609,6 +2631,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -2653,10 +2676,13 @@ SPEC REPOS:
     - GTMSessionFetcher
     - leveldb-library
     - libevent
+    - libwebp
     - lottie-ios
     - nanopb
     - PromisesObjC
     - RecaptchaInterop
+    - SDWebImage
+    - SDWebImageWebPCoder
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2771,6 +2797,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNFastImage:
+    :path: "../node_modules/react-native-fast-image"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -2836,6 +2864,7 @@ SPEC CHECKSUMS:
   hermes-engine: 5420539d016f368cd27e008f65f777abd6098c56
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
   lottie-react-native: 5d89c05930d4180a1e39b1757d46e6c0eec90255
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
@@ -2888,6 +2917,7 @@ SPEC CHECKSUMS:
   ReactCommon: 69cd9c1c2e2fbfc0d50bcaf850aa478cdfff7aa7
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
+  RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFBApp: 25f246a77f8b3a458ac5f1cd34ade26a7fb45f20
   RNFBAuth: a5964ccae9b457415bad15ab69809e98f2ccdb67
   RNFBFirestore: 35cf992bf2f9c68799ed04f8302625889eaecb2a
@@ -2899,6 +2929,8 @@ SPEC CHECKSUMS:
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: 043f603fc70d48d289bc3f2ceedbb05ce2636f5c
   RNVectorIcons: 433d2e7249acbcd2921118a2ea5f254cba798d31
+  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   ViroKit: 728e2547f4ac693a69fa7652813ec178a361dbd6
   ViroReact: 0fe7ad200cee750209ef1e767f677a90f4736bf0
