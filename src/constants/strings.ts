@@ -95,7 +95,8 @@ export const strings = {
   screenTimeLimitBody: (used: number, limit: number) =>
     `You've used ${used} of ${limit} minutes today. Great job learning!`,
   screenTimeLimitParentNote: 'Ask a parent to unlock more time.',
-  screenTimeLimitUnlock: 'Parent Unlock',
+  screenTimeLimitUnlock: 'Unlock with Parent PIN',
+  screenTimeLimitGrant5: '+ 5 more minutes',
 
   // Pack Downloads (Phase 10)
   downloadPack: 'Download Pack',
@@ -164,6 +165,7 @@ export const strings = {
   PREMIUM_GATE_CTA: (price: string) => `Unlock — ${price}`,
   PREMIUM_GATE_DISMISS: 'Maybe Later',
   PACK_PRICE: '$2.99',
+  PACK_WORDS_TO_DISCOVER: (count: number) => `${count} words to discover`,
 
   // Checkout
   CHECKOUT_TITLE: 'Unlock Pack',

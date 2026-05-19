@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import type { Pack } from '../../types/pack';
 import { getPackGradient, getPackIcon } from '../../constants/packAccents';
 import { colors } from '../../constants/colors';
-import { strings } from '../../constants/strings';
+import { useStrings } from '../../hooks/useStrings';
 import { usePackDownloadStore } from '../../store/usePackDownloadStore';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { playUI } from '../../utils/uiSound';
@@ -20,6 +20,7 @@ interface Props {
 export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const gradient = getPackGradient(pack.id);
   const icon = getPackIcon(pack.id);
+  const strings = useStrings();
   const dlStatus = usePackDownloadStore((s) => s.packs[pack.id]?.status);
   const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
   // Bundled (or legacy/undefined-typed) packs are already available — no badge.
