@@ -20,10 +20,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 import { Recipe } from '../../types/makeAMeal';
 import { RECIPES } from '../../data/recipes';
 import { colors } from '../../constants/colors';
+import { usePackStore } from '../../store/usePackStore';
+import { usePackDownloadStore } from '../../store/usePackDownloadStore';
 import { styles } from './RecipeSelectOverlayStyles';
 
 const BODY_BG = require('../../assets/backgrounds/make-a-meal-bg.png');
@@ -37,6 +39,26 @@ interface Props {
 
 export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const packs = usePackStore((s) => s.packs);
+  const isDownloaded = usePackDownloadStore((s) => s.isDownloaded);
+
+  const isRecipeLocked = (recipe: Recipe): boolean =>
+    recipe.requiredPackIds.some((packId) => {
+      const pack = packs.find((p) => p.id === packId);
+      return pack ? !isDownloaded(pack.id, pack.assetVersion ?? '1.0.0') : true;
+    });
+
+  const handleLockedPress = (recipe: Recipe) => {
+    const missingPackId = recipe.requiredPackIds.find((packId) => {
+      const pack = packs.find((p) => p.id === packId);
+      return pack ? !isDownloaded(pack.id, pack.assetVersion ?? '1.0.0') : true;
+    });
+    const pack = packs.find((p) => p.id === missingPackId);
+    if (pack) {
+      (navigation as any).navigate('PackDetail', { pack });
+    }
+  };
   return (
     <ImageBackground source={BODY_BG} style={styles.overlay} resizeMode="cover">
       {/* Translucent cream veil over the wood so card titles + chip text stay
@@ -77,46 +99,42 @@ export const RecipeSelectOverlay = ({ onSelect, onBack }: Props) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.grid}>
-          {RECIPES.map((recipe) => (
-            <TouchableOpacity
-              key={recipe.id}
-              style={styles.card}
-              onPress={() => onSelect(recipe)}
-              activeOpacity={0.85}
-              accessibilityLabel={recipe.name}
-              accessibilityHint="Double tap to select this recipe"
-              accessibilityRole="button"
-            >
-              <View style={styles.cardImageWrap}>
-                {recipe.image ? (
-                  <Image
-                    source={recipe.image}
-                    style={styles.cardImage}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name="silverware-fork-knife"
-                    size={56}
-                    color="#C48A4A"
-                  />
+          {RECIPES.map((recipe) => {
+            const locked = isRecipeLocked(recipe);
+            return (
+              <TouchableOpacity
+                key={recipe.id}
+                style={[styles.card, locked && styles.cardLocked]}
+                onPress={locked ? () => handleLockedPress(recipe) : () => onSelect(recipe)}
+                activeOpacity={locked ? 1 : 0.85}
+                accessibilityLabel={recipe.name}
+                accessibilityHint={locked ? 'Download required to unlock' : 'Double tap to select this recipe'}
+                accessibilityRole="button"
+              >
+                <View style={styles.cardImageWrap}>
+                  {recipe.image ? (
+                    <Image source={recipe.image} style={styles.cardImage} resizeMode="contain" />
+                  ) : (
+                    <Text style={styles.cardFallbackEmoji}>{recipe.emoji}</Text>
+                  )}
+                </View>
+                <Text style={styles.cardName} numberOfLines={1}>{recipe.name}</Text>
+                <View style={styles.cardChip}>
+                  <Text style={styles.cardChipText}>
+                    {recipe.ingredients.length} ingredients
+                  </Text>
+                </View>
+                {locked && (
+                  <View style={styles.cardLockOverlay}>
+                    <Ionicons name="cloud-download-outline" size={22} color="#FFF" />
+                    <Text style={styles.cardLockLabel}>
+                      Download {recipe.requiredPackIds[0]} pack
+                    </Text>
+                  </View>
                 )}
-              </View>
-              <Text style={styles.cardName} numberOfLines={1}>
-                {recipe.name}
-              </Text>
-              <View style={styles.cardChip}>
-                <MaterialCommunityIcons
-                  name="cube-outline"
-                  size={12}
-                  color="#7A4A1F"
-                />
-                <Text style={styles.cardChipText}>
-                  {recipe.ingredients.length} ingredients
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
     </ImageBackground>

@@ -5,7 +5,7 @@
 // solid colour band across the screen.
 
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -39,7 +39,12 @@ export const PackDetailHeader: React.FC<Props> = ({
         >
           <Ionicons name="chevron-back" size={28} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.appName}>LUMI</Text>
+        <Image
+          source={require('../../assets/backgrounds/lumi-logo.png')}
+          style={styles.appLogo}
+          resizeMode="contain"
+          accessibilityLabel="Lumi"
+        />
         <View style={styles.navSpacer} />
       </View>
 

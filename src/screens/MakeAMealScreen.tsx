@@ -201,6 +201,9 @@ export const MakeAMealScreen = () => {
             <View style={styles.recipePill}>
               <Text style={styles.recipeEmoji}>{activeRecipe.emoji}</Text>
               <Text style={styles.recipeName}>{activeRecipe.name}</Text>
+              <Text style={styles.recipeProgress}>
+                {collectedIngredients.length}/{activeRecipe.ingredients.length}
+              </Text>
             </View>
           )}
         </View>

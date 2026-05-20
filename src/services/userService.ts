@@ -70,6 +70,22 @@ export const updateUsername = async (uid: string, username: string) => {
   }
 };
 
+export const CHILD_NAME_MAX_LENGTH = 30;
+
+export const updateChildName = async (
+  uid: string,
+  childName: string | null
+): Promise<void> => {
+  try {
+    await updateDoc(doc(getFirestore(getApp()), 'users', uid) as any, {
+      childName,
+    });
+  } catch (e) {
+    console.error('[userService] updateChildName:', e);
+    throw e;
+  }
+};
+
 export const updateChildProfile = async (
   uid: string,
   childName: string | null,

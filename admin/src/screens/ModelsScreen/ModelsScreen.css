@@ -4,25 +4,121 @@
   gap: var(--space-6);
 }
 
-.models__filters {
+.models__search {
+  position: relative;
+  max-width: 360px;
+}
+
+.models__search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.models__search-input {
+  padding-left: calc(var(--space-3) + 20px);
+}
+
+.models__category {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-3);
 }
 
-.models__filter-select {
-  width: 200px;
+.models__category-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
 }
 
-.models__count {
+.models__category-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.models__category-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.models__pack-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.models__pack-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* Pack row works as a button (toggle) plus an inline Add-Model link. The
+   stop-propagation in the JSX keeps the link click from also collapsing the
+   drawer. */
+.models__pack-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.models__pack-row:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.models__pack-name {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.models__pack-meta {
+  flex: 1;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.models__pack-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.models__pack-cta:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.models__empty-pack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
 .models__table-wrap {
-  background: var(--color-card-bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-top: 1px solid var(--color-border);
   overflow: hidden;
 }
 
@@ -53,9 +149,6 @@
 }
 
 .models__row:last-child td { border-bottom: none; }
-/* Theme-aware row hover — the hardcoded #FAFAFA washed out in dark mode.
-   Translucent brand-indigo lifts the row in both themes without needing a
-   separate dark-mode override. */
 .models__row:hover td { background: rgba(99, 102, 241, 0.08); }
 
 .models__syllables {

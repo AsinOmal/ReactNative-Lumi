@@ -36,10 +36,10 @@
  *     complete/remove so a freshly-downloaded GLB swaps in immediately.
  */
 
-import { useRemoteContentStore } from '../store/useRemoteContentStore';
-import { usePackDownloadStore } from '../store/usePackDownloadStore';
-import type { RemoteModelEntry } from '../types/remoteContent';
-import { getAudioUriForPlayback, getModelUriForViro } from './packStorage';
+import { useRemoteContentStore } from "../store/useRemoteContentStore";
+import { usePackDownloadStore } from "../store/usePackDownloadStore";
+import type { RemoteModelEntry } from "../types/remoteContent";
+import { getAudioUriForPlayback, getModelUriForViro } from "./packStorage";
 
 export type ModelKey = string;
 
@@ -59,9 +59,9 @@ const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   scale: [r.scale, r.scale, r.scale],
   position: [0, r.positionY, r.positionZ ?? -1.0],
   syllables: r.syllables,
-  audio: '',
+  audio: "",
   audioUrl: r.audioUrl,
-  emoji: '',
+  emoji: "",
   sinhalaLabel: r.sinhalaLabel,
 });
 
@@ -75,9 +75,9 @@ const downloadedToEntry = (
   scale: [r.scale, r.scale, r.scale],
   position: [0, r.positionY, r.positionZ ?? -1.0],
   syllables: r.syllables,
-  audio: '',
+  audio: "",
   audioUrl: audioPath ? getAudioUriForPlayback(audioPath) : r.audioUrl,
-  emoji: '',
+  emoji: "",
   sinhalaLabel: r.sinhalaLabel,
 });
 
@@ -110,58 +110,90 @@ export function invalidateModelCache(words: string[]): void {
 // placeholders — calibrate on device and update before App Store submission.
 export const MODEL_REGISTRY: Record<ModelKey, ModelEntry> = {
   balloon: {
-    source: require('../assets/models/misc/balloon.glb'),
-    scale: [0.1, 0.1, 0.1],
-    position: [0, 0, -1.0],
-    syllables: ['bal', 'loon'],
-    audio: 'balloon.mp3',
-    emoji: '🎈',
-    sinhalaLabel: 'බැලූන්',
-  },
-  cat: {
-    source: require('../assets/models/misc/cat.glb'),
+    source: require("../assets/models/misc/balloon.glb"),
     scale: [0.5, 0.5, 0.5],
     position: [0, 0, -1.0],
-    syllables: ['cat'],
-    audio: 'cat.mp3',
-    emoji: '🐱',
-    sinhalaLabel: 'බළලා',
+    syllables: ["bal", "loon"],
+    audio: "balloon.mp3",
+    emoji: "🎈",
+    sinhalaLabel: "බැලූන්",
+  },
+  cat: {
+    source: require("../assets/models/misc/cat.glb"),
+    scale: [1, 1, 1],
+    position: [0, 0, -1.0],
+    syllables: ["cat"],
+    audio: "cat.mp3",
+    emoji: "🐱",
+    sinhalaLabel: "බළලා",
   },
   fish: {
-    source: require('../assets/models/misc/fish.glb'),
+    source: require("../assets/models/misc/fish.glb"),
     scale: [0.1, 0.1, 0.1],
     position: [0, 0, -1.0],
-    syllables: ['fish'],
-    audio: 'fish.mp3',
-    emoji: '🐟',
-    sinhalaLabel: 'මාළුවා',
+    syllables: ["fish"],
+    audio: "fish.mp3",
+    emoji: "🐟",
+    sinhalaLabel: "මාළුවා",
   },
   hat: {
-    source: require('../assets/models/misc/hat.glb'),
+    source: require("../assets/models/misc/hat.glb"),
     scale: [0.1, 0.1, 0.1],
     position: [0, 0, -1.0],
-    syllables: ['hat'],
-    audio: 'hat.mp3',
-    emoji: '🎩',
-    sinhalaLabel: 'තොප්පිය',
+    syllables: ["hat"],
+    audio: "hat.mp3",
+    emoji: "🎩",
+    sinhalaLabel: "තොප්පිය",
   },
   ship: {
-    source: require('../assets/models/misc/ship.glb'),
+    source: require("../assets/models/misc/ship.glb"),
     scale: [0.00005, 0.00005, 0.00005],
     position: [0, 0, -1.0],
-    syllables: ['ship'],
-    audio: 'ship.mp3',
-    emoji: '🚢',
-    sinhalaLabel: 'නෞකාව',
+    syllables: ["ship"],
+    audio: "ship.mp3",
+    emoji: "🚢",
+    sinhalaLabel: "නෞකාව",
   },
   teddy: {
-    source: require('../assets/models/misc/teddy.glb'),
-    scale: [0.1, 0.1, 0.1],
+    source: require("../assets/models/misc/teddy.glb"),
+    scale: [0.7, 0.7, 0.7],
     position: [0, 0, -1.0],
-    syllables: ['ted', 'dy'],
-    audio: 'teddy.mp3',
-    emoji: '🧸',
-    sinhalaLabel: 'ටෙඩි',
+    syllables: ["ted", "dy"],
+    audio: "teddy.mp3",
+    emoji: "🧸",
+    sinhalaLabel: "ටෙඩි",
+  },
+  dog: {
+    source: require("../assets/models/misc/dog.glb"),
+    scale: [1, 1, 1],
+    position: [0, 0, -1.0],
+    syllables: ["dog"],
+    audio: "",
+    emoji: "🐕",
+  },
+  icecream: {
+    source: require("../assets/models/misc/ice-cream.glb"),
+    scale: [0.8, 0.8, 0.8],
+    position: [0, 0, -1.0],
+    syllables: ["ice", "cream"],
+    audio: "",
+    emoji: "🍦",
+  },
+  sunflower: {
+    source: require("../assets/models/misc/sunflower.glb"),
+    scale: [1, 1, 1],
+    position: [0, 0, -1.0],
+    syllables: ["sun", "flow", "er"],
+    audio: "",
+    emoji: "🌻",
+  },
+  ball: {
+    source: require("../assets/models/misc/ball.glb"),
+    scale: [1, 1, 1],
+    position: [0, 0, -1.0],
+    syllables: ["ball"],
+    audio: "",
+    emoji: "⚽",
   },
 };
 
@@ -180,7 +212,7 @@ export const getModel = (word: string): ModelEntry | null => {
   if (remote?.packId) {
     const dl = usePackDownloadStore.getState().packs[remote.packId];
     const modelPath = dl?.localModelPaths[key];
-    if (dl && dl.status === 'downloaded' && modelPath) {
+    if (dl && dl.status === "downloaded" && modelPath) {
       entry = downloadedToEntry(
         remote,
         modelPath,

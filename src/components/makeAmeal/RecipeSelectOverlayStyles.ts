@@ -138,4 +138,22 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     color: '#7A4A1F',
   },
+  cardLocked: { opacity: 0.75 },
+  cardLockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(30,10,5,0.72)',
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+  },
+  cardLockLabel: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 12,
+    color: '#FFF',
+    textAlign: 'center',
+    textTransform: 'capitalize',
+  },
+  cardFallbackEmoji: { fontSize: 44 },
 });

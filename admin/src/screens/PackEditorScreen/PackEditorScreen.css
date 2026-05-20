@@ -18,18 +18,41 @@
   color: var(--color-danger);
 }
 
+/* Rows stack vertically; each row is its own grid */
 .pack-editor__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Row 1 — Details (wider) + Words (narrower) */
+.pack-editor__row--top {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   gap: var(--space-4);
   align-items: start;
 }
 
-@media (max-width: 1100px) {
-  .pack-editor__body { grid-template-columns: 1fr 1fr; }
+/* Row 2 — Colours: gradient swatch + two pickers in one line */
+.pack-editor__colours-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 1fr;
+  gap: var(--space-5);
+  align-items: center;
 }
-@media (max-width: 760px) {
-  .pack-editor__body { grid-template-columns: 1fr; }
+
+.pack-editor__preview-gradient {
+  height: 72px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+/* Row 3 — Art images: three equal cards */
+.pack-editor__row--art {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
 }
 
 .pack-editor__card {
@@ -61,11 +84,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-.pack-editor__preview-gradient {
-  height: 80px;
-  border-radius: var(--radius-md);
 }
 
 .pack-editor__word-count {
@@ -115,9 +133,10 @@
 
 .pack-editor__word-remove:hover { color: var(--color-danger); }
 
-.pack-editor__cover-preview {
+/* Art previews: fixed height so portrait images don't blow out the card */
+.pack-editor__art-preview {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 140px;
   object-fit: cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
@@ -126,4 +145,15 @@
 .pack-editor__progress {
   font-size: var(--font-size-xs);
   color: var(--color-primary);
+}
+
+@media (max-width: 1100px) {
+  .pack-editor__row--top { grid-template-columns: 1fr; }
+  .pack-editor__row--art  { grid-template-columns: 1fr 1fr; }
+  .pack-editor__colours-row { grid-template-columns: 80px 1fr 1fr; }
+}
+
+@media (max-width: 760px) {
+  .pack-editor__row--art    { grid-template-columns: 1fr; }
+  .pack-editor__colours-row { grid-template-columns: 1fr; }
 }

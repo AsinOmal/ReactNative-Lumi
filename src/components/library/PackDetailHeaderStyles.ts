@@ -11,19 +11,31 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  backBtn: { padding: 8, width: 44 },
-  appName: {
-    flex: 1,
-    textAlign: 'center',
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 22,
-    color: '#FFF',
-    letterSpacing: 1,
-    textShadowColor: 'rgba(0,0,0,0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
+  // Translucent disc + soft shadow keeps the back affordance readable over the
+  // pack's busy hero artwork (the previous bare chevron disappeared on light
+  // backgrounds like the fruits pack).
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 4,
   },
-  navSpacer: { width: 44 },
+  // Image is sized by height + contain — flex:1 lets the bounding box span the
+  // row so the artwork stays optically centred between back button and spacer.
+  appLogo: {
+    flex: 1,
+    height: 44,
+  },
+  navSpacer: { width: 40 },
   heroRow: {
     flexDirection: 'row',
     alignItems: 'center',

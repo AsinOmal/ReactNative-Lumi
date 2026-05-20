@@ -89,14 +89,30 @@ export const styles = StyleSheet.create({
   },
   streakText: { fontFamily: 'Fredoka-Bold', fontSize: 15, color: '#FFF' },
 
-  trophyWrap: { padding: 4 },
+  // Trophy entry point — sits in the welcome banner. A high-contrast white
+  // disc + amber glyph + "Trophies" label is much more readable than the
+  // previous low-opacity yellow circle, which blended into the orange card.
+  trophyWrap: { alignItems: 'center', gap: 4, padding: 4 },
   trophyCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: 'rgba(255,220,80,0.22)',
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFD16B',
+    shadowColor: '#7A3D00',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.28,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  trophyLabel: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 11,
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
 
   progressBanner: {

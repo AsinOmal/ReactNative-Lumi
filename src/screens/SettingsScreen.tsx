@@ -23,6 +23,7 @@ import { StatsCard } from '../components/settings/StatsCard';
 import { SettingsRow } from '../components/settings/SettingsRow';
 import { FeedbackModal } from '../components/settings/FeedbackModal';
 import { EditUsernameModal } from '../components/settings/EditUsernameModal';
+import { EditChildNameModal } from '../components/settings/EditChildNameModal';
 import { styles } from './SettingsScreenStyles';
 
 export const SettingsScreen = () => {
@@ -38,6 +39,7 @@ export const SettingsScreen = () => {
   const [achievementCount, setAchievementCount] = useState(0);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [usernameVisible, setUsernameVisible] = useState(false);
+  const [childNameVisible, setChildNameVisible] = useState(false);
 
   // childName wins because profile.username is auto-seeded from the Google
   // display name on first sign-in — without childName first, the kid-facing
@@ -132,6 +134,11 @@ export const SettingsScreen = () => {
             label={strings.SETTINGS_EDIT_USERNAME}
             onPress={() => setUsernameVisible(true)}
           />
+          <SettingsRow
+            iconName="happy-outline"
+            label={strings.SETTINGS_EDIT_CHILD_NAME}
+            onPress={() => setChildNameVisible(true)}
+          />
         </View>
 
         <Text style={styles.sectionLabel}>
@@ -214,6 +221,12 @@ export const SettingsScreen = () => {
         uid={user?.uid ?? ''}
         currentUsername={profile.username || profile.displayName || ''}
         onClose={() => setUsernameVisible(false)}
+      />
+      <EditChildNameModal
+        visible={childNameVisible}
+        uid={user?.uid ?? ''}
+        currentChildName={childName}
+        onClose={() => setChildNameVisible(false)}
       />
     </SkyScene>
   );

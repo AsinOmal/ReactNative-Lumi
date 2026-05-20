@@ -22,6 +22,7 @@ import { PlacementScene } from '../components/ar/PlacementScene';
 import { useARPlacement } from '../hooks/useARPlacement';
 import { useStrings } from '../hooks/useStrings';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
+import { useSwipeRotation } from '../hooks/useSwipeRotation';
 import { colors } from '../constants/colors';
 import { styles } from './ARPlacementScreenStyles';
 
@@ -33,6 +34,7 @@ export const ARPlacementScreen = () => {
   const { word } = route.params as { word: string };
   const { state, isLeaving, sceneKey, onPlaneSelected, onReplace, safeGoBack } =
     useARPlacement();
+  const { rotationApiRef, panHandlers } = useSwipeRotation();
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -61,14 +63,21 @@ export const ARPlacementScreen = () => {
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
 
-      <View style={[StyleSheet.absoluteFill, { opacity: isLeaving ? 0 : 1 }]}>
+      <View
+        style={[StyleSheet.absoluteFill, { opacity: isLeaving ? 0 : 1 }]}
+      >
         <ViroARSceneNavigator
           key={sceneKey}
           autofocus
           initialScene={{ scene: PlacementScene }}
-          viroAppProps={{ word, onPlaneSelected }}
+          viroAppProps={{ word, onPlaneSelected, rotationApiRef }}
           style={styles.arView}
         />
+        {/* Swipe-to-rotate overlay only after the model is anchored — during
+            'searching' the user needs to tap a plane, which would be blocked. */}
+        {state === 'placed' && (
+          <View style={StyleSheet.absoluteFill} {...panHandlers} />
+        )}
       </View>
 
       {/* Back button — always visible */}

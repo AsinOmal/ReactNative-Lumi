@@ -18,7 +18,10 @@ console.warn = (...args) => {
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { AppRegistry } from 'react-native';
+import { AppRegistry, LogBox } from 'react-native';
+
+// Suppress in-app log overlays (yellow/red banners) — logs still appear in Metro terminal
+LogBox.ignoreAllLogs();
 import { enableScreens } from 'react-native-screens';
 import { ViroAnimations } from '@reactvision/react-viro';
 import App from './App';

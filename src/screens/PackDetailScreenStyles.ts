@@ -162,12 +162,30 @@ export const styles = StyleSheet.create({
     color: colors.textMid,
     marginTop: 4,
   },
-  ctaWrap: { marginHorizontal: 32, marginTop: 8 },
+  // Bottom-anchored cream card holds the info strip + state-aware CTA.
+  // Lift comes from a translucent cream fill (≈45%) so the pack hero still
+  // bleeds through — solid #FFF8E7 was visually too heavy and broke the
+  // illustrated background's continuity.
+  ctaWrap: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    backgroundColor: 'rgba(255,248,231,0.45)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,138,74,0.25)',
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 6,
+  },
   infoStrip: {
     fontFamily: 'Fredoka-Regular',
     fontSize: 13,
     color: colors.textMid,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
 });

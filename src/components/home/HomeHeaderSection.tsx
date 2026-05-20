@@ -131,6 +131,7 @@ export const HomeHeaderSection: React.FC<Props> = ({
         </View>
         <TouchableOpacity
           style={styles.trophyWrap}
+          activeOpacity={0.85}
           onPress={() => {
             playUI('tap');
             onTrophyPress();
@@ -139,8 +140,9 @@ export const HomeHeaderSection: React.FC<Props> = ({
           accessibilityRole="button"
         >
           <View style={styles.trophyCircle}>
-            <Ionicons name="trophy" size={38} color="#FFF" />
+            <Ionicons name="trophy" size={30} color="#C96B00" />
           </View>
+          <Text style={styles.trophyLabel}>Trophies</Text>
         </TouchableOpacity>
       </LinearGradient>
 

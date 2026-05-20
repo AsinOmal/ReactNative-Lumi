@@ -137,10 +137,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
     gap: 10,
-    marginTop: 6,
-    marginBottom: 2,
+    backgroundColor: '#FFF7E8',
+    borderWidth: 1,
+    borderColor: '#E6D1AE',
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 10,
   },
   playBtn: {
     width: 36,
@@ -154,6 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#9B59B6',
   },
   syllablesRow: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,

@@ -1,10 +1,7 @@
-// 📖 What this does:
-// Pure AR model viewer — child browses every 3D model in a pack, one at a time.
-// No achievements, no daily-hunt tracking, no scan scoring. Preview-only.
-//
+// 📖 Pure AR model viewer — browses every model in a pack one at a time.
 // ViroNode reads viroAppProps once at mount, so word changes require a full
-// ViroARSceneNavigator remount via sceneKey (same pattern as MakeAMealScreen).
-// safeGoBack hides the view for 350ms before navigation so Metal textures release.
+// ViroARSceneNavigator remount via sceneKey. safeGoBack hides the view 350ms
+// before navigation so Metal textures release.
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
@@ -14,14 +11,18 @@ import {
   StatusBar,
   TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ARWordScene } from '../components/ar/ARWordScene';
+import { RotateHint } from '../components/ar/RotateHint';
 import type { Pack } from '../types/pack';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
+import { useRotateHint } from '../hooks/useRotateHint';
+import { useSwipeRotation } from '../hooks/useSwipeRotation';
 import { styles } from './PackARPreviewScreenStyles';
 
 export const PackARPreviewScreen = () => {
@@ -34,6 +35,8 @@ export const PackARPreviewScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [isLeaving, setIsLeaving] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const showRotateHint = useRotateHint(modelLoaded);
+  const { rotationApiRef, panHandlers } = useSwipeRotation();
 
   const currentWord = pack.words[currentIndex];
   const model = MODEL_REGISTRY[currentWord];
@@ -69,9 +72,16 @@ export const PackARPreviewScreen = () => {
           key={sceneKey}
           autofocus
           initialScene={{ scene: ARWordScene as any }}
-          viroAppProps={{ word: currentWord, onModelLoaded: stableOnLoaded }}
+          viroAppProps={{
+            word: currentWord,
+            onModelLoaded: stableOnLoaded,
+            rotationApiRef,
+          }}
           style={{ flex: 1 }}
         />
+        {/* Transparent gesture catcher above the AR view. Buttons sit higher
+            in the tree (SafeAreaView overlay) so they still receive taps. */}
+        <View style={StyleSheet.absoluteFillObject} {...panHandlers} />
       </View>
 
       {/* Overlay */}
@@ -142,6 +152,8 @@ export const PackARPreviewScreen = () => {
           <Text style={styles.loadingText}>Loading {currentWord}...</Text>
         </View>
       )}
+
+      <RotateHint visible={showRotateHint} />
     </View>
   );
 };

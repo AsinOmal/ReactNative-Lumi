@@ -27,7 +27,11 @@ import {
 } from '../services/parentalControlsService';
 import { config } from '../constants/config';
 
-const todayKey = () => `screenTime_${new Date().toISOString().slice(0, 10)}`;
+// Key is scoped by uid so the accumulator never bleeds between accounts on a
+// shared device — without the uid suffix, signing out user A and signing in
+// user B would load A's minutes for B on the same date.
+const todayKey = (uid: string | null | undefined) =>
+  `screenTime_${uid ?? 'anon'}_${new Date().toISOString().slice(0, 10)}`;
 
 export const useScreenTime = () => {
   const { user } = useAuthStore();
@@ -62,9 +66,14 @@ export const useScreenTime = () => {
     // previous account on the same device.
     screenTimeLoadedRef.current = false;
     setScreenTimeLoaded(false);
+    // Reset the live accumulator before reading the new account's key — if
+    // the prior user had been running, accumulatedRef still holds their
+    // minutes and would briefly show on the new user's screen.
+    accumulatedRef.current = 0;
+    pushMinutes(0);
     const load = async () => {
       try {
-        const cached = await AsyncStorage.getItem(todayKey());
+        const cached = await AsyncStorage.getItem(todayKey(user?.uid));
         const minutes = cached ? parseFloat(cached) : 0;
         accumulatedRef.current = minutes;
         pushMinutes(minutes);
@@ -75,7 +84,7 @@ export const useScreenTime = () => {
           if (best !== minutes) {
             accumulatedRef.current = best;
             pushMinutes(best);
-            await AsyncStorage.setItem(todayKey(), String(best));
+            await AsyncStorage.setItem(todayKey(user.uid), String(best));
           }
         }
       } catch (e) {
@@ -107,7 +116,7 @@ export const useScreenTime = () => {
     pushMinutes(total);
 
     try {
-      await AsyncStorage.setItem(todayKey(), String(total));
+      await AsyncStorage.setItem(todayKey(user?.uid), String(total));
       if (user) {
         await saveScreenTimeForDate(user.uid, total);
       }

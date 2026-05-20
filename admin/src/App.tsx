@@ -34,14 +34,14 @@ export const App: React.FC = () => {
 
   if (!user) {
     return (
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <LoginScreen onSignIn={signIn} loading={loading} error={error} />
       </BrowserRouter>
     );
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Layout user={user} onSignOut={signOutUser}>
         <Routes>
           <Route path={ROUTES.DASHBOARD} element={<DashboardScreen />} />

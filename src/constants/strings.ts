@@ -91,12 +91,13 @@ export const strings = {
   maintenanceModeBody: "We're making Lumi even better! Check back soon.",
 
   // Parental Controls — Screen Time
-  screenTimeLimitTitle: "Time's Up for Today!",
-  screenTimeLimitBody: (used: number, limit: number) =>
-    `You've used ${used} of ${limit} minutes today. Great job learning!`,
-  screenTimeLimitParentNote: 'Ask a parent to unlock more time.',
+  screenTimeLimitTitle: 'Learning Break Time!',
+  screenTimeLimitBody: "You've reached today's screen-time limit.",
+  screenTimeLimitParentNote: 'Ask a parent to unlock more learning time.',
+  screenTimeLimitUsageFmt: (used: number, limit: number) =>
+    `Today: ${used} / ${limit} min used`,
   screenTimeLimitUnlock: 'Unlock with Parent PIN',
-  screenTimeLimitGrant5: '+ 5 more minutes',
+  screenTimeLimitGrant5: 'Request 5 More Minutes',
 
   // Pack Downloads (Phase 10)
   downloadPack: 'Download Pack',
@@ -191,6 +192,7 @@ export const strings = {
   // Settings
   SETTINGS_SECTION_PROFILE: 'Profile',
   SETTINGS_EDIT_USERNAME: 'Edit Username',
+  SETTINGS_EDIT_CHILD_NAME: "Child's Name",
   SETTINGS_LANGUAGE_SECTION: 'Language',
   SETTINGS_LANGUAGE_ROW: 'සිංහල (Sinhala)',
   SETTINGS_SECTION_PARENT: 'Parent Controls',

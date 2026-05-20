@@ -12,6 +12,11 @@ import { usePackDownloadStore } from '../../store/usePackDownloadStore';
 import { usePurchaseStore } from '../../store/usePurchaseStore';
 import { playUI } from '../../utils/uiSound';
 import { DownloadBadge } from './DownloadBadge';
+import { styles } from './ColorPackCardStyles';
+
+// 📖 Pack tile — collectible-feeling card. Cover art on top (~60-65% of card
+// height), title + 'N words to discover' subtitle below, progress bar in
+// pack-accent colour, and a soft "Free Pack" / "Premium" pill in the meta row.
 
 interface Props {
   pack: Pack;
@@ -20,14 +25,12 @@ interface Props {
 
 export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
   const gradient = getPackGradient(pack.id);
+  const accent = gradient[0] ?? colors.primary;
   const icon = getPackIcon(pack.id);
   const strings = useStrings();
   const dlStatus = usePackDownloadStore((s) => s.packs[pack.id]?.status);
   const isPurchased = usePurchaseStore((s) => s.isPurchased(pack.id));
-  // Bundled (or legacy/undefined-typed) packs are already available — no badge.
   const showBadge = !!pack.packType && pack.packType !== 'bundled';
-  // Premium + not yet purchased → cover is dimmed and a centered price chip
-  // signals "tap to unlock" instead of the easily-missed corner padlock.
   const showLockedOverlay = pack.isPremium && !isPurchased;
 
   const handlePress = () => {
@@ -43,8 +46,6 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
       accessibilityHint="Double tap to open pack details"
       accessibilityRole="button"
     >
-      {/* Single thin warm-brown outline + soft shadow — the cover art is the
-          hero so the frame stays out of the way. */}
       <View style={styles.card}>
         <View style={styles.header}>
           {pack.coverImageUrl ? (
@@ -78,42 +79,44 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
             </>
           )}
           {pack.isPremium && isPurchased && (
-            <View style={styles.lockBadge}>
+            <View style={styles.cornerCheck}>
               <Ionicons name="checkmark" size={14} color="#FFF" />
             </View>
           )}
           {showBadge && <DownloadBadge status={dlStatus} />}
         </View>
+
         <View style={styles.footer}>
           <Text style={styles.name} numberOfLines={1}>
             {pack.name}
           </Text>
-          <View style={styles.packProgressTrack}>
-            <LinearGradient
-              colors={gradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.packProgressFill, { width: '0%' }]}
+          <Text style={styles.subtitle} numberOfLines={1}>
+            {strings.PACK_WORDS_TO_DISCOVER(pack.wordCount)}
+          </Text>
+
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: '0%', backgroundColor: accent },
+              ]}
             />
           </View>
+
           <View style={styles.metaRow}>
-            <Text style={styles.wordCount}>0/{pack.wordCount} words</Text>
+            <Text style={styles.wordCount}>0 / {pack.wordCount} found</Text>
             {pack.isPremium ? (
-              <View style={[styles.badge, styles.badgePremium]}>
-                <Ionicons name="star" size={9} color={colors.accentAmber} />
-                <Text style={[styles.badgeText, { color: colors.accentAmber }]}>
+              <View style={[styles.pill, styles.pillPremium]}>
+                <Ionicons name="star" size={13} color="#92400E" />
+                <Text style={[styles.pillText, styles.pillTextPremium]}>
                   Premium
                 </Text>
               </View>
             ) : (
-              <View style={[styles.badge, styles.badgeFree]}>
-                <Ionicons
-                  name="checkmark"
-                  size={9}
-                  color={colors.successDark}
-                />
-                <Text style={[styles.badgeText, { color: colors.successDark }]}>
-                  Free
+              <View style={[styles.pill, styles.pillFree]}>
+                <Ionicons name="checkmark" size={13} color="#2E9E58" />
+                <Text style={[styles.pillText, styles.pillTextFree]}>
+                  Free Pack
                 </Text>
               </View>
             )}
@@ -123,96 +126,3 @@ export const ColorPackCard: React.FC<Props> = ({ pack, onPress }) => {
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 26,
-    borderWidth: 1.5,
-    borderColor: '#C48A4A',
-    overflow: 'hidden',
-    shadowColor: '#3D2008',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  header: {
-    aspectRatio: 1,
-    overflow: 'hidden',
-    backgroundColor: colors.primaryLight,
-  },
-  iconWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  lockBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(34,197,94,0.92)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  // Dark wash over the cover when premium + unpurchased — reads as "locked"
-  // without removing the art entirely (kid still sees what they're unlocking).
-  lockedDim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.42)',
-  },
-  // Flex-centered wrapper — guarantees the chip is dead-centre regardless of
-  // its actual width (price strings can be variable length). The earlier
-  // fixed-translate version drifted left because the negative offsets were
-  // hand-tuned to one price label.
-  lockedChipWrap: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lockedChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 18,
-    backgroundColor: colors.primary,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  lockedChipText: {
-    fontFamily: 'Fredoka-Bold',
-    fontSize: 14,
-    color: '#FFFFFF',
-  },
-  footer: { padding: 10, gap: 5 },
-  packProgressTrack: {
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(0,0,0,0.06)',
-    overflow: 'hidden',
-  },
-  packProgressFill: { height: 3, borderRadius: 2 },
-  name: { fontFamily: 'Fredoka-Bold', fontSize: 17, color: colors.textDark },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  wordCount: {
-    fontFamily: 'Fredoka-Regular',
-    fontSize: 13,
-    color: colors.textMid,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  badgeFree: { backgroundColor: '#DCFCE7' },
-  badgePremium: { backgroundColor: '#FEF3C7' },
-  badgeText: { fontFamily: 'Fredoka-SemiBold', fontSize: 11 },
-});

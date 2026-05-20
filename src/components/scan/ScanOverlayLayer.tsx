@@ -7,21 +7,12 @@ import { SyllablePlayer } from '../../components/ar/SyllablePlayer';
 import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
+import { getWordPackLabel, getWordPackEmoji } from '../../constants/packAccents';
 import { MatchResult } from '../../utils/wordMatcher';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { useStrings } from '../../hooks/useStrings';
 import { colors } from '../../constants/colors';
-import { PACK_WORDS } from '../../constants/packWords';
 import { triggerHaptic } from '../../hooks/useHaptic';
-
-function getPackLabel(word: string): string {
-  for (const [pack, words] of Object.entries(PACK_WORDS)) {
-    if (words.includes(word)) {
-      return pack.charAt(0).toUpperCase() + pack.slice(1) + ' Pack';
-    }
-  }
-  return '';
-}
 
 interface ScanOverlayLayerProps {
   activeWord: string;
@@ -34,9 +25,9 @@ interface ScanOverlayLayerProps {
 }
 
 // 📖 What this does:
-// This is the animated bottom sheet that pops up when a word is matched and viewed in AR.
-// It shows the word, its pack, pronunciation syllables, spell correction if applicable,
-// a fun fact, and the save button.
+// Animated bottom sheet that appears when a word is matched in AR. Shows the
+// word title (with pack emoji), pronunciation pill, fun fact, and action buttons.
+// Place is the primary CTA; Save is secondary; X closes.
 export const ScanOverlayLayer = ({
   activeWord,
   cardAnim,
@@ -48,10 +39,12 @@ export const ScanOverlayLayer = ({
 }: ScanOverlayLayerProps) => {
   const strings = useStrings();
   const fact = getRandomFact(activeWord);
-  const packLabel = getPackLabel(activeWord);
+  const packLabel = getWordPackLabel(activeWord);
+  const packEmoji = getWordPackEmoji(activeWord);
   const [showConfetti, setShowConfetti] = useState(false);
   const language = useLanguageStore((s) => s.language);
   const sinhalaLabel = getModel(activeWord)?.sinhalaLabel;
+  const wordDisplay = activeWord.charAt(0).toUpperCase() + activeWord.slice(1);
 
   useEffect(() => {
     setShowConfetti(true);
@@ -71,12 +64,16 @@ export const ScanOverlayLayer = ({
           onAnimationFinish={() => setShowConfetti(false)}
         />
       )}
+
       <View style={styles.resultCardHandle} />
+
+      {/* Title row: pack emoji + word + pack label */}
       <View style={styles.resultCardRow}>
+        {packEmoji ? (
+          <Text style={styles.wordEmoji}>{packEmoji}</Text>
+        ) : null}
         <View style={styles.resultWordBlock}>
-          <Text style={styles.resultWord}>
-            {activeWord.charAt(0).toUpperCase() + activeWord.slice(1)}
-          </Text>
+          <Text style={styles.resultWord}>{wordDisplay}</Text>
           {language === 'si' && sinhalaLabel ? (
             <Text style={styles.sinhalaLabel}>{sinhalaLabel}</Text>
           ) : null}
@@ -86,10 +83,9 @@ export const ScanOverlayLayer = ({
         </View>
       </View>
 
-      {/* Pronunciation + syllable chips */}
+      {/* Pronunciation pill */}
       <SyllablePlayer entry={getModel(activeWord)} />
 
-      {/* Spell correction badge — only shows on Levenshtein distance=2 matches */}
       {matchResult?.isCorrection && (
         <SpellCorrectionBadge
           scannedAs={matchResult.scannedAs}
@@ -97,10 +93,18 @@ export const ScanOverlayLayer = ({
         />
       )}
 
+      {/* Fun fact */}
       <View style={styles.factBox}>
+        <Ionicons
+          name="bulb-outline"
+          size={16}
+          color="#C8840A"
+          style={styles.factIcon}
+        />
         <Text style={styles.factText}>{fact}</Text>
       </View>
 
+      {/* Actions: [X]  [Place Word — primary]  [Save — secondary] */}
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={styles.dismissBtn}
@@ -108,38 +112,33 @@ export const ScanOverlayLayer = ({
           accessibilityLabel="Dismiss word card"
           accessibilityRole="button"
         >
-          <Ionicons name="close" size={20} color={colors.primary} />
+          <Ionicons name="close" size={20} color={colors.textMid} />
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.placeBtn}
           onPress={onPlace}
           activeOpacity={0.8}
-          accessibilityLabel={strings.AR_PLACE_BUTTON}
+          accessibilityLabel={`Place ${wordDisplay}`}
           accessibilityRole="button"
         >
-          <Ionicons name="cube-outline" size={18} color={colors.primary} />
-          <Text style={styles.placeBtnText}>{strings.AR_PLACE_BUTTON}</Text>
+          <Ionicons name="cube-outline" size={18} color="#FFF" />
+          <Text style={styles.placeBtnText}>Place {wordDisplay}</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}
           onPress={onSave}
           activeOpacity={0.8}
-          accessibilityLabel={
-            isWordSaved ? 'Word already saved' : `Save ${activeWord}`
-          }
+          accessibilityLabel={isWordSaved ? 'Word already saved' : `Save ${activeWord}`}
           accessibilityRole="button"
         >
           <Ionicons
-            name="star"
-            size={18}
-            color={isWordSaved ? '#A78BFA' : '#fff'}
+            name={isWordSaved ? 'star' : 'star-outline'}
+            size={16}
+            color={colors.primary}
           />
-          <Text
-            style={[
-              styles.saveBtnText,
-              isWordSaved && styles.saveBtnTextDisabled,
-            ]}
-          >
+          <Text style={[styles.saveBtnText, isWordSaved && styles.saveBtnTextDisabled]}>
             {isWordSaved ? strings.wordSaved : strings.saveWord}
           </Text>
         </TouchableOpacity>

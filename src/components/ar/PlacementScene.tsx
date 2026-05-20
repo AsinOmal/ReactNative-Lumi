@@ -2,10 +2,12 @@
 // ViroARScene that uses ViroARPlaneSelector for horizontal surface detection.
 // When the user taps a detected plane the model anchors flat on the surface
 // (positionY = 0 — the stored registry positionY is only for fixed-world mode).
-// onPlaneSelected is passed via viroAppProps and uses the double-ref pattern
+// Rotation comes from a screen-level swipe via useSwipeRotation; the scene
+// publishes its rotation setter onto rotationApiRef and the PanResponder
+// above pumps deltas into it. onPlaneSelected uses the double-ref pattern
 // (CLAUDE.md constraint) so the callback never goes stale after state changes.
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, MutableRefObject } from 'react';
 import {
   ViroARScene,
   ViroAmbientLight,
@@ -15,15 +17,16 @@ import {
   Viro3DObject,
 } from '@reactvision/react-viro';
 import { getModel } from '../../utils/modelRegistry';
+import { config } from '../../constants/config';
+import type { RotationApi } from '../../hooks/useSwipeRotation';
 
 export const PlacementScene = (props: any) => {
   const word: string = props?.sceneNavigator?.viroAppProps?.word ?? 'apple';
   const onPlaneSelectedProp: (() => void) | undefined =
     props?.sceneNavigator?.viroAppProps?.onPlaneSelected;
+  const rotationApiRef: MutableRefObject<RotationApi | null> | undefined =
+    props?.sceneNavigator?.viroAppProps?.rotationApiRef;
 
-  // Double-ref pattern: viroAppProps is read once at mount, so any callback
-  // passed through it becomes stale after the first state change. Store the
-  // latest value in a ref, expose a stable wrapper that reads from the ref.
   const onPlaneSelectedRef = useRef<(() => void) | undefined>(
     onPlaneSelectedProp
   );
@@ -33,6 +36,28 @@ export const PlacementScene = (props: any) => {
   const stableOnPlaneSelected = useRef(() =>
     onPlaneSelectedRef.current?.()
   ).current;
+
+  const [isManual, setIsManual] = useState(false);
+  const [rotY, setRotY] = useState(0);
+  const startRotY = useRef(0);
+  const isManualRef = useRef(false);
+
+  useEffect(() => {
+    if (!rotationApiRef) return;
+    rotationApiRef.current = {
+      applyDelta: (dx: number) => {
+        if (!isManualRef.current) {
+          isManualRef.current = true;
+          setIsManual(true);
+        }
+        setRotY(startRotY.current + dx * config.SWIPE_ROTATE_DEG_PER_PX);
+      },
+      commit: (dx: number) => {
+        startRotY.current += dx * config.SWIPE_ROTATE_DEG_PER_PX;
+        setRotY(startRotY.current);
+      },
+    };
+  }, [rotationApiRef]);
 
   const modelEntry = getModel(word);
   if (!modelEntry) {
@@ -58,7 +83,12 @@ export const PlacementScene = (props: any) => {
         onPlaneSelected={stableOnPlaneSelected}
       >
         {/* positionY = 0: model sits flat on the detected surface */}
-        <ViroNode position={[0, 0, 0]} scale={scale}>
+        <ViroNode
+          position={[0, 0, 0]}
+          scale={scale}
+          rotation={isManual ? [0, rotY, 0] : [0, 0, 0]}
+          animation={{ name: 'rotate', run: !isManual, loop: true }}
+        >
           <Viro3DObject
             source={modelEntry.source}
             type="GLB"

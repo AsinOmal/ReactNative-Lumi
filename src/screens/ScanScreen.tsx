@@ -1,10 +1,17 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, TouchableOpacity, Animated, StatusBar } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Animated,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { ARWordScene } from '../components/ar/ARWordScene';
+import { RotateHint } from '../components/ar/RotateHint';
 import { AchievementToast } from '../components/AchievementToast';
 import { ScanCameraLayer } from '../components/scan/ScanCameraLayer';
 import { ScanOverlayLayer } from '../components/scan/ScanOverlayLayer';
@@ -14,6 +21,8 @@ import { useWordSaving } from '../hooks/useWordSaving';
 import { useHazardDetection } from '../hooks/useHazardDetection';
 import { useModelCache } from '../hooks/useModelCache';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
+import { useRotateHint } from '../hooks/useRotateHint';
+import { useSwipeRotation } from '../hooks/useSwipeRotation';
 import { MODEL_REGISTRY } from '../utils/modelRegistry';
 import { wishWord } from '../utils/wishlistStore';
 import { decidePackGate } from '../utils/packUtils';
@@ -37,6 +46,8 @@ export const ScanScreen = () => {
   const [sceneKey, setSceneKey] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [arLeavingForPlacement, setArLeavingForPlacement] = useState(false);
+  const showRotateHint = useRotateHint(mode === 'ar' && modelLoaded);
+  const { rotationApiRef, panHandlers } = useSwipeRotation();
   // When set, a useEffect fires navigation after mode='scan' is committed to the
   // React tree — ensures ViroARSceneNavigator is fully unmounted before ARPlacement
   // mounts its own navigator (two navigators cannot share the camera).
@@ -87,14 +98,19 @@ export const ScanScreen = () => {
     setShowWishModal(false);
   }, [unknownWord]);
 
-  // Navigate to ARPlacement only after mode='scan' has been committed — by this
-  // point React has unmounted ViroARSceneNavigator, so the camera is free.
+  // After mode='scan' commits, ViroARSceneNavigator is unmounted and Metal
+  // resource release begins — but it is asynchronous. Wait 350ms before
+  // mounting ARPlacement's own navigator so the two sessions don't race
+  // for the same ARKit device.
   useEffect(() => {
     if (mode === 'scan' && pendingPlacementWord.current) {
       const word = pendingPlacementWord.current;
       pendingPlacementWord.current = null;
-      setArLeavingForPlacement(false);
-      (navigation as any).navigate('ARPlacement', { word });
+      const t = setTimeout(() => {
+        setArLeavingForPlacement(false);
+        (navigation as any).navigate('ARPlacement', { word });
+      }, 350);
+      return () => clearTimeout(t);
     }
   }, [mode, navigation]);
 
@@ -174,7 +190,7 @@ export const ScanScreen = () => {
 
   if (mode === 'scan') {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, arLeavingForPlacement && { opacity: 0 }]}>
         <HazardAlertOverlay
           visible={!!currentHazard}
           onDismiss={dismissHazard}
@@ -207,13 +223,21 @@ export const ScanScreen = () => {
       <StatusBar barStyle="light-content" />
       {/* opacity:0 hides the navigator without unmounting it — required before
           navigating to ARPlacementScreen so Metal textures release asynchronously */}
-      <View style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}>
+      <View
+        style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}
+      >
         <ViroARSceneNavigator
           key={sceneKey}
           initialScene={{ scene: ARWordScene as any }}
-          viroAppProps={{ word: activeWord, onModelLoaded: handleModelLoaded }}
+          viroAppProps={{
+            word: activeWord,
+            onModelLoaded: handleModelLoaded,
+            rotationApiRef,
+          }}
           style={styles.arView}
         />
+        {/* Transparent swipe-catcher above the AR view */}
+        <View style={StyleSheet.absoluteFillObject} {...panHandlers} />
       </View>
 
       <TouchableOpacity
@@ -246,14 +270,13 @@ export const ScanScreen = () => {
         onDismiss={dismissCard}
         onSave={handleSaveWord}
         onPlace={() => {
-          // 1. Hide navigator (opacity:0) so the user doesn't see a flash.
-          // 2. After 350ms Metal release, call handleBackToScan() which sets
-          //    mode='scan' and triggers the useEffect above to navigate.
-          //    Navigation happens after the React commit so ViroARSceneNavigator
-          //    is truly unmounted before ARPlacementScreen mounts its own.
+          // Hide Viro immediately (opacity:0) then unmount it in the same
+          // render cycle by calling handleBackToScan() synchronously.
+          // The useEffect above waits 350ms after unmount before navigating,
+          // giving ARKit time to release its Metal session.
           setArLeavingForPlacement(true);
           pendingPlacementWord.current = activeWord;
-          setTimeout(() => handleBackToScan(), 350);
+          handleBackToScan();
         }}
       />
 
@@ -261,6 +284,8 @@ export const ScanScreen = () => {
         queue={achievementQueue}
         onDismissed={() => setAchievementQueue((prev) => prev.slice(1))}
       />
+
+      <RotateHint visible={showRotateHint} />
     </View>
   );
 };

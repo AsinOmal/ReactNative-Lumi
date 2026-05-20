@@ -97,12 +97,13 @@ export const stringsSi = {
   maintenanceModeBody: "අපි Lumi තවත් හොඳ කරමින් සිටිමු! ටිකෙන් ටික බලන්න.",
 
   // Parental Controls — Screen Time
-  screenTimeLimitTitle: "අද කාලය ගෙවී ගොස් ඇත!",
-  screenTimeLimitBody: (used: number, limit: number) =>
-    `ඔබ අද ${limit} මිනිත්තු වලින් ${used} ක් භාවිතා කළා. ඉගෙනීම හොඳයි!`,
-  screenTimeLimitParentNote: "තවත් කාලය ලබා ගැනීමට දෙමාපියෙකු ඇමතීමට.",
+  screenTimeLimitTitle: "ඉගෙනුම් විවේකයේ වේලාවයි!",
+  screenTimeLimitBody: "ඔබ අද දිනයේ තිර කාලය අවසන් කර ඇත.",
+  screenTimeLimitParentNote: "තවත් ඉගෙනුම් කාලය ලබා ගැනීමට දෙමාපියෙකු ඇමතන්න.",
+  screenTimeLimitUsageFmt: (used: number, limit: number) =>
+    `අද: මිනිත්තු ${limit} වලින් ${used} භාවිතා කළා`,
   screenTimeLimitUnlock: "දෙමාපිය PIN එකෙන් අගුළු හරින්න",
-  screenTimeLimitGrant5: "තවත් මිනිත්තු 5 ක්",
+  screenTimeLimitGrant5: "තවත් මිනිත්තු 5 ක් ඉල්ලන්න",
 
   // Pack Downloads
   downloadPack: "ඇසුරුම බාගන්න",
@@ -197,6 +198,7 @@ export const stringsSi = {
   // Settings
   SETTINGS_SECTION_PROFILE: "පරිශීලක තතු",
   SETTINGS_EDIT_USERNAME: "පරිශීලක නාමය සංස්කරණය කරන්න",
+  SETTINGS_EDIT_CHILD_NAME: "දරුවාගේ නම", // TODO: native-speaker review
   SETTINGS_LANGUAGE_SECTION: "භාෂාව",
   SETTINGS_LANGUAGE_ROW: "සිංහල (Sinhala)",
   SETTINGS_SECTION_PARENT: "දෙමාපිය පාලනය",

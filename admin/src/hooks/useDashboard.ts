@@ -75,6 +75,32 @@ const fetchGroupCount = async (col: string): Promise<number> => {
     return 0;
   }
 };
+
+// Count distinct users who have any activityLog entry today.
+// Fetches the 500 most recent entries (no where-filter to avoid index requirement)
+// and counts distinct uids whose timestamp falls within today.
+const fetchActiveTodayCount = async (todayMs: number): Promise<number> => {
+  try {
+    const snap = await getDocs(
+      query(
+        collectionGroup(db, 'activityLog'),
+        orderBy('timestamp', 'desc'),
+        limit(500)
+      )
+    );
+    const uids = new Set(
+      snap.docs
+        .filter((d) => {
+          const ts = d.data().timestamp;
+          return toMs(ts) >= todayMs;
+        })
+        .map((d) => d.ref.path.split('/')[1])
+    );
+    return uids.size;
+  } catch {
+    return 0;
+  }
+};
 const fetchWeeklySavedCount = async (): Promise<number> => {
   try {
     return (
@@ -128,6 +154,7 @@ export const useDashboard = (): UseDashboardResult => {
           achievementsUnlocked,
           gamesPlayed,
           rawTopWords,
+          activeToday,
         ] = await Promise.all([
           getDocs(collection(db, 'users')),
           getDocs(
@@ -143,10 +170,10 @@ export const useDashboard = (): UseDashboardResult => {
           fetchGroupCount('achievements'),
           fetchGroupCount('gameProgress'),
           fetchTopWords(),
+          fetchActiveTodayCount(todayMs),
         ]);
 
         let newUsersToday = 0;
-        let activeToday = 0;
         const uidToUser = new Map<
           string,
           { email: string; username: string }
@@ -156,9 +183,6 @@ export const useDashboard = (): UseDashboardResult => {
           const u = d.data();
           if (toMs(u.createdAt) >= todayMs) {
             newUsersToday++;
-          }
-          if (toMs(u.lastActive) >= todayMs) {
-            activeToday++;
           }
           uidToUser.set(d.id, {
             email: u.email ?? d.id,

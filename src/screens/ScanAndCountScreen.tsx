@@ -22,6 +22,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { shuffleArray } from '../utils/arrayUtils';
+import { getWordEmoji } from '../constants/packAccents';
 import { styles } from './ScanAndCountScreenStyles';
 
 type GamePhase =
@@ -165,17 +166,24 @@ export const ScanAndCountScreen = () => {
           <TouchableOpacity
             style={styles.closeBtn}
             onPress={safeGoBack}
-            pointerEvents="auto"
             accessibilityLabel="Exit game"
             accessibilityRole="button"
           >
             <Ionicons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
-          <View style={styles.headerSpacer} />
+          {phase === 'playing' ? (
+            <CounterOverlay
+              targetWord={targetWord}
+              found={foundIndices.length}
+              target={targetCount}
+            />
+          ) : (
+            <View style={styles.headerSpacer} />
+          )}
           {arMounted && (
             <View style={styles.roundPill}>
               <Text style={styles.roundPillText}>
-                Round {currentRound + 1} / {totalRounds}
+                {currentRound + 1}/{totalRounds}
               </Text>
             </View>
           )}
@@ -183,11 +191,6 @@ export const ScanAndCountScreen = () => {
 
         {phase === 'playing' && (
           <>
-            <CounterOverlay
-              targetWord={targetWord}
-              found={foundIndices.length}
-              target={targetCount}
-            />
             {timedMode && <TimerBar key={sceneKey} onTimeout={handleTimeout} />}
             <Animated.View
               style={[styles.wrongBanner, { opacity: feedbackAnim }]}
@@ -195,6 +198,11 @@ export const ScanAndCountScreen = () => {
             >
               <Text style={styles.wrongText}>❌ Not that one!</Text>
             </Animated.View>
+            <View style={styles.bottomHelper} pointerEvents="none">
+              <Text style={styles.bottomHelperText}>
+                {getWordEmoji(targetWord)}{'  '}Tap the {targetWord}!
+              </Text>
+            </View>
           </>
         )}
       </SafeAreaView>

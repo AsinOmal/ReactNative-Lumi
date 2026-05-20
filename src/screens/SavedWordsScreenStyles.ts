@@ -85,16 +85,6 @@ export const styles = StyleSheet.create({
     marginTop: 1,
   },
   dateText: { fontFamily: 'Fredoka-Regular', fontSize: 15, color: '#94A3B8' },
-  arBtn: {
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  arBtnText: { fontFamily: 'Fredoka-SemiBold', fontSize: 16, color: '#FFF' },
   trashBtn: {
     width: 42,
     height: 42,

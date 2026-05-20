@@ -83,10 +83,6 @@ export const WriteAndScanScreen = () => {
             viroAppProps={{ word: targetWord }}
             style={StyleSheet.absoluteFill}
           />
-          <View style={styles.revealPrompt} pointerEvents="none">
-            <Text style={styles.revealPromptLabel}>WHAT IS THIS?</Text>
-            <Text style={styles.revealPromptWord}>Write it down on paper</Text>
-          </View>
           <TouchableOpacity
             style={styles.closeBtnDark}
             onPress={safeExit}
@@ -95,15 +91,29 @@ export const WriteAndScanScreen = () => {
           >
             <Ionicons name="close" size={22} color="#FFF" />
           </TouchableOpacity>
+          <View style={styles.revealPrompt} pointerEvents="none">
+            <View style={styles.revealStepChip}>
+              <Text style={styles.revealStepText}>Step 1</Text>
+            </View>
+            <Text style={styles.revealInstruction}>Write this word on paper</Text>
+            <Text style={styles.revealWord}>
+              {targetWord.charAt(0).toUpperCase() + targetWord.slice(1)}
+            </Text>
+          </View>
+          <View pointerEvents="none">
+            <Text style={styles.revealHelper}>
+              Write it on paper, then scan your answer.
+            </Text>
+          </View>
           <TouchableOpacity
             style={styles.revealScanBtn}
             activeOpacity={0.85}
             onPress={handleScanMyAnswer}
-            accessibilityLabel="Ready to scan my answer"
+            accessibilityLabel="Check my writing"
             accessibilityRole="button"
           >
             <Ionicons name="camera" size={22} color="#FFF" />
-            <Text style={styles.revealScanBtnText}>Scan my answer</Text>
+            <Text style={styles.revealScanBtnText}>Check My Writing</Text>
           </TouchableOpacity>
         </View>
       )}

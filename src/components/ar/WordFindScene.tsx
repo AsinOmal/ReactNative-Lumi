@@ -7,7 +7,12 @@ import {
   ViroNode,
   ViroText,
 } from '@reactvision/react-viro';
-import { MODEL_REGISTRY } from '../../utils/modelRegistry';
+import { ModelEntry } from '../../utils/modelRegistry';
+
+// 📖 What this does:
+// Spawns one 3D model per word in wordPool using getModel() for resolution.
+// wordPool is passed via viroAppProps so it works for both bundled and downloaded
+// pack words — getModel() resolves local file paths for downloaded models.
 
 export const WordFindScene = (props: any) => {
   const {
@@ -17,6 +22,8 @@ export const WordFindScene = (props: any) => {
     onWrong,
     onModelLoaded,
     randomizedPositions,
+    wordPool,
+    modelEntries,
   }: {
     targetWord: string;
     foundWords: string[];
@@ -24,9 +31,9 @@ export const WordFindScene = (props: any) => {
     onWrong: (w: string) => void;
     onModelLoaded: (w: string) => void;
     randomizedPositions: [number, number, number][];
+    wordPool: string[];
+    modelEntries: ModelEntry[];
   } = props.sceneNavigator.viroAppProps;
-
-  const entries = Object.entries(MODEL_REGISTRY);
 
   return (
     <ViroARScene>
@@ -44,7 +51,9 @@ export const WordFindScene = (props: any) => {
         castsShadow={false}
       />
 
-      {entries.map(([word, model], idx) => {
+      {wordPool.map((word, idx) => {
+        const model = modelEntries[idx];
+        if (!model) return null;
         const isFound = foundWords.includes(word);
         const isTarget = word === targetWord;
         const pos = randomizedPositions[idx] ?? [0, 0, -1.5];
@@ -53,23 +62,12 @@ export const WordFindScene = (props: any) => {
           <ViroNode
             key={word}
             position={pos}
-            animation={{
-              name: 'rotate',
-              run: isTarget && !isFound,
-              loop: true,
-            }}
+            animation={{ name: 'rotate', run: isTarget && !isFound, loop: true }}
             onClickState={(state: number) => {
-              if (state !== 1) {
-                return;
-              } // 1 = CLICKED
-              if (isFound || !targetWord) {
-                return;
-              }
-              if (word === targetWord) {
-                onCorrect(word);
-              } else {
-                onWrong(word);
-              }
+              if (state !== 1) return;
+              if (isFound || !targetWord) return;
+              if (word === targetWord) onCorrect(word);
+              else onWrong(word);
             }}
           >
             <Viro3DObject

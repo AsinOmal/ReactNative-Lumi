@@ -1,13 +1,12 @@
 // 📖 What this does:
-// One row in the Saved Words or Wishlist tab. Mode prop drives icon, AR button
-// vs trash button, and card accent. Extracted so SavedWordsScreen stays under
-// the 150-line rule. formatDate lives here so it travels with the display logic.
+// One row in the Saved Words or Wishlist tab. Mode prop drives icon, trailing
+// action (none on saved, trash on wishlist) and card accent. Extracted so
+// SavedWordsScreen stays under the 150-line rule.
 
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
 import { MODEL_REGISTRY } from '../../utils/modelRegistry';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { colors } from '../../constants/colors';
@@ -37,7 +36,6 @@ export const WordCard: React.FC<Props> = ({
   mode,
   onRemove,
 }) => {
-  const navigation = useNavigation();
   const display = word.charAt(0).toUpperCase() + word.slice(1);
   const isSaved = mode === 'saved';
   const language = useLanguageStore((s) => s.language);
@@ -63,23 +61,7 @@ export const WordCard: React.FC<Props> = ({
         ) : null}
         <Text style={styles.dateText}>{formatDate(timestamp)}</Text>
       </View>
-      {isSaved ? (
-        <TouchableOpacity
-          style={styles.arBtn}
-          activeOpacity={0.8}
-          onPress={() =>
-            (navigation as any).navigate('MainTabs', {
-              screen: 'Scan',
-              params: { preloadWord: word },
-            })
-          }
-          accessibilityLabel={`View ${display} in AR`}
-          accessibilityRole="button"
-        >
-          <Text style={styles.arBtnText}>AR</Text>
-          <Ionicons name="arrow-forward" size={13} color="#FFF" />
-        </TouchableOpacity>
-      ) : (
+      {!isSaved && (
         <TouchableOpacity
           style={styles.trashBtn}
           onPress={onRemove}

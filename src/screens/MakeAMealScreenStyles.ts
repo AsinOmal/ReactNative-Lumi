@@ -33,6 +33,12 @@ export const styles = StyleSheet.create({
   },
   recipeEmoji: { fontSize: 20 },
   recipeName: { fontFamily: 'Fredoka-Bold', fontSize: 16, color: '#FFF' },
+  recipeProgress: {
+    fontFamily: 'Fredoka-SemiBold',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.7)',
+    marginLeft: 2,
+  },
 
   feedbackBanner: {
     marginTop: 12,

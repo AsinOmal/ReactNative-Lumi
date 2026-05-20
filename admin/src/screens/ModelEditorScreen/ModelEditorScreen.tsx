@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Save, Trash2, ArrowLeft } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Save, Trash2, ArrowLeft, Plus, CheckCircle2 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/common/Button';
 import { FormField } from '../../components/common/FormField';
@@ -29,12 +29,20 @@ const EMPTY_MODEL: ModelEntry = {
 
 export const ModelEditorScreen: React.FC = () => {
   const { wordKey } = useParams<{ wordKey: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { models, saveModel, deleteModel, uploadFile } = useModels();
   const { packs, bumpAssetVersion } = usePacks();
   const isNew = !wordKey || wordKey === 'new';
+  // Pack pre-fill from query string — set when the user clicked "Add Model"
+  // inside a specific pack on the Models list, so they don't have to re-pick.
+  const prefilledPackId = searchParams.get('packId') ?? '';
 
-  const [form, setForm] = useState<ModelEntry>(EMPTY_MODEL);
+  const [form, setForm] = useState<ModelEntry>(() =>
+    isNew && prefilledPackId
+      ? { ...EMPTY_MODEL, packId: prefilledPackId }
+      : EMPTY_MODEL
+  );
   const [syllableInput, setSyllableInput] = useState('');
   // Number inputs are kept as strings while focused so users can type partial
   // values like "0" or "0." without the previous `parseFloat() || 1` snap-back.
@@ -50,6 +58,21 @@ export const ModelEditorScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [glbProgress, setGlbProgress] = useState<number | null>(null);
   const [audioProgress, setAudioProgress] = useState<number | null>(null);
+  // Transient "Saved ✓" indicator. We stay on the page after Save so the user
+  // can continue calibrating; the flash gives feedback without yanking nav.
+  const [savedFlash, setSavedFlash] = useState(false);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showSavedFlash = () => {
+    setSavedFlash(true);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setSavedFlash(false), 1800);
+  };
+  useEffect(
+    () => () => {
+      if (flashTimer.current) clearTimeout(flashTimer.current);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!isNew) {
@@ -141,24 +164,63 @@ export const ModelEditorScreen: React.FC = () => {
     await bumpParentPack();
   };
 
-  const handleSave = async () => {
+  const saveFormCore = async (): Promise<string | null> => {
     if (!form.word.trim()) {
       setError('Word is required.');
-      return;
+      return null;
     }
     if (!form.packId) {
       setError('Please select a pack.');
-      return;
+      return null;
     }
-    setSaving(true);
     setError(null);
+    const syllables = syllableInput
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const word = form.word.toLowerCase();
+    await saveModel({ ...form, word, syllables });
+    return word;
+  };
+
+  // Save and stay — for calibration loops. New models swap URL to the edit
+  // route so the next save targets the same record instead of re-creating.
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      const syllables = syllableInput
-        .split(',')
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      await saveModel({ ...form, word: form.word.toLowerCase(), syllables });
-      navigate(ROUTES.MODELS);
+      const word = await saveFormCore();
+      if (!word) return;
+      if (isNew) {
+        navigate(ROUTES.MODEL_EDIT.replace(':wordKey', word), {
+          replace: true,
+        });
+      }
+      showSavedFlash();
+    } catch {
+      setError('Failed to save. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Save then jump to a fresh /new with packId preserved — for batch entry.
+  const handleSaveAndAddAnother = async () => {
+    setSaving(true);
+    try {
+      const word = await saveFormCore();
+      if (!word) return;
+      const packId = form.packId;
+      navigate(`${ROUTES.MODEL_NEW}?packId=${encodeURIComponent(packId)}`, {
+        replace: false,
+      });
+      // Reset the in-memory form so the next render starts clean even before
+      // useEffect re-syncs against the (new) URL.
+      setForm({ ...EMPTY_MODEL, packId });
+      setSyllableInput('');
+      setScaleInput(String(EMPTY_MODEL.scale));
+      setPositionYInput(String(EMPTY_MODEL.positionY));
+      setPositionZInput(String(EMPTY_MODEL.positionZ ?? -1.0));
+      showSavedFlash();
     } catch {
       setError('Failed to save. Please try again.');
     } finally {
@@ -209,6 +271,14 @@ export const ModelEditorScreen: React.FC = () => {
               </Button>
             )}
             <Button
+              variant="ghost"
+              icon={<Plus size={16} />}
+              loading={saving}
+              onClick={handleSaveAndAddAnother}
+            >
+              Save &amp; Add Another
+            </Button>
+            <Button
               icon={<Save size={16} />}
               loading={saving}
               onClick={handleSave}
@@ -219,6 +289,11 @@ export const ModelEditorScreen: React.FC = () => {
         }
       />
 
+      {savedFlash && (
+        <p className="model-editor__saved-flash" role="status">
+          <CheckCircle2 size={16} /> Saved
+        </p>
+      )}
       {error && <p className="model-editor__error">{error}</p>}
 
       <div className="model-editor__body">

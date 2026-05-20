@@ -13,11 +13,14 @@ import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { MODEL_REGISTRY, ModelEntry } from '../utils/modelRegistry';
+import { usePackDownloadStore } from '../store/usePackDownloadStore';
+import { useRemoteContentStore } from '../store/useRemoteContentStore';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { getWordEmoji } from '../constants/packAccents';
 import { loadGameSounds, releaseGameSounds } from '../utils/gameSound';
-import { config } from '../constants/config';
 import { shuffleArray } from '../utils/arrayUtils';
+import { getModelUriForViro, getAudioUriForPlayback } from '../utils/packStorage';
 
 import { GameLoadingOverlay } from '../components/ar/GameLoadingOverlay';
 import { GameOverModal } from '../components/ar/GameOverModal';
@@ -25,8 +28,6 @@ import { WordFindScene } from '../components/ar/WordFindScene';
 import { useARGameLoop } from '../hooks/useARGameLoop';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { styles } from './ARWordFindScreenStyles';
-
-const ALL_WORDS = Object.keys(MODEL_REGISTRY);
 
 const POSITIONS: [number, number, number][] = [
   [-2.2, 0.6, -1.6],
@@ -49,7 +50,55 @@ export const ARWordFindScreen = () => {
   useAmbientPauseOnFocus();
   const navigation = useNavigation();
   const [randomizedPositions] = useState(() => shuffleArray(POSITIONS));
-  const [wordQueue] = useState<string[]>(() => shuffleArray(ALL_WORDS));
+  // Pre-compute (word, ModelEntry) pairs once in React context so the Viro
+  // scene receives already-resolved entries — no store access inside the scene.
+  // Only bundled words (require() sources) are included: pack GLBs load from
+  // remote URLs inside ViroReact unreliably. This guarantees all spawned models
+  // are local bundled assets that ViroReact can always load.
+  const [[wordQueue, modelEntries]] = useState<[string[], ModelEntry[]]>(() => {
+    // usePackStore is NOT persisted — it starts empty on every launch, so we
+    // cannot call getState().packs here. usePackDownloadStore IS persisted and
+    // has localModelPaths keyed by word, making it the reliable source of truth
+    // for which words have local GLBs ready to load.
+    const dlStore = usePackDownloadStore.getState().packs;
+    const remoteModels = useRemoteContentStore.getState().remoteModels;
+
+    // Bundled words — always available, no download required.
+    const bundledPairs: Array<[string, ModelEntry]> = Object.entries(MODEL_REGISTRY)
+      .map(([w, e]) => [w, e] as [string, ModelEntry]);
+
+    // Downloaded pack words — build ModelEntry directly from local file paths
+    // so we never touch HTTPS (unreliable in ViroReact Old Arch).
+    const downloadedPairs: Array<[string, ModelEntry]> = [];
+    for (const dl of Object.values(dlStore)) {
+      if (dl.status !== 'downloaded') continue;
+      for (const [word, modelPath] of Object.entries(dl.localModelPaths)) {
+        if (MODEL_REGISTRY[word]) continue; // bundled already covers this word
+        const remote = remoteModels[word];
+        const scale: [number, number, number] = remote
+          ? [remote.scale, remote.scale, remote.scale]
+          : [0.1, 0.1, 0.1];
+        const position: [number, number, number] = remote
+          ? [0, remote.positionY, remote.positionZ ?? -1.0]
+          : [0, 0, -1.0];
+        const audioPath = dl.localAudioPaths[word];
+        downloadedPairs.push([word, {
+          source: { uri: getModelUriForViro(modelPath, dl.assetVersion) },
+          scale,
+          position,
+          syllables: remote?.syllables ?? [word],
+          audio: '',
+          audioUrl: audioPath ? getAudioUriForPlayback(audioPath) : remote?.audioUrl,
+          emoji: '',
+          sinhalaLabel: remote?.sinhalaLabel,
+        }]);
+      }
+    }
+
+    const all = shuffleArray([...bundledPairs, ...downloadedPairs]);
+    const capped = all.slice(0, POSITIONS.length);
+    return [capped.map(p => p[0]), capped.map(p => p[1])];
+  });
 
   const [loadedWords, setLoadedWords] = useState<string[]>([]);
   const [allLoaded, setAllLoaded] = useState(false);
@@ -74,7 +123,7 @@ export const ARWordFindScreen = () => {
     stopTimer,
   } = useARGameLoop({ wordQueue });
 
-  const targetModel = MODEL_REGISTRY[targetWord];
+  const targetModel = modelEntries[wordQueue.indexOf(targetWord)] ?? null;
   const language = useLanguageStore((s) => s.language);
 
   useEffect(() => {
@@ -91,16 +140,13 @@ export const ARWordFindScreen = () => {
 
   const handleModelLoaded = useCallback((word: string) => {
     setLoadedWords((prev) => {
-      if (prev.includes(word)) {
-        return prev;
-      }
+      if (prev.includes(word)) return prev;
       const next = [...prev, word];
-      if (next.length >= config.AR_MODELS_TOTAL) {
-        setAllLoaded(true);
-      }
+      // Use wordQueue.length — only the words actually spawned need to load
+      if (next.length >= wordQueue.length) setAllLoaded(true);
       return next;
     });
-  }, []);
+  }, [wordQueue.length]);
 
   const onCorrectRef = useRef<(w: string) => void>(() => {});
   const onWrongRef = useRef<(w: string) => void>(() => {});
@@ -136,6 +182,8 @@ export const ARWordFindScreen = () => {
             onWrong: stableOnWrong,
             onModelLoaded: stableOnModelLoaded,
             randomizedPositions,
+            wordPool: wordQueue,
+            modelEntries,
           }}
           style={StyleSheet.absoluteFill}
         />
@@ -185,7 +233,7 @@ export const ARWordFindScreen = () => {
         {gameStarted && !gameOver && (
           <View style={styles.targetCard} pointerEvents="none">
             <Text style={styles.tapThe}>TAP THE</Text>
-            <Text style={styles.targetEmoji}>{targetModel?.emoji ?? '❓'}</Text>
+            <Text style={styles.targetEmoji}>{targetModel?.emoji ?? getWordEmoji(targetWord)}</Text>
             <Text style={styles.targetWord}>{targetWord.toUpperCase()}</Text>
             {language === 'si' && targetModel?.sinhalaLabel ? (
               <Text style={styles.targetSinhala}>
@@ -227,8 +275,8 @@ export const ARWordFindScreen = () => {
           loadFadeAnim={loadFadeAnim}
           loadedWords={loadedWords}
           allLoaded={allLoaded}
-          totalModels={config.AR_MODELS_TOTAL}
-          allWords={ALL_WORDS}
+          totalModels={wordQueue.length}
+          allWords={wordQueue}
           onStartPlay={() => {
             Animated.timing(loadFadeAnim, {
               toValue: 0,

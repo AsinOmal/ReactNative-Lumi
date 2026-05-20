@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, MutableRefObject } from 'react';
 import {
   ViroARScene,
   ViroAmbientLight,
@@ -7,20 +7,51 @@ import {
   ViroNode,
 } from '@reactvision/react-viro';
 import { getModel } from '../../utils/modelRegistry';
+import { config } from '../../constants/config';
+import type { RotationApi } from '../../hooks/useSwipeRotation';
 
-// Animations registered in index.js at startup
+// Animations registered in index.js at startup.
+// Rotation is driven by a screen-level swipe (useSwipeRotation): the scene
+// publishes applyDelta/commit onto the ref passed via viroAppProps and the
+// PanResponder above pumps gesture deltas into it. First swipe stops the
+// auto-spin and the model follows the finger thereafter.
 
 export const ARWordScene = (props: any) => {
   const word: string = props?.sceneNavigator?.viroAppProps?.word ?? 'apple';
   const onModelLoaded: (() => void) | undefined =
     props?.sceneNavigator?.viroAppProps?.onModelLoaded;
+  const rotationApiRef: MutableRefObject<RotationApi | null> | undefined =
+    props?.sceneNavigator?.viroAppProps?.rotationApiRef;
   const [modelError, setModelError] = useState(false);
+
+  const [isManual, setIsManual] = useState(false);
+  const [rotY, setRotY] = useState(0);
+  const startRotY = useRef(0);
+  // Ref mirror of isManual so the rotation-API closure stays stable across
+  // renders — re-binding the api on every state flip would mid-gesture race.
+  const isManualRef = useRef(false);
+
+  useEffect(() => {
+    if (!rotationApiRef) return;
+    rotationApiRef.current = {
+      applyDelta: (dx: number) => {
+        if (!isManualRef.current) {
+          isManualRef.current = true;
+          setIsManual(true);
+        }
+        setRotY(startRotY.current + dx * config.SWIPE_ROTATE_DEG_PER_PX);
+      },
+      commit: (dx: number) => {
+        startRotY.current += dx * config.SWIPE_ROTATE_DEG_PER_PX;
+        setRotY(startRotY.current);
+      },
+    };
+  }, [rotationApiRef]);
 
   const modelEntry = getModel(word);
 
   return (
     <ViroARScene>
-      {/* Lighting — multi-directional to illuminate all PBR surfaces */}
       <ViroAmbientLight color="#ffffff" intensity={600} />
       <ViroDirectionalLight
         color="#ffffff"
@@ -41,11 +72,11 @@ export const ARWordScene = (props: any) => {
         castsShadow={false}
       />
 
-      {/* 3D Model — placed at fixed world position, rotates continuously */}
       {modelEntry && !modelError && (
         <ViroNode
           position={modelEntry.position}
-          animation={{ name: 'rotate', run: true, loop: true }}
+          rotation={isManual ? [0, rotY, 0] : [0, 0, 0]}
+          animation={{ name: 'rotate', run: !isManual, loop: true }}
         >
           <Viro3DObject
             source={modelEntry.source}

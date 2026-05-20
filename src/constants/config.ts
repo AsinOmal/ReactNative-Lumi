@@ -26,6 +26,10 @@ export const config = {
 
   // Animations
   CARD_SLIDE_DURATION_MS: 250,
+  // Screen-level swipe-to-rotate: degrees per pixel, plus minimum dx before
+  // PanResponder claims the gesture (taps must remain inert).
+  SWIPE_ROTATE_DEG_PER_PX: 0.5,
+  SWIPE_ROTATE_THRESHOLD_PX: 6,
 
   // Storage & API limits
   MAX_DAILY_SCANS: 10, // Unused natively, but valid domain logic
