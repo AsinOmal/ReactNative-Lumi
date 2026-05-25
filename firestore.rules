@@ -136,12 +136,29 @@ service cloud.firestore {
     }
 
     // ── Purchases ─────────────────────────────────────────────────────────────
+    // Entitlement records are server-written only. Clients request a purchase
+    // by creating a doc under /purchaseRequests; the Cloud Function validates
+    // (and in Phase 11, verifies the IAP receipt) before writing here via the
+    // Admin SDK. This prevents a client from self-granting premium packs.
     match /users/{uid}/purchases/{packId} {
-      allow read, create: if request.auth != null && request.auth.uid == uid;
+      allow read: if isOwner(uid);
+      allow create, update, delete: if false;
       allow read, write: if isAdmin();
     }
     match /{path=**}/purchases/{packId} {
       allow read: if isAdmin();
+    }
+
+    // Client-writable purchase request queue. The trigger function reads from
+    // here, validates, then writes the real purchase record. Clients cannot
+    // mark their own request 'completed' — only the function (Admin SDK) can.
+    match /users/{uid}/purchaseRequests/{requestId} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.packId)
+        && request.resource.data.status == 'pending';
+      allow update, delete: if false;
+      allow write: if isAdmin();
     }
 
     match /{path=**}/hazardEvents/{eventId} {

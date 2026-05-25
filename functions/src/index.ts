@@ -54,6 +54,67 @@ const countRecentBroadcasts = async (excludeId: string): Promise<number> => {
   return snap.docs.filter((d) => d.id !== excludeId).length;
 };
 
+// ── Purchase request processor ───────────────────────────────────────────────
+// Client writes to /users/{uid}/purchaseRequests/{requestId} with { packId,
+// status: 'pending' }. This trigger validates that the pack exists and is
+// premium, then writes the real entitlement to /users/{uid}/purchases/{packId}
+// via the Admin SDK. Client listens for status to flip to 'completed'/'failed'.
+//
+// Phase 11 (real IAP): add App Store / Play receipt validation in the marked
+// block below before writing the purchase doc. No other changes needed.
+
+interface PurchaseRequestDoc {
+  packId: string;
+  status: 'pending' | 'completed' | 'failed';
+  requestedAt?: admin.firestore.Timestamp;
+}
+
+export const processPurchaseRequest = onDocumentCreated(
+  'users/{uid}/purchaseRequests/{requestId}',
+  async (event) => {
+    const snap = event.data;
+    if (!snap) {
+      return;
+    }
+    const data = snap.data() as PurchaseRequestDoc;
+    const { uid } = event.params;
+
+    if (data.status !== 'pending') {
+      return;
+    }
+
+    const fail = async (reason: string) => {
+      await snap.ref.update({ status: 'failed', failureReason: reason });
+      logger.warn(`processPurchaseRequest ${event.params.requestId}: ${reason}`);
+    };
+
+    try {
+      const packSnap = await db.doc(`packs/${data.packId}`).get();
+      if (!packSnap.exists) {
+        return fail('pack_not_found');
+      }
+      const pack = packSnap.data() as { isPremium?: boolean };
+      if (!pack.isPremium) {
+        return fail('pack_not_premium');
+      }
+
+      // Phase 11 receipt validation goes here.
+
+      await db.doc(`users/${uid}/purchases/${data.packId}`).set({
+        purchasedAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: 'mock',
+      });
+      await snap.ref.update({ status: 'completed' });
+      logger.info(
+        `processPurchaseRequest ${event.params.requestId}: granted ${data.packId} to ${uid}`
+      );
+    } catch (err) {
+      logger.error('processPurchaseRequest failed:', err);
+      await snap.ref.update({ status: 'failed', failureReason: 'internal' });
+    }
+  }
+);
+
 export const dispatchBroadcast = onDocumentCreated(
   'adminConfig/notifications/broadcasts/{broadcastId}',
   async (event) => {
