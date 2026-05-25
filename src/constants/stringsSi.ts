@@ -128,7 +128,8 @@ export const stringsSi = {
   packDetailReadyOffline: "ඕෆ්ලයින් ක්‍රීඩාවට සූදානම්", // TODO: native-speaker review
   packGateBelongsTo: (packName: string) => `මෙම වචනය ${packName} ට අයිතිය.`, // TODO: native-speaker review
   packGateCtaFmt: (packName: string) => `${packName} බාගන්න`, // TODO: native-speaker review
-  PREMIUM_GATE_CTA_PACK: (packName: string, price: string) => `${packName} අගුළු ඇරීමට · ${price}`, // TODO: native-speaker review
+  PREMIUM_GATE_CTA_PACK: (packName: string, price: string) =>
+    `${packName} අගුළු ඇරීමට · ${price}`, // TODO: native-speaker review
 
   // Onboarding
   onboardingSlide0Title: "Lumi වෙත සාදරයෙන් පිළිගනිමු!",
