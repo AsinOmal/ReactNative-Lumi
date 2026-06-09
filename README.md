@@ -1,6 +1,6 @@
 # Lumi — AR Word Explorer
 
-> *"Every word a child sees in the real world becomes an interactive 3D experience."*
+> _"Every word a child sees in the real world becomes an interactive 3D experience."_
 
 Lumi is an iOS app for children aged **4–10** that uses Augmented Reality and OCR to bring words to life. Point the camera at any written word — in a book, on a label, on a cereal box — and the matching 3D model appears in the real world.
 
@@ -8,34 +8,34 @@ Lumi is an iOS app for children aged **4–10** that uses Augmented Reality and 
 
 ---
 
-> [!CAUTION]
-> **iOS physical device only.** AR runs on ARKit via ViroReact — it will not work on the iOS Simulator. All development and testing must be done on a physical iPhone.
+> [!CAUTION] > **iOS physical device only.** AR runs on ARKit via ViroReact — it will not work on the iOS Simulator. All development and testing must be done on a physical iPhone.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | React Native (Old Architecture — required by ViroReact) |
-| AR Engine | `@reactvision/react-viro` (ViroReact) |
-| OCR | Vision Camera + `LumiVisionOCR.swift` (Apple VNRecognizeTextRequest) |
-| 3D Models | `.glb` (binary GLTF) — bundled + remote via Firebase Storage |
-| Auth | Firebase Auth (Google Sign-In) |
-| Database | Cloud Firestore |
-| Storage | Firebase Storage (admin-uploaded GLB/MP3 assets) |
-| Push Notifications | `@react-native-firebase/messaging` + `@notifee/react-native` |
-| Cloud Functions | Firebase Functions (FCM broadcast dispatcher) |
-| State | Zustand |
-| Navigation | React Navigation (Stack + Bottom Tabs) |
-| Icons | react-native-vector-icons (Ionicons + MaterialCommunityIcons) |
-| Admin Dashboard | Vite + React + TypeScript, deployed on Firebase Hosting |
+| Layer              | Technology                                                           |
+| ------------------ | -------------------------------------------------------------------- |
+| Framework          | React Native (Old Architecture — required by ViroReact)              |
+| AR Engine          | `@reactvision/react-viro` (ViroReact)                                |
+| OCR                | Vision Camera + `LumiVisionOCR.swift` (Apple VNRecognizeTextRequest) |
+| 3D Models          | `.glb` (binary GLTF) — bundled + remote via Firebase Storage         |
+| Auth               | Firebase Auth (Google Sign-In)                                       |
+| Database           | Cloud Firestore                                                      |
+| Storage            | Firebase Storage (admin-uploaded GLB/MP3 assets)                     |
+| Push Notifications | `@react-native-firebase/messaging` + `@notifee/react-native`         |
+| Cloud Functions    | Firebase Functions (FCM broadcast dispatcher)                        |
+| State              | Zustand                                                              |
+| Navigation         | React Navigation (Stack + Bottom Tabs)                               |
+| Icons              | react-native-vector-icons (Ionicons + MaterialCommunityIcons)        |
+| Admin Dashboard    | Vite + React + TypeScript, deployed on Firebase Hosting              |
 
 ---
 
 ## Features
 
 ### Core
+
 - Google Sign-In with Firebase Auth
 - OCR pipeline: Vision Camera → native Swift bridge → VNRecognizeTextRequest (centre-cropped), two-pass Levenshtein word matching, 3-frame debounce to prevent false positives
 - AR Word Find game — 60s timer, 10 fruit models, scoring, SFX
@@ -44,11 +44,13 @@ Lumi is an iOS app for children aged **4–10** that uses Augmented Reality and 
 - Fruits pack — 10 hand-calibrated GLB models with `.mp3` pronunciation audio
 
 ### Content & Packs
+
 - Vegetables pack (10 GLBs bundled, pending scale calibration on device)
 - Vehicles pack (10 GLBs bundled, pending scale calibration on device)
 - Remote content integration — admin-uploaded packs and models served from Firebase Storage, merged with local seed at boot
 
 ### User Features
+
 - Achievement system — 7 achievements, Firestore-synced, shareable
 - Saved words — Firestore-backed dual-tab screen
 - Daily Word Hunt with streak tracking
@@ -57,7 +59,9 @@ Lumi is an iOS app for children aged **4–10** that uses Augmented Reality and 
 - Parental controls — PIN/biometric gate, custom blocklist, screen time limit, activity log
 
 ### Admin Dashboard
+
 A separate web app (Vite + React) deployed on Firebase Hosting with Google Sign-In gated to admin-claim accounts:
+
 - **Content** — create/edit packs and models, upload GLB/MP3 files with progress, publish/draft toggle
 - **Users** — paginated user table, full profile view, suspend/delete account, grant achievements
 - **Analytics** — DAU, new signups, top scanned words, game usage (Recharts)
@@ -72,12 +76,15 @@ A separate web app (Vite + React) deployed on Firebase Hosting with Google Sign-
 ## Architecture Notes
 
 ### Old Architecture only
+
 ViroReact is permanently incompatible with React Native's New Architecture (JSI/Fabric). New Arch is disabled in the iOS build. All native modules use the standard `NativeModule` bridge (`LumiVisionOCR.swift` / `LumiVisionOCR.m`).
 
 ### Two-phase camera
+
 Vision Camera and ViroReact cannot run simultaneously — they share the same hardware. A `ScanMode` enum (`'scan' | 'ar'`) controls which is mounted. Camera must be `isActive={isAppActive && isFocused}` — losing focus releases the hardware for ViroReact to claim it.
 
 ### Remote content
+
 Admins upload GLBs and MP3s via the dashboard → stored in Firebase Storage → URLs saved in Firestore `adminModels/{word}` → mobile fetches at boot → `modelRegistry.getModel()` checks remote first, falls back to bundled assets. No app update needed for new content.
 
 ---
@@ -125,13 +132,13 @@ Admins upload GLBs and MP3s via the dashboard → stored in Firebase Storage →
 
 ## Pack System
 
-| Pack | Status | Words |
-|---|---|---|
-| Fruits | Free — calibrated ✅ | Apple, Banana, Cherry, Grape, Lemon, Mango, Orange, Pineapple, Strawberry, Watermelon |
-| Vegetables | Free — calibration pending | Broccoli, Carrot, Chili, Corn, Cucumber, Eggplant, Onion, Potato, Pumpkin, Tomato |
-| Vehicles | Free — calibration pending | Bicycle, Boat, Bus, Car, Helicopter, Plane, Rocket, Tractor, Train, Truck |
-| Dinosaurs | Premium (planned) | — |
-| Space | Premium (planned) | — |
+| Pack       | Status                     | Words                                                                                 |
+| ---------- | -------------------------- | ------------------------------------------------------------------------------------- |
+| Fruits     | Free — calibrated ✅       | Apple, Banana, Cherry, Grape, Lemon, Mango, Orange, Pineapple, Strawberry, Watermelon |
+| Vegetables | Free — calibration pending | Broccoli, Carrot, Chili, Corn, Cucumber, Eggplant, Onion, Potato, Pumpkin, Tomato     |
+| Vehicles   | Free — calibration pending | Bicycle, Boat, Bus, Car, Helicopter, Plane, Rocket, Tractor, Train, Truck             |
+| Dinosaurs  | Premium (planned)          | —                                                                                     |
+| Space      | Premium (planned)          | —                                                                                     |
 
 New packs and models can be published by admins at any time without an app update.
 
@@ -185,15 +192,15 @@ npm run dev
 
 ## Pending Work
 
-| Item | Phase |
-|---|---|
-| Calibrate vegetables + vehicles GLBs on device | 10 |
-| Source 20 `.mp3` audio files (vegetables + vehicles) | 10 |
-| Deploy FCM Cloud Function (`cd functions && npm run deploy`) | 9-tail |
-| In-app purchases (`react-native-iap`) | 11 |
-| Replace `HazardAlertOverlay` emoji with Ionicons `warning` | 12 |
-| Wire UI sounds (`save_chime.mp3`, `achievement_unlock.mp3`) | 12 |
-| App Store submission (screenshots, `PrivacyInfo.xcprivacy`, COPPA) | 12 |
+| Item                                                               | Phase  |
+| ------------------------------------------------------------------ | ------ |
+| Calibrate vegetables + vehicles GLBs on device                     | 10     |
+| Source 20 `.mp3` audio files (vegetables + vehicles)               | 10     |
+| Deploy FCM Cloud Function (`cd functions && npm run deploy`)       | 9-tail |
+| In-app purchases (`react-native-iap`)                              | 11     |
+| Replace `HazardAlertOverlay` emoji with Ionicons `warning`         | 12     |
+| Wire UI sounds (`save_chime.mp3`, `achievement_unlock.mp3`)        | 12     |
+| App Store submission (screenshots, `PrivacyInfo.xcprivacy`, COPPA) | 12     |
 
 ---
 
@@ -205,4 +212,4 @@ npm run dev
 
 ---
 
-*Final Year Project — built with React Native, ViroReact, Firebase, and a lot of ☕*
+_Final Year Project — built with React Native, ViroReact, Firebase, and a lot of ☕_
