@@ -70,6 +70,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
       await addDoc(collection(getFirestore(getApp()), 'feedback') as any, {
         uid,
         email,
+        type: 'feedback',
         message: message.trim(),
         appVersion: config.APP_VERSION,
         submittedAt: serverTimestamp(),

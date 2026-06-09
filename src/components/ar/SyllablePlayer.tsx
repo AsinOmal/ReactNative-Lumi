@@ -124,7 +124,7 @@ export const SyllablePlayer: React.FC<Props> = ({ entry }) => {
         <Text
           style={[styles.slowBtnText, slowMode && styles.slowBtnTextActive]}
         >
-          🐢 Slow
+          Slow
         </Text>
       </TouchableOpacity>
     </View>
@@ -142,14 +142,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E6D1AE',
     borderRadius: 24,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     marginBottom: 10,
   },
   playBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#6C4AB6',
     alignItems: 'center',
     justifyContent: 'center',
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   slowBtn: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 11,
     paddingVertical: 5,
     borderRadius: 20,
     borderWidth: 1.5,

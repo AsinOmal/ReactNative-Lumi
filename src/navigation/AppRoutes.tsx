@@ -28,6 +28,7 @@ import { WriteAndScanScreen } from '../screens/WriteAndScanScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { AppIntroScreen } from '../screens/AppIntroScreen';
 import { ChildProfileScreen } from '../screens/ChildProfileScreen';
+import { MandatoryPinSetupScreen } from '../screens/MandatoryPinSetupScreen';
 import { scheduleStreakReminder } from '../services/notificationService';
 import { useStrings } from '../hooks/useStrings';
 import {
@@ -51,8 +52,13 @@ const SPRING = {
 
 export const AppRoutes = () => {
   const { user, hydrated, childProfileSeen, introSeen } = useAuthStore();
-  const { isParentUnlocked, extendGrace, setParentUnlocked } =
-    useParentalControlsStore();
+  const {
+    isParentUnlocked,
+    extendGrace,
+    setParentUnlocked,
+    settings,
+    settingsLoaded,
+  } = useParentalControlsStore();
   const strings = useStrings();
   const {
     isAtLimit,
@@ -110,6 +116,16 @@ export const AppRoutes = () => {
   // re-shows for a different account on the same device.
   if (!introSeen) {
     return <AppIntroScreen />;
+  }
+  if (!settingsLoaded) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#5B2DC0" />
+      </View>
+    );
+  }
+  if (!settings.pinHash) {
+    return <MandatoryPinSetupScreen />;
   }
   // Collect child name/age once. Server-driven (users/{uid}.childProfileSeen)
   // so a different account on the same device sees this fresh, but a user who

@@ -11,6 +11,15 @@ export const strings = {
   wishForIt: '⭐ Wish for it!',
   unknownPrefix: '❓',
   unknownSuffix: "isn't in our collection yet",
+  scanStepLabel: 'Step 1',
+  scanInstruction: 'Hold a word inside the box',
+  scanWordFound: 'Word found!',
+  scanViewInAR: 'View in AR',
+  unknownWordCard: (word: string) => `"${word}" is not in LUMI yet`,
+  rotateWordHint: (word: string) => `Swipe to rotate the ${word}`,
+  placementMoveHint: (word: string) => `Move the ${word} around`,
+  placeRequiresDownload: 'Download this pack before placing it.',
+  placeUnavailable: 'Place is not ready yet',
 
   // Packs
   fruitsPackName: 'Fruits Pack',
@@ -26,6 +35,9 @@ export const strings = {
   // Parental Controls — PIN
   pinSetTitle: 'Set Your Parental PIN',
   pinSetSubtitle: 'Choose a 4-digit PIN to protect parent settings',
+  mandatoryPinTitle: 'Create a parent PIN',
+  mandatoryPinSubtitle:
+    'This keeps screen-time limits safe across all your devices.',
   pinVerifyTitle: 'Parent Access',
   pinVerifySubtitle: 'Enter your 4-digit PIN to continue',
   pinIncorrect: 'Incorrect PIN. Try again.',
@@ -122,9 +134,11 @@ export const strings = {
   packDetailNotDownloaded: 'Not downloaded yet',
   packDetailDownloaded: 'Downloaded',
   packDetailReadyOffline: 'Ready to play offline',
-  packGateBelongsTo: (packName: string) => `This word belongs to the ${packName}.`,
+  packGateBelongsTo: (packName: string) =>
+    `This word belongs to the ${packName}.`,
   packGateCtaFmt: (packName: string) => `Download ${packName}`,
-  PREMIUM_GATE_CTA_PACK: (packName: string, price: string) => `Unlock ${packName} · ${price}`,
+  PREMIUM_GATE_CTA_PACK: (packName: string, price: string) =>
+    `Unlock ${packName} · ${price}`,
 
   // Onboarding (Phase C redesign)
   onboardingSlide0Title: 'Welcome to Lumi!',

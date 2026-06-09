@@ -6,13 +6,16 @@
 // Schema: /users/{uid}/screenTime/{YYYY-MM-DD} → { totalMinutes: number }
 
 import { useEffect, useState } from 'react';
-import { collectionGroup, getDocs } from 'firebase/firestore';
+import { collection, collectionGroup, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export type ScreenTimeRange = '7d' | '30d' | 'all';
 
 export interface UserScreenTimeStat {
   uid: string;
+  email: string;
+  displayName: string;
+  username: string;
   totalMinutes: number;
   daysActive: number;
   lastActiveDate: string; // YYYY-MM-DD
@@ -56,15 +59,31 @@ export const useScreenTimeAnalytics = (
       setLoading(true);
       setError(null);
       try {
-        const snap = await getDocs(collectionGroup(db, 'screenTime'));
+        const [snap, usersSnap] = await Promise.all([
+          getDocs(collectionGroup(db, 'screenTime')),
+          getDocs(collection(db, 'users')),
+        ]);
+        const usersByUid = new Map(
+          usersSnap.docs.map((d) => {
+            const data = d.data();
+            return [
+              d.id,
+              {
+                email: (data.email as string) ?? '',
+                displayName: (data.displayName as string) ?? '',
+                username: (data.username as string) ?? '',
+              },
+            ] as const;
+          })
+        );
 
         // Build the date floor for the current range.
         const cutoff =
           range === 'all'
             ? '0000-00-00'
             : range === '30d'
-              ? daysAgoKey(29)
-              : daysAgoKey(6);
+            ? daysAgoKey(29)
+            : daysAgoKey(6);
 
         // Aggregate per-user inside the range.
         const userAgg = new Map<
@@ -109,8 +128,7 @@ export const useScreenTimeAnalytics = (
         }
         snap.docs.forEach((d) => {
           if (d.id in trendBuckets) {
-            trendBuckets[d.id] +=
-              (d.data().totalMinutes as number) ?? 0;
+            trendBuckets[d.id] += (d.data().totalMinutes as number) ?? 0;
           }
         });
 
@@ -118,6 +136,9 @@ export const useScreenTimeAnalytics = (
           Array.from(userAgg.entries())
             .map(([uid, v]) => ({
               uid,
+              email: usersByUid.get(uid)?.email ?? '',
+              displayName: usersByUid.get(uid)?.displayName ?? '',
+              username: usersByUid.get(uid)?.username ?? '',
               totalMinutes: v.totalMinutes,
               daysActive: v.days.size,
               lastActiveDate: v.lastActive,

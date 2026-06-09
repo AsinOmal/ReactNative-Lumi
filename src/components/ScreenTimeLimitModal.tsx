@@ -45,18 +45,11 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
 }) => {
   const strings = useStrings();
   const { verifyPin, isLocked, lockSecondsRemaining } = useParentAuth();
-  const { setParentUnlocked, settings } = useParentalControlsStore();
-  const pinConfigured = !!settings.pinHash;
+  const { setParentUnlocked } = useParentalControlsStore();
   const [pinError, setPinError] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const handleAction = (action: PendingAction) => {
-    if (!pinConfigured) {
-      // No PIN set — allow through immediately so the child isn't locked out.
-      if (action === 'grant5') onGrant5Min();
-      else if (action === 'unlock') onUnlocked();
-      return;
-    }
     setPendingAction(action);
   };
 
@@ -148,4 +141,3 @@ export const ScreenTimeLimitModal: React.FC<ScreenTimeLimitModalProps> = ({
     </Modal>
   );
 };
-

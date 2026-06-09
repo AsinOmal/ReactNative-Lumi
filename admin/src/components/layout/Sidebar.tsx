@@ -36,7 +36,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Notifications', path: ROUTES.NOTIFICATIONS, icon: Bell },
   { label: 'App Config', path: ROUTES.APP_CONFIG, icon: Settings },
   { label: 'Revenue', path: ROUTES.REVENUE, icon: DollarSign },
-  { label: 'Feedback', path: ROUTES.FEEDBACK, icon: MessageSquare },
+  { label: 'Support Inbox', path: ROUTES.FEEDBACK, icon: MessageSquare },
   { label: 'Wishlist', path: ROUTES.WISHLIST, icon: Heart },
 ];
 

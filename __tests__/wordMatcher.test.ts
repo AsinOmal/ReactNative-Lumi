@@ -54,6 +54,11 @@ describe('matchWord — fuzzy matches (Levenshtein)', () => {
     const result = matchWord('ap', WORDS);
     expect(result).toBeNull();
   });
+
+  it('does not fuzzy-correct a protected catalog word that is not active', () => {
+    const result = matchWord('plane', ['planet'], ['plane', 'planet']);
+    expect(result).toBeNull();
+  });
 });
 
 describe('matchWord — no match cases', () => {
@@ -110,6 +115,12 @@ describe('detectUnknownWord', () => {
   it('returns null when the token is within distance-2 of a pack word', () => {
     // 'gripe' is distance-2 from 'grape' — should be excluded
     expect(detectUnknownWord('gripe', WORDS)).toBeNull();
+  });
+
+  it('returns a protected inactive catalog word as unknown', () => {
+    expect(detectUnknownWord('plane', ['planet'], ['plane', 'planet'])).toBe(
+      'plane'
+    );
   });
 
   it('returns null for empty input', () => {

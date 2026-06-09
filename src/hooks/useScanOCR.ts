@@ -13,22 +13,29 @@ import {
 } from '../utils/wordMatcher';
 import { recognizeTextInImage } from '../utils/visionOCR';
 import { unlinkPaths } from '../utils/packStorage';
+import { getWordPackId, getWordPackLabel } from '../constants/packAccents';
 import { config } from '../constants/config';
 import { ScanMode } from '../types';
 import { useParentalControlsStore } from '../store/useParentalControlsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { logActivityEvent } from '../services/parentalControlsService';
+import { logContentEvent } from '../services/contentAnalyticsService';
 
 interface UseScanOCRProps {
   mode: ScanMode;
   allSupportedWords: string[];
+  protectedCatalogWords?: string[];
 }
 
 // 📖 What this does:
 // This hook encapsulates all the heavy camera logic and OCR scanning loops.
 // It manages permissions, camera references, App state (backgrounding),
 // and the debounce logic to ensure words have to be matched across multiple consecutive frames.
-export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
+export const useScanOCR = ({
+  mode,
+  allSupportedWords,
+  protectedCatalogWords = allSupportedWords,
+}: UseScanOCRProps) => {
   const device = useCameraDevice('back');
   const { hasPermission, requestPermission } = useCameraPermission();
   const cameraRef = useRef<Camera>(null);
@@ -57,6 +64,7 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
 
   const lastUnknownCandidateRef = useRef<string | null>(null);
   const unknownConsecutiveRef = useRef(0);
+  const loggedUnknownWordRef = useRef<string | null>(null);
 
   // Parental controls — read from store (never recalculated in the scan hot-path)
   const { mergedBlocklist } = useParentalControlsStore();
@@ -122,7 +130,7 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
       // this, sustained scanning leaks ~120 photos/minute into the app's
       // sandbox until the OS evicts the tmp dir.
       unlinkPaths([snapshot.path]).catch(() => {});
-      const matched = matchWord(text, allSupportedWords);
+      const matched = matchWord(text, allSupportedWords, protectedCatalogWords);
 
       if (matched?.word === lastCandidateRef.current) {
         consecutiveCountRef.current += 1;
@@ -153,6 +161,14 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
           }).catch(() => {
             // Fire-and-forget — don't stall the scan loop on a Firestore write error
           });
+          logContentEvent(user.uid, {
+            type: 'scan_matched',
+            word: matched.word,
+            packId: getWordPackId(matched.word) ?? undefined,
+            packName: getWordPackLabel(matched.word) || undefined,
+            source: 'scan',
+            flagged: isBlocked,
+          }).catch(() => {});
           loggedWordRef.current = matched.word;
         }
 
@@ -164,10 +180,15 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
         setUnknownWord(null);
         lastUnknownCandidateRef.current = null;
         unknownConsecutiveRef.current = 0;
+        loggedUnknownWordRef.current = null;
       } else if (!matched) {
         setMatchResult(null);
 
-        const unknown = detectUnknownWord(text, allSupportedWords);
+        const unknown = detectUnknownWord(
+          text,
+          allSupportedWords,
+          protectedCatalogWords
+        );
         if (unknown && unknown === lastUnknownCandidateRef.current) {
           unknownConsecutiveRef.current += 1;
         } else {
@@ -180,8 +201,18 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
           unknownConsecutiveRef.current >= config.REQUIRED_UNKNOWN_CONSECUTIVE
         ) {
           setUnknownWord(unknown);
+          if (user && loggedUnknownWordRef.current !== unknown) {
+            logContentEvent(user.uid, {
+              type: 'scan_unknown',
+              word: unknown,
+              source: 'scan',
+              reason: 'ocr_unknown',
+            }).catch(() => {});
+            loggedUnknownWordRef.current = unknown;
+          }
         } else if (!unknown) {
           setUnknownWord(null);
+          loggedUnknownWordRef.current = null;
         }
       }
     } catch {
@@ -195,6 +226,7 @@ export const useScanOCR = ({ mode, allSupportedWords }: UseScanOCRProps) => {
     isScreenFocused,
     isFocused,
     allSupportedWords,
+    protectedCatalogWords,
     mergedBlocklist,
     user,
   ]);

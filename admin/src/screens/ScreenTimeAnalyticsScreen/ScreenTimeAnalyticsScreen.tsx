@@ -46,6 +46,14 @@ const fmtMinutes = (m: number): string => {
   return rem === 0 ? `${h}h` : `${h}h ${rem}m`;
 };
 
+const userLabel = (u: {
+  username: string;
+  displayName: string;
+  email: string;
+  uid: string;
+}): string =>
+  u.username || u.displayName || u.email || `${u.uid.slice(0, 8)}...`;
+
 export const ScreenTimeAnalyticsScreen: React.FC = () => {
   const navigate = useNavigate();
   const [range, setRange] = React.useState<ScreenTimeRange>('7d');
@@ -60,7 +68,9 @@ export const ScreenTimeAnalyticsScreen: React.FC = () => {
     <div className="screen-time">
       <PageHeader
         title="Screen Time"
-        subtitle={`${fmtMinutes(totalMinutes)} across all users — ${RANGE_LABEL[range].toLowerCase()}`}
+        subtitle={`${fmtMinutes(totalMinutes)} across all users — ${RANGE_LABEL[
+          range
+        ].toLowerCase()}`}
         onBack={() => navigate(-1)}
       />
 
@@ -163,7 +173,10 @@ export const ScreenTimeAnalyticsScreen: React.FC = () => {
             <tbody>
               {perUser.map((u, i) => {
                 const avg =
-                  u.daysActive > 0 ? Math.round(u.totalMinutes / u.daysActive) : 0;
+                  u.daysActive > 0
+                    ? Math.round(u.totalMinutes / u.daysActive)
+                    : 0;
+                const label = userLabel(u);
                 return (
                   <tr key={u.uid} className="screen-time__row">
                     <td className="screen-time__rank">{i + 1}</td>
@@ -172,8 +185,11 @@ export const ScreenTimeAnalyticsScreen: React.FC = () => {
                         to={ROUTES.USER_DETAIL.replace(':uid', u.uid)}
                         className="screen-time__uid-link"
                       >
-                        {u.uid.slice(0, 8)}…
+                        {label}
                       </Link>
+                      {label !== u.email && u.email ? (
+                        <span className="screen-time__user-sub">{u.email}</span>
+                      ) : null}
                     </td>
                     <td>
                       <span className="screen-time__count">

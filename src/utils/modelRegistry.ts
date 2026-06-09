@@ -54,6 +54,8 @@ export interface ModelEntry {
   sinhalaLabel?: string;
 }
 
+export type ModelSourceKind = 'bundled' | 'downloaded' | 'remote' | 'missing';
+
 const remoteToEntry = (r: RemoteModelEntry): ModelEntry => ({
   source: { uri: r.modelUrl },
   scale: [r.scale, r.scale, r.scale],
@@ -232,4 +234,20 @@ export const getModel = (word: string): ModelEntry | null => {
     setCache(key, entry);
   }
   return entry;
+};
+
+export const getModelSourceKind = (word: string): ModelSourceKind => {
+  const entry = getModel(word);
+  if (!entry) {
+    return 'missing';
+  }
+  if (typeof entry.source === 'number') {
+    return 'bundled';
+  }
+  return entry.source.uri.startsWith('file://') ? 'downloaded' : 'remote';
+};
+
+export const canPlaceModel = (word: string): boolean => {
+  const kind = getModelSourceKind(word);
+  return kind === 'bundled' || kind === 'downloaded';
 };

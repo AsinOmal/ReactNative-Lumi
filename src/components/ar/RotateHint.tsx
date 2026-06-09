@@ -9,14 +9,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // underlying ViroARSceneNavigator.
 interface RotateHintProps {
   visible: boolean;
+  label?: string;
 }
 
-export const RotateHint = ({ visible }: RotateHintProps) => {
-  if (!visible) return null;
+export const RotateHint = ({
+  visible,
+  label = 'Swipe to rotate',
+}: RotateHintProps) => {
+  if (!visible) {
+    return null;
+  }
   return (
     <View style={styles.pill} pointerEvents="none">
       <Ionicons name="swap-horizontal" size={22} color="#FFFFFF" />
-      <Text style={styles.text}>Swipe to rotate</Text>
+      <Text style={styles.text}>{label}</Text>
     </View>
   );
 };
@@ -45,6 +51,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Fredoka-SemiBold',
     fontSize: 17,
     color: '#FFFFFF',
-    letterSpacing: 0.3,
   },
 });

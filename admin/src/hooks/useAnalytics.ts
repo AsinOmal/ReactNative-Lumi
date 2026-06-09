@@ -26,11 +26,28 @@ export interface AnalyticsKpis {
   avgStreak: number;
   wishlistRequests: number;
   screenTimeTodayMin: number;
+  packPreviewSessions: number;
+  packPreviewMinutes: number;
+}
+
+export interface PackPreviewStat {
+  label: string;
+  count: number;
+}
+
+export interface SlowPreviewRow {
+  id: string;
+  packName: string;
+  word: string;
+  durationMs: number;
 }
 
 interface UseAnalyticsResult {
   dailyPoints: DailyPoint[];
   kpis: AnalyticsKpis;
+  topPreviewPacks: PackPreviewStat[];
+  topPreviewWords: PackPreviewStat[];
+  slowPreviewRows: SlowPreviewRow[];
   loading: boolean;
 }
 
@@ -61,7 +78,12 @@ export const useAnalytics = (): UseAnalyticsResult => {
     avgStreak: 0,
     wishlistRequests: 0,
     screenTimeTodayMin: 0,
+    packPreviewSessions: 0,
+    packPreviewMinutes: 0,
   });
+  const [topPreviewPacks, setTopPreviewPacks] = useState<PackPreviewStat[]>([]);
+  const [topPreviewWords, setTopPreviewWords] = useState<PackPreviewStat[]>([]);
+  const [slowPreviewRows, setSlowPreviewRows] = useState<SlowPreviewRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,6 +102,7 @@ export const useAnalytics = (): UseAnalyticsResult => {
           flaggedEvents,
           wishlistSnap,
           screenTimeSnap,
+          previewSnap,
         ] = await Promise.all([
           getDocs(collection(db, 'users')),
           safeCount(collectionGroup(db, 'savedWords')),
@@ -98,6 +121,7 @@ export const useAnalytics = (): UseAnalyticsResult => {
           // collection is small (N users × recent days). Returns null on
           // permission failure so the KPI degrades to 0 instead of crashing.
           getDocs(collectionGroup(db, 'screenTime')).catch(() => null),
+          getDocs(collectionGroup(db, 'packPreviewSessions')).catch(() => null),
         ]);
         const users = snap.docs.map((d) => d.data() as DocumentData);
         const wishlistRequests =
@@ -112,6 +136,26 @@ export const useAnalytics = (): UseAnalyticsResult => {
               (sum, d) => sum + ((d.data().totalMinutes as number) ?? 0),
               0
             ) ?? 0;
+        const previewDocs = previewSnap?.docs ?? [];
+        const packTally: Record<string, number> = {};
+        const wordTally: Record<string, number> = {};
+        let previewDurationMs = 0;
+
+        for (const d of previewDocs) {
+          const data = d.data();
+          const packName = (data.packName as string) || 'Unknown pack';
+          const word = (data.word as string) || 'unknown';
+          const durationMs = (data.durationMs as number) ?? 0;
+          previewDurationMs += durationMs;
+          packTally[packName] = (packTally[packName] ?? 0) + 1;
+          wordTally[word] = (wordTally[word] ?? 0) + 1;
+        }
+
+        const sortStats = (tally: Record<string, number>) =>
+          Object.entries(tally)
+            .map(([label, count]) => ({ label, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
 
         // Seed 14-day buckets keyed by formatted date
         const buckets: Record<string, number> = {};
@@ -155,7 +199,23 @@ export const useAnalytics = (): UseAnalyticsResult => {
           avgStreak: users.length ? Math.round(totalStreak / users.length) : 0,
           wishlistRequests,
           screenTimeTodayMin,
+          packPreviewSessions: previewDocs.length,
+          packPreviewMinutes: Math.round(previewDurationMs / 60_000),
         });
+        setTopPreviewPacks(sortStats(packTally));
+        setTopPreviewWords(sortStats(wordTally));
+        setSlowPreviewRows(
+          previewDocs
+            .filter((d) => d.data().loadTimedOut)
+            .map((d) => ({
+              id: d.id,
+              packName: (d.data().packName as string) || 'Unknown pack',
+              word: (d.data().word as string) || 'unknown',
+              durationMs: (d.data().durationMs as number) ?? 0,
+            }))
+            .sort((a, b) => b.durationMs - a.durationMs)
+            .slice(0, 6)
+        );
       } catch (e) {
         console.error('[useAnalytics] load failed:', e);
       } finally {
@@ -165,5 +225,12 @@ export const useAnalytics = (): UseAnalyticsResult => {
     load();
   }, []);
 
-  return { dailyPoints, kpis, loading };
+  return {
+    dailyPoints,
+    kpis,
+    topPreviewPacks,
+    topPreviewWords,
+    slowPreviewRows,
+    loading,
+  };
 };

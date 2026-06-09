@@ -92,6 +92,24 @@ service cloud.firestore {
       // No update or delete from client — logs are append-only (anti-tampering).
     }
 
+    match /users/{uid}/contentEvents/{eventId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.type)
+        && request.resource.data.type.matches(
+          '^(scan_matched|scan_unknown|wishlist_added|word_saved|ar_model_opened)$'
+        );
+      // No update or delete from client — events are append-only.
+    }
+
+    match /users/{uid}/packPreviewSessions/{sessionId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && isValidString(request.resource.data.packId)
+        && isValidString(request.resource.data.word);
+      // No update/delete from client — sessions are append-only.
+    }
+
     match /users/{uid}/parentSettings/{document=**} {
       allow read, write: if isOwner(uid);
     }
@@ -118,6 +136,14 @@ service cloud.firestore {
     match /{path=**}/activityLog/{logId} {
       allow read: if isAdmin();
       allow update: if isAdmin(); // reviewEvent marks flagged entries as reviewed
+    }
+
+    match /{path=**}/contentEvents/{eventId} {
+      allow read: if isAdmin();
+    }
+
+    match /{path=**}/packPreviewSessions/{sessionId} {
+      allow read: if isAdmin();
     }
 
     // Admin analytics: aggregate screen-time across all users via collectionGroup.
@@ -173,6 +199,7 @@ service cloud.firestore {
         && request.resource.data.email == request.auth.token.email
         && isValidString(request.resource.data.message)
         && request.resource.data.get('isRead', false) == false
+        && request.resource.data.get('type', 'feedback') in ['feedback', 'model_report']
         && !request.resource.data.keys().hasAny(['isModerated', 'reviewedAt']);
       allow read, update, delete: if isAdmin();
     }

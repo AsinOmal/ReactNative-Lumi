@@ -25,6 +25,7 @@ interface PINEntryModalProps {
   hasError?: boolean;
   titleOverride?: string;
   subtitleOverride?: string;
+  showCancel?: boolean;
 }
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
@@ -37,6 +38,7 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
   hasError = false,
   titleOverride,
   subtitleOverride,
+  showCancel = true,
 }) => {
   const strings = useStrings();
   const [pin, setPin] = useState('');
@@ -65,7 +67,7 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onCancel}
+      onRequestClose={showCancel ? onCancel : undefined}
     >
       <View style={styles.overlay}>
         <View style={styles.card}>
@@ -114,14 +116,16 @@ export const PINEntryModal: React.FC<PINEntryModalProps> = ({
             ))}
           </View>
 
-          <TouchableOpacity
-            onPress={onCancel}
-            style={styles.cancelBtn}
-            accessibilityLabel="Cancel PIN entry"
-            accessibilityRole="button"
-          >
-            <Text style={styles.cancelText}>{strings.cancel}</Text>
-          </TouchableOpacity>
+          {showCancel ? (
+            <TouchableOpacity
+              onPress={onCancel}
+              style={styles.cancelBtn}
+              accessibilityLabel="Cancel PIN entry"
+              accessibilityRole="button"
+            >
+              <Text style={styles.cancelText}>{strings.cancel}</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </Modal>

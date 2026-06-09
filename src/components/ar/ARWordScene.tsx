@@ -20,6 +20,8 @@ export const ARWordScene = (props: any) => {
   const word: string = props?.sceneNavigator?.viroAppProps?.word ?? 'apple';
   const onModelLoaded: (() => void) | undefined =
     props?.sceneNavigator?.viroAppProps?.onModelLoaded;
+  const onModelError: (() => void) | undefined =
+    props?.sceneNavigator?.viroAppProps?.onModelError;
   const rotationApiRef: MutableRefObject<RotationApi | null> | undefined =
     props?.sceneNavigator?.viroAppProps?.rotationApiRef;
   const [modelError, setModelError] = useState(false);
@@ -32,7 +34,9 @@ export const ARWordScene = (props: any) => {
   const isManualRef = useRef(false);
 
   useEffect(() => {
-    if (!rotationApiRef) return;
+    if (!rotationApiRef) {
+      return;
+    }
     rotationApiRef.current = {
       applyDelta: (dx: number) => {
         if (!isManualRef.current) {
@@ -86,6 +90,7 @@ export const ARWordScene = (props: any) => {
             onError={(e: any) => {
               console.warn('AR model error:', e);
               setModelError(true);
+              onModelError?.();
             }}
           />
         </ViroNode>

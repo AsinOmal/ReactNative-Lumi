@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LottieView from 'lottie-react-native';
+import { useStrings } from '../../hooks/useStrings';
 
 interface OCROverlayProps {
   detectedWord: string | null;
@@ -27,6 +28,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
   detectedWord,
   onViewInAR,
 }) => {
+  const strings = useStrings();
   const { width, height } = useWindowDimensions();
 
   const RETICLE_W = width * 0.82;
@@ -57,7 +59,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
     );
     pulse.start();
     return () => pulse.stop();
-  }, []);
+  }, [pulseAnim]);
 
   // Scan line sweeps top → bottom of the reticle on a 2s loop
   useEffect(() => {
@@ -77,7 +79,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
     );
     sweep.start();
     return () => sweep.stop();
-  }, []);
+  }, [scanLineAnim]);
 
   // Explicitly start Lottie — autoPlay alone can silently no-op on first mount in v5
   useEffect(() => {
@@ -112,7 +114,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
       }).start();
       lottieRef.current?.play();
     }
-  }, [detectedWord]);
+  }, [chipAnim, detectedWord, lottieAnim]);
 
   const scanLineY = scanLineAnim.interpolate({
     inputRange: [0, 1],
@@ -152,6 +154,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
         ]}
         pointerEvents="none"
       >
+        <View style={styles.reticleFill} />
         {/* Corner brackets */}
         <View
           style={[styles.corner, styles.cornerTL, { borderColor: cornerColor }]}
@@ -182,7 +185,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
 
       {/* Hint text just below the reticle */}
       <Text style={[styles.reticleHint, { marginTop: RETICLE_H / 2 + 14 }]}>
-        {detectedWord ? 'Word found!' : 'Hold a word inside the box'}
+        {detectedWord ? strings.scanWordFound : strings.scanInstruction}
       </Text>
 
       {/* Scanning Lottie — sits above the reticle, fades out on word lock */}
@@ -233,7 +236,7 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
             accessibilityRole="button"
           >
             <Ionicons name="cube-outline" size={20} color="#fff" />
-            <Text style={styles.arButtonText}>View in AR</Text>
+            <Text style={styles.arButtonText}>{strings.scanViewInAR}</Text>
             <Ionicons name="arrow-forward" size={17} color="#fff" />
           </TouchableOpacity>
         </Animated.View>
@@ -242,8 +245,8 @@ export const OCROverlay: React.FC<OCROverlayProps> = ({
   );
 };
 
-const CORNER_SIZE = 32;
-const CORNER_THICKNESS = 4;
+const CORNER_SIZE = 38;
+const CORNER_THICKNESS = 5;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -255,8 +258,20 @@ const styles = StyleSheet.create({
 
   reticle: {
     position: 'absolute',
-    borderRadius: 14,
+    borderRadius: 20,
     overflow: 'hidden',
+    backgroundColor: 'rgba(31,14,62,0.16)',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  reticleFill: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
   },
 
   corner: {
@@ -269,28 +284,28 @@ const styles = StyleSheet.create({
     left: 0,
     borderTopWidth: CORNER_THICKNESS,
     borderLeftWidth: CORNER_THICKNESS,
-    borderTopLeftRadius: 8,
+    borderTopLeftRadius: 14,
   },
   cornerTR: {
     top: 0,
     right: 0,
     borderTopWidth: CORNER_THICKNESS,
     borderRightWidth: CORNER_THICKNESS,
-    borderTopRightRadius: 8,
+    borderTopRightRadius: 14,
   },
   cornerBL: {
     bottom: 0,
     left: 0,
     borderBottomWidth: CORNER_THICKNESS,
     borderLeftWidth: CORNER_THICKNESS,
-    borderBottomLeftRadius: 8,
+    borderBottomLeftRadius: 14,
   },
   cornerBR: {
     bottom: 0,
     right: 0,
     borderBottomWidth: CORNER_THICKNESS,
     borderRightWidth: CORNER_THICKNESS,
-    borderBottomRightRadius: 8,
+    borderBottomRightRadius: 14,
   },
 
   scanLine: {
@@ -307,7 +322,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
-    letterSpacing: 0.3,
+    textShadowColor: 'rgba(0,0,0,0.7)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
   },
 
   detectedRow: {

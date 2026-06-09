@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Mail } from 'lucide-react';
+import { AlertTriangle, Mail, MessageSquare } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -19,29 +19,76 @@ const fmt = (d: Date) =>
 export const FeedbackScreen: React.FC = () => {
   const { items, unreadCount, loading, markRead } = useFeedback();
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [tab, setTab] = useState<'feedback' | 'model_report'>('feedback');
+  const feedbackItems = items.filter((item) => item.type === 'feedback');
+  const reportItems = items.filter((item) => item.type === 'model_report');
+  const visibleItems = tab === 'feedback' ? feedbackItems : reportItems;
+  const unreadReports = reportItems.filter((item) => !item.isRead).length;
+  const unreadFeedback = feedbackItems.filter((item) => !item.isRead).length;
 
   return (
     <div className="feedback">
       <PageHeader
-        title="Feedback"
+        title="Support Inbox"
         subtitle={
           unreadCount > 0
-            ? `${unreadCount} unread message${unreadCount !== 1 ? 's' : ''}`
+            ? `${unreadCount} unread item${unreadCount !== 1 ? 's' : ''}`
             : 'All caught up'
         }
       />
 
+      <div className="feedback__tabs">
+        <button
+          type="button"
+          className={`feedback__tab ${
+            tab === 'feedback' ? 'feedback__tab--active' : ''
+          }`}
+          onClick={() => setTab('feedback')}
+        >
+          <MessageSquare size={16} />
+          Feedback
+          {unreadFeedback > 0 && (
+            <Badge label={`${unreadFeedback}`} variant="purple" />
+          )}
+        </button>
+        <button
+          type="button"
+          className={`feedback__tab ${
+            tab === 'model_report' ? 'feedback__tab--active' : ''
+          }`}
+          onClick={() => setTab('model_report')}
+        >
+          <AlertTriangle size={16} />
+          Model Reports
+          {unreadReports > 0 && (
+            <Badge label={`${unreadReports}`} variant="purple" />
+          )}
+        </button>
+      </div>
+
       {loading ? (
         <LoadingSpinner />
-      ) : items.length === 0 ? (
+      ) : visibleItems.length === 0 ? (
         <EmptyState
-          icon={<MessageSquare size={40} />}
-          title="No feedback yet"
-          description="Feedback submitted from the app's Settings screen appears here."
+          icon={
+            tab === 'feedback' ? (
+              <MessageSquare size={40} />
+            ) : (
+              <AlertTriangle size={40} />
+            )
+          }
+          title={
+            tab === 'feedback' ? 'No feedback yet' : 'No model reports yet'
+          }
+          description={
+            tab === 'feedback'
+              ? "Feedback submitted from the app's Settings screen appears here."
+              : 'Model load reports from pack previews appear here.'
+          }
         />
       ) : (
         <div className="feedback__list">
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <FeedbackRow
               key={item.id}
               item={item}
@@ -94,8 +141,16 @@ const FeedbackRow: React.FC<FeedbackRowProps> = ({
         tabIndex={0}
       >
         <div className="feedback__row-meta">
-          <Mail size={14} className="feedback__mail-icon" />
+          {item.type === 'model_report' ? (
+            <AlertTriangle size={14} className="feedback__mail-icon" />
+          ) : (
+            <Mail size={14} className="feedback__mail-icon" />
+          )}
           <span className="feedback__email">{item.email}</span>
+          <Badge
+            label={item.type === 'model_report' ? 'Model Report' : 'Feedback'}
+            variant={item.type === 'model_report' ? 'warning' : 'purple'}
+          />
           {!item.isRead && <Badge label="New" variant="purple" />}
           <span className="feedback__version">v{item.appVersion}</span>
         </div>
@@ -116,6 +171,24 @@ const FeedbackRow: React.FC<FeedbackRowProps> = ({
 
       {isExpanded && (
         <div className="feedback__message">
+          {item.type === 'model_report' && (
+            <div className="feedback__report-grid">
+              <Info
+                label="Pack"
+                value={item.packName ?? item.packId ?? 'Unknown'}
+              />
+              <Info label="Word" value={item.word ?? 'Unknown'} />
+              <Info label="Reason" value={item.reason ?? 'Unknown'} />
+              <Info
+                label="Load time"
+                value={
+                  item.durationMs
+                    ? `${Math.round(item.durationMs / 1000)}s`
+                    : 'n/a'
+                }
+              />
+            </div>
+          )}
           <p>{item.message}</p>
           <p className="feedback__uid">UID: {item.uid}</p>
         </div>
@@ -130,3 +203,10 @@ const FeedbackRow: React.FC<FeedbackRowProps> = ({
     </div>
   );
 };
+
+const Info: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="feedback__info">
+    <span>{label}</span>
+    <strong>{value}</strong>
+  </div>
+);

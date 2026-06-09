@@ -23,10 +23,16 @@ const docToFeedback = (id: string, data: DocumentData): FeedbackItem => ({
   id,
   uid: data.uid ?? '',
   email: data.email ?? '',
+  type: data.type === 'model_report' ? 'model_report' : 'feedback',
   message: data.message ?? '',
   appVersion: data.appVersion ?? '',
   submittedAt: data.submittedAt?.toDate() ?? new Date(),
   isRead: data.isRead ?? false,
+  packId: data.packId,
+  packName: data.packName,
+  word: data.word,
+  reason: data.reason,
+  durationMs: data.durationMs,
 });
 
 export const useFeedback = (): UseFeedbackResult => {

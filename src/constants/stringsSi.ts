@@ -15,6 +15,15 @@ export const stringsSi = {
   wishForIt: "⭐ ඉල්ලා සිටින්න!",
   unknownPrefix: "❓",
   unknownSuffix: "අපගේ එකතුවේ නොමැත",
+  scanStepLabel: 'පියවර 1',
+  scanInstruction: 'වචනය කොටුව තුළ තබන්න', // TODO: native-speaker review
+  scanWordFound: 'වචනය හමු විය!', // TODO: native-speaker review
+  scanViewInAR: 'AR තුළ බලන්න', // TODO: native-speaker review
+  unknownWordCard: (word: string) => `"${word}" තවම LUMI තුළ නැත`, // TODO: native-speaker review
+  rotateWordHint: (word: string) => `${word} කරකවීමට swipe කරන්න`, // TODO: native-speaker review
+  placementMoveHint: (word: string) => `${word} එහා මෙහා ගෙන යන්න`, // TODO: native-speaker review
+  placeRequiresDownload: 'මෙය තැබීමට පෙර ඇසුරුම බාගන්න.', // TODO: native-speaker review
+  placeUnavailable: 'තැබීම තවම සූදානම් නැත', // TODO: native-speaker review
 
   // Packs
   fruitsPackName: "පළතුරු ඇසුරුම",
@@ -30,6 +39,9 @@ export const stringsSi = {
   // Parental Controls — PIN
   pinSetTitle: "දෙමාපිය PIN එක සකසන්න",
   pinSetSubtitle: "දෙමාපිය සැකසුම් ආරක්ෂා කිරීමට 4-ඉලක්කම් PIN එකක් තෝරන්න",
+  mandatoryPinTitle: 'දෙමාපිය PIN එකක් සාදන්න', // TODO: native-speaker review
+  mandatoryPinSubtitle:
+    'තිර කාල සීමා සියලු උපාංගවල ආරක්ෂිතව තබා ගැනීමට මෙය භාවිතා වේ.', // TODO: native-speaker review
   pinVerifyTitle: "දෙමාපිය ප්‍රවේශය",
   pinVerifySubtitle: "ඉදිරියට යාමට ඔබේ 4-ඉලක්කම් PIN ඇතුළු කරන්න",
   pinIncorrect: "වැරදි PIN. නැවත උත්සාහ කරන්න.",

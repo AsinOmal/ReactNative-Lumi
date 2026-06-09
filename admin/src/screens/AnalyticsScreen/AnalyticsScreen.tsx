@@ -13,11 +13,27 @@ import {
 import { PageHeader } from '../../components/common/PageHeader';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useAnalytics } from '../../hooks/useAnalytics';
+import { useContentInsights } from '../../hooks/useContentInsights';
 import { ROUTES } from '../../constants/routes';
 import './AnalyticsScreen.css';
 
 export const AnalyticsScreen: React.FC = () => {
-  const { dailyPoints, kpis, loading } = useAnalytics();
+  const {
+    dailyPoints,
+    kpis,
+    topPreviewPacks,
+    topPreviewWords,
+    slowPreviewRows,
+    loading,
+  } = useAnalytics();
+  const {
+    summary,
+    alerts,
+    topScannedWords,
+    topUnknownWords,
+    topWishlistedWords,
+    loading: insightsLoading,
+  } = useContentInsights();
   const navigate = useNavigate();
 
   if (loading) {
@@ -64,6 +80,11 @@ export const AnalyticsScreen: React.FC = () => {
           label="Screen Time Today"
           value={`${Math.round(kpis.screenTimeTodayMin)}m`}
           onClick={() => navigate(ROUTES.ANALYTICS_SCREEN_TIME)}
+        />
+        <KpiBlock label="Preview Sessions" value={kpis.packPreviewSessions} />
+        <KpiBlock
+          label="Preview Minutes"
+          value={`${kpis.packPreviewMinutes}m`}
         />
       </div>
 
@@ -126,9 +147,127 @@ export const AnalyticsScreen: React.FC = () => {
           <code>lastActive</code> timestamp.
         </p>
       </div>
+
+      <div className="analytics__preview-grid">
+        <PreviewList
+          title="Top Previewed Packs"
+          rows={topPreviewPacks}
+          empty="No pack previews yet"
+        />
+        <PreviewList
+          title="Top Previewed Models"
+          rows={topPreviewWords}
+          empty="No model previews yet"
+        />
+        <div className="analytics__preview-card">
+          <p className="analytics__chart-title">Slow Preview Loads</p>
+          {slowPreviewRows.length === 0 ? (
+            <p className="analytics__empty">No slow previews logged</p>
+          ) : (
+            slowPreviewRows.map((row) => (
+              <div key={row.id} className="analytics__preview-row">
+                <span>
+                  {row.packName} · {row.word}
+                </span>
+                <strong>{Math.round(row.durationMs / 1000)}s</strong>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="analytics__insights-grid">
+        <div className="analytics__insights-card">
+          <p className="analytics__chart-title">Content Signals</p>
+          <p className="analytics__chart-sub">
+            What kids are scanning, saving, and asking for right now
+          </p>
+
+          {insightsLoading ? (
+            <p className="analytics__empty">Loading content signals…</p>
+          ) : (
+            <div className="analytics__insight-metrics">
+              <Metric label="Words scanned" value={summary.totalScans} />
+              <Metric label="Unknown scans" value={summary.totalUnknowns} />
+              <Metric
+                label="Wishlisted"
+                value={summary.totalWishlistRequests}
+              />
+              <Metric label="Saved words" value={summary.totalSavedWords} />
+              <Metric label="Model views" value={summary.totalModelViews} />
+              <Metric
+                label="Preview timeouts"
+                value={summary.previewTimeouts}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="analytics__insights-card">
+          <p className="analytics__chart-title">Live Alerts</p>
+          <p className="analytics__chart-sub">
+            Milestones and inbox activity surfaced by the bell
+          </p>
+          {insightsLoading ? (
+            <p className="analytics__empty">Loading alerts…</p>
+          ) : alerts.length === 0 ? (
+            <p className="analytics__empty">No alerts right now</p>
+          ) : (
+            <div className="analytics__alert-list">
+              {alerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className={`analytics__alert analytics__alert--${alert.tone}`}
+                >
+                  <strong>{alert.title}</strong>
+                  <span>{alert.body}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <PreviewList
+          title="Recent Scan Leaders"
+          rows={topScannedWords}
+          empty="No scan events yet"
+        />
+        <PreviewList
+          title="Recent Unknown Words"
+          rows={topUnknownWords}
+          empty="No unknown words logged"
+        />
+        <PreviewList
+          title="Top Wishlist Requests"
+          rows={topWishlistedWords}
+          empty="No wishlist requests yet"
+        />
+      </div>
     </div>
   );
 };
+
+interface PreviewListProps {
+  title: string;
+  rows: { label: string; count: number }[];
+  empty: string;
+}
+
+const PreviewList: React.FC<PreviewListProps> = ({ title, rows, empty }) => (
+  <div className="analytics__preview-card">
+    <p className="analytics__chart-title">{title}</p>
+    {rows.length === 0 ? (
+      <p className="analytics__empty">{empty}</p>
+    ) : (
+      rows.map((row) => (
+        <div key={row.label} className="analytics__preview-row">
+          <span>{row.label}</span>
+          <strong>{row.count}</strong>
+        </div>
+      ))
+    )}
+  </div>
+);
 
 interface KpiBlockProps {
   label: string;
@@ -159,3 +298,13 @@ const KpiBlock: React.FC<KpiBlockProps> = ({ label, value, onClick }) => {
     </div>
   );
 };
+
+const Metric: React.FC<{ label: string; value: number }> = ({
+  label,
+  value,
+}) => (
+  <div className="analytics__insight-metric">
+    <strong>{value.toLocaleString('en-US')}</strong>
+    <span>{label}</span>
+  </div>
+);

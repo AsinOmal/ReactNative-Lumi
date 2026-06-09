@@ -7,7 +7,10 @@ import { SyllablePlayer } from '../../components/ar/SyllablePlayer';
 import { SpellCorrectionBadge } from '../../components/ar/SpellCorrectionBadge';
 import { getModel } from '../../utils/modelRegistry';
 import { getRandomFact } from '../../utils/wordFacts';
-import { getWordPackLabel, getWordPackEmoji } from '../../constants/packAccents';
+import {
+  getWordPackLabel,
+  getWordPackEmoji,
+} from '../../constants/packAccents';
 import { MatchResult } from '../../utils/wordMatcher';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { useStrings } from '../../hooks/useStrings';
@@ -22,6 +25,7 @@ interface ScanOverlayLayerProps {
   onDismiss: () => void;
   onSave: () => void;
   onPlace: () => void;
+  canPlace?: boolean;
 }
 
 // 📖 What this does:
@@ -36,6 +40,7 @@ export const ScanOverlayLayer = ({
   onDismiss,
   onSave,
   onPlace,
+  canPlace = true,
 }: ScanOverlayLayerProps) => {
   const strings = useStrings();
   const fact = getRandomFact(activeWord);
@@ -69,9 +74,7 @@ export const ScanOverlayLayer = ({
 
       {/* Title row: pack emoji + word + pack label */}
       <View style={styles.resultCardRow}>
-        {packEmoji ? (
-          <Text style={styles.wordEmoji}>{packEmoji}</Text>
-        ) : null}
+        {packEmoji ? <Text style={styles.wordEmoji}>{packEmoji}</Text> : null}
         <View style={styles.resultWordBlock}>
           <Text style={styles.resultWord}>{wordDisplay}</Text>
           {language === 'si' && sinhalaLabel ? (
@@ -116,10 +119,13 @@ export const ScanOverlayLayer = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.placeBtn}
+          style={[styles.placeBtn, !canPlace && styles.placeBtnDisabled]}
           onPress={onPlace}
           activeOpacity={0.8}
-          accessibilityLabel={`Place ${wordDisplay}`}
+          disabled={!canPlace}
+          accessibilityLabel={
+            canPlace ? `Place ${wordDisplay}` : strings.placeUnavailable
+          }
           accessibilityRole="button"
         >
           <Ionicons name="cube-outline" size={18} color="#FFF" />
@@ -130,7 +136,9 @@ export const ScanOverlayLayer = ({
           style={[styles.saveBtn, isWordSaved && styles.saveBtnDisabled]}
           onPress={onSave}
           activeOpacity={0.8}
-          accessibilityLabel={isWordSaved ? 'Word already saved' : `Save ${activeWord}`}
+          accessibilityLabel={
+            isWordSaved ? 'Word already saved' : `Save ${activeWord}`
+          }
           accessibilityRole="button"
         >
           <Ionicons
@@ -138,7 +146,12 @@ export const ScanOverlayLayer = ({
             size={16}
             color={colors.primary}
           />
-          <Text style={[styles.saveBtnText, isWordSaved && styles.saveBtnTextDisabled]}>
+          <Text
+            style={[
+              styles.saveBtnText,
+              isWordSaved && styles.saveBtnTextDisabled,
+            ]}
+          >
             {isWordSaved ? strings.wordSaved : strings.saveWord}
           </Text>
         </TouchableOpacity>

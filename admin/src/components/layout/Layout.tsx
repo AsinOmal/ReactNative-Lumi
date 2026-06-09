@@ -25,7 +25,7 @@ const PAGE_TITLES: Record<string, string> = {
   [ROUTES.NOTIFICATIONS]: 'Notifications',
   [ROUTES.APP_CONFIG]: 'App Config',
   [ROUTES.REVENUE]: 'Revenue',
-  [ROUTES.FEEDBACK]: 'Feedback',
+  [ROUTES.FEEDBACK]: 'Support Inbox',
 };
 
 export const Layout: React.FC<LayoutProps> = ({

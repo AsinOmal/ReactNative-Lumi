@@ -13,6 +13,7 @@ import { OCROverlay } from '../../components/ar/OCROverlay';
 import { WishConfirmModal } from '../../components/WishConfirmModal';
 import { styles } from '../../screens/ScanScreenStyles';
 import { useStrings } from '../../hooks/useStrings';
+import { colors } from '../../constants/colors';
 
 interface ScanCameraLayerProps {
   device: CameraDevice | undefined;
@@ -66,7 +67,7 @@ export const ScanCameraLayer = ({
     );
     pulse.start();
     return () => pulse.stop();
-  }, []);
+  }, [ringAnim]);
 
   const ringScale = ringAnim.interpolate({
     inputRange: [0, 1],
@@ -105,13 +106,14 @@ export const ScanCameraLayer = ({
       <OCROverlay detectedWord={matchResultWord} onViewInAR={onViewInAR} />
 
       {!matchResultWord && unknownWord && (
-        <View style={styles.unknownChip}>
-          <Text style={styles.unknownChipText}>
-            {strings.unknownPrefix}{' '}
-            <Text style={styles.unknownWord}>
-              {unknownWord.charAt(0).toUpperCase() + unknownWord.slice(1)}
-            </Text>{' '}
-            {strings.unknownSuffix}
+        <View style={styles.unknownCard}>
+          <View style={styles.unknownIconBadge}>
+            <Ionicons name="sparkles" size={18} color={colors.primary} />
+          </View>
+          <Text style={styles.unknownCardText}>
+            {strings.unknownWordCard(
+              unknownWord.charAt(0).toUpperCase() + unknownWord.slice(1)
+            )}
           </Text>
           <TouchableOpacity
             style={styles.wishBtn}
@@ -140,10 +142,10 @@ export const ScanCameraLayer = ({
         <Ionicons name="chevron-back" size={22} color="#fff" />
       </TouchableOpacity>
 
-      {/* Scanning status pill with pulsing dot + breathing opacity */}
+      {/* Instruction card with pulsing status dot */}
       <Animated.View
         style={[
-          styles.statusBar,
+          styles.scanInstructionCard,
           {
             opacity: ringAnim.interpolate({
               inputRange: [0, 1],
@@ -152,16 +154,21 @@ export const ScanCameraLayer = ({
           },
         ]}
       >
-        <View style={styles.statusDotWrapper}>
-          <Animated.View
-            style={[
-              styles.statusDotRing,
-              { transform: [{ scale: ringScale }], opacity: ringOpacity },
-            ]}
-          />
-          <View style={styles.statusDot} />
+        <View style={styles.scanStepBadge}>
+          <View style={styles.statusDotWrapper}>
+            <Animated.View
+              style={[
+                styles.statusDotRing,
+                { transform: [{ scale: ringScale }], opacity: ringOpacity },
+              ]}
+            />
+            <View style={styles.statusDot} />
+          </View>
+          <Text style={styles.scanStepText}>{strings.scanStepLabel}</Text>
         </View>
-        <Text style={styles.statusText}>{strings.scanStatus}</Text>
+        <Text style={styles.scanInstructionText}>
+          {strings.scanInstruction}
+        </Text>
       </Animated.View>
     </>
   );

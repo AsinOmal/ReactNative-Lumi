@@ -92,9 +92,20 @@
 }
 
 .screen-time__rank { color: var(--color-text-secondary); font-weight: 600; width: 40px; }
-.screen-time__uid { font-weight: 600; font-family: monospace; font-size: 13px; }
+.screen-time__uid {
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 180px;
+}
 .screen-time__uid-link { color: var(--color-primary); text-decoration: none; }
 .screen-time__uid-link:hover { text-decoration: underline; }
+.screen-time__user-sub {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
 .screen-time__sub { color: var(--color-text-secondary); font-size: 13px; }
 .screen-time__date { color: var(--color-text-secondary); font-size: 13px; font-family: monospace; }
 

@@ -88,10 +88,16 @@ export interface FeedbackItem {
   id: string;
   uid: string;
   email: string;
+  type: 'feedback' | 'model_report';
   message: string;
   appVersion: string;
   submittedAt: Date;
   isRead: boolean;
+  packId?: string;
+  packName?: string;
+  word?: string;
+  reason?: string;
+  durationMs?: number;
 }
 
 export interface NavItem {

@@ -18,6 +18,7 @@ import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import { PlacementScene } from '../components/ar/PlacementScene';
 import { useARPlacement } from '../hooks/useARPlacement';
 import { useStrings } from '../hooks/useStrings';
@@ -32,6 +33,7 @@ export const ARPlacementScreen = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { word } = route.params as { word: string };
+  const wordDisplay = word.charAt(0).toUpperCase() + word.slice(1);
   const { state, isLeaving, sceneKey, onPlaneSelected, onReplace, safeGoBack } =
     useARPlacement();
   const { rotationApiRef, panHandlers } = useSwipeRotation();
@@ -57,19 +59,17 @@ export const ARPlacementScreen = () => {
     );
     loop.start();
     return () => loop.stop();
-  }, [state]);
+  }, [pulseAnim, state]);
 
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
 
-      <View
-        style={[StyleSheet.absoluteFill, { opacity: isLeaving ? 0 : 1 }]}
-      >
+      <View style={[StyleSheet.absoluteFill, { opacity: isLeaving ? 0 : 1 }]}>
         <ViroARSceneNavigator
           key={sceneKey}
           autofocus
-          initialScene={{ scene: PlacementScene }}
+          initialScene={{ scene: PlacementScene as any }}
           viroAppProps={{ word, onPlaneSelected, rotationApiRef }}
           style={styles.arView}
         />
@@ -79,6 +79,17 @@ export const ARPlacementScreen = () => {
           <View style={StyleSheet.absoluteFill} {...panHandlers} />
         )}
       </View>
+
+      <LinearGradient
+        colors={['rgba(0,0,0,0.34)', 'rgba(0,0,0,0)']}
+        style={styles.topGradient}
+        pointerEvents="none"
+      />
+      <LinearGradient
+        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.45)']}
+        style={styles.bottomGradient}
+        pointerEvents="none"
+      />
 
       {/* Back button — always visible */}
       <TouchableOpacity
@@ -96,8 +107,22 @@ export const ARPlacementScreen = () => {
           <Animated.View
             style={[styles.pulseRing, { transform: [{ scale: pulseAnim }] }]}
           />
-          <Text style={styles.searchingHint}>
-            {strings.AR_PLACEMENT_SEARCHING}
+          <View style={styles.searchingCard}>
+            <Text style={styles.searchingTitle}>
+              {strings.placementMoveHint(wordDisplay)}
+            </Text>
+            <Text style={styles.searchingHint}>
+              {strings.AR_PLACEMENT_SEARCHING}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {state === 'placed' && (
+        <View style={[styles.rotateInstruction, { top: insets.top + 18 }]}>
+          <Ionicons name="swap-horizontal" size={18} color="#FFFFFF" />
+          <Text style={styles.rotateInstructionText}>
+            {strings.rotateWordHint(word)}
           </Text>
         </View>
       )}
@@ -107,9 +132,7 @@ export const ARPlacementScreen = () => {
         <View
           style={[styles.placedOverlay, { paddingBottom: insets.bottom + 24 }]}
         >
-          <Text style={styles.placedWord}>
-            {word.charAt(0).toUpperCase() + word.slice(1)}
-          </Text>
+          <Text style={styles.placedWord}>{wordDisplay}</Text>
           <Text style={styles.placedLabel}>{strings.AR_PLACEMENT_PLACED}</Text>
           <TouchableOpacity
             style={styles.replaceBtn}

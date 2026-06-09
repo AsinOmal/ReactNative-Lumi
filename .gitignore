@@ -99,3 +99,5 @@ ios/add_firebase_plist.rb
 ios/pod_install_err.log
 ios/File.txt
 
+
+AGENTS.md

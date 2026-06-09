@@ -5,10 +5,12 @@ import {
   Animated,
   StatusBar,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 
 import { ARWordScene } from '../components/ar/ARWordScene';
 import { RotateHint } from '../components/ar/RotateHint';
@@ -23,14 +25,18 @@ import { useModelCache } from '../hooks/useModelCache';
 import { useAmbientPauseOnFocus } from '../hooks/useAmbientPauseOnFocus';
 import { useRotateHint } from '../hooks/useRotateHint';
 import { useSwipeRotation } from '../hooks/useSwipeRotation';
-import { MODEL_REGISTRY } from '../utils/modelRegistry';
+import { useStrings } from '../hooks/useStrings';
+import { canPlaceModel, MODEL_REGISTRY } from '../utils/modelRegistry';
+import { PACK_WORDS } from '../constants/packWords';
 import { wishWord } from '../utils/wishlistStore';
 import { decidePackGate } from '../utils/packUtils';
+import { getWordPackId } from '../constants/packAccents';
 import { usePackStore } from '../store/usePackStore';
 import { usePackDownloadStore } from '../store/usePackDownloadStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { usePurchaseStore } from '../store/usePurchaseStore';
 import { logActivityEvent } from '../services/parentalControlsService';
+import { logContentEvent } from '../services/contentAnalyticsService';
 import { ScanMode } from '../types';
 import { HazardAlertOverlay } from '../components/HazardAlertOverlay';
 import { styles } from './ScanScreenStyles';
@@ -48,6 +54,7 @@ export const ScanScreen = () => {
   const [arLeavingForPlacement, setArLeavingForPlacement] = useState(false);
   const showRotateHint = useRotateHint(mode === 'ar' && modelLoaded);
   const { rotationApiRef, panHandlers } = useSwipeRotation();
+  const strings = useStrings();
   // When set, a useEffect fires navigation after mode='scan' is committed to the
   // React tree — ensures ViroARSceneNavigator is fully unmounted before ARPlacement
   // mounts its own navigator (two navigators cannot share the camera).
@@ -57,7 +64,7 @@ export const ScanScreen = () => {
   const loadPacks = usePackStore((s) => s.loadPacks);
   useEffect(() => {
     loadPacks();
-  }, []);
+  }, [loadPacks]);
   // All pack words are scannable so the gate flow triggers correctly.
   // decidePackGate() decides whether to show AR or a gate screen based on
   // pack type + download/purchase state — detection must come first.
@@ -66,6 +73,11 @@ export const ScanScreen = () => {
     const allPackWords = packs.flatMap((p) => p.words);
     return [...new Set([...base, ...allPackWords])];
   }, [packs]);
+  const protectedCatalogWords = React.useMemo(() => {
+    const base = Object.keys(MODEL_REGISTRY);
+    const catalogWords = Object.values(PACK_WORDS).flat();
+    return [...new Set([...base, ...catalogWords])];
+  }, []);
   const {
     cameraRef,
     device,
@@ -75,7 +87,7 @@ export const ScanScreen = () => {
     matchResult,
     unknownWord,
     setMatchResult,
-  } = useScanOCR({ mode, allSupportedWords });
+  } = useScanOCR({ mode, allSupportedWords, protectedCatalogWords });
   const {
     isWordSaved,
     checkWordSavedStatus,
@@ -99,7 +111,7 @@ export const ScanScreen = () => {
   }, [unknownWord]);
 
   // After mode='scan' commits, ViroARSceneNavigator is unmounted and Metal
-  // resource release begins — but it is asynchronous. Wait 350ms before
+  // resource release begins — but it is asynchronous. Wait 650ms before
   // mounting ARPlacement's own navigator so the two sessions don't race
   // for the same ARKit device.
   useEffect(() => {
@@ -109,7 +121,7 @@ export const ScanScreen = () => {
       const t = setTimeout(() => {
         setArLeavingForPlacement(false);
         (navigation as any).navigate('ARPlacement', { word });
-      }, 350);
+      }, 650);
       return () => clearTimeout(t);
     }
   }, [mode, navigation]);
@@ -144,6 +156,14 @@ export const ScanScreen = () => {
         cardAnim.setValue(400);
         await checkWordSavedStatus(target);
         recordView(target); // fire-and-forget — updates hot model rankings in background
+        if (uid) {
+          logContentEvent(uid, {
+            type: 'ar_model_opened',
+            word: target,
+            packId: getWordPackId(target) ?? undefined,
+            source: 'ar',
+          }).catch(() => {});
+        }
         setMode('ar');
       } catch (e) {
         console.error('[ScanScreen] handleViewInAR:', e);
@@ -208,7 +228,14 @@ export const ScanScreen = () => {
           onViewInAR={() => handleViewInAR()}
           onWishPress={async () => {
             if (unknownWord) {
-              await wishWord(unknownWord);
+              const newlyWished = await wishWord(unknownWord);
+              if (newlyWished && uid) {
+                logContentEvent(uid, {
+                  type: 'wishlist_added',
+                  word: unknownWord,
+                  source: 'wishlist',
+                }).catch(() => {});
+              }
               setShowWishModal(true);
             }
           }}
@@ -223,9 +250,7 @@ export const ScanScreen = () => {
       <StatusBar barStyle="light-content" />
       {/* opacity:0 hides the navigator without unmounting it — required before
           navigating to ARPlacementScreen so Metal textures release asynchronously */}
-      <View
-        style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}
-      >
+      <View style={[styles.arView, { opacity: arLeavingForPlacement ? 0 : 1 }]}>
         <ViroARSceneNavigator
           key={sceneKey}
           initialScene={{ scene: ARWordScene as any }}
@@ -239,6 +264,17 @@ export const ScanScreen = () => {
         {/* Transparent swipe-catcher above the AR view */}
         <View style={StyleSheet.absoluteFillObject} {...panHandlers} />
       </View>
+
+      <LinearGradient
+        colors={['rgba(0,0,0,0.34)', 'rgba(0,0,0,0)']}
+        style={styles.previewTopGradient}
+        pointerEvents="none"
+      />
+      <LinearGradient
+        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.44)']}
+        style={styles.previewBottomGradient}
+        pointerEvents="none"
+      />
 
       <TouchableOpacity
         style={styles.backButton}
@@ -267,9 +303,17 @@ export const ScanScreen = () => {
         cardAnim={cardAnim}
         matchResult={matchResult}
         isWordSaved={isWordSaved}
+        canPlace={canPlaceModel(activeWord)}
         onDismiss={dismissCard}
         onSave={handleSaveWord}
         onPlace={() => {
+          if (!canPlaceModel(activeWord)) {
+            Alert.alert(
+              strings.placeUnavailable,
+              strings.placeRequiresDownload
+            );
+            return;
+          }
           // Hide Viro immediately (opacity:0) then unmount it in the same
           // render cycle by calling handleBackToScan() synchronously.
           // The useEffect above waits 350ms after unmount before navigating,
@@ -285,7 +329,10 @@ export const ScanScreen = () => {
         onDismissed={() => setAchievementQueue((prev) => prev.slice(1))}
       />
 
-      <RotateHint visible={showRotateHint} />
+      <RotateHint
+        visible={showRotateHint}
+        label={strings.rotateWordHint(activeWord)}
+      />
     </View>
   );
 };

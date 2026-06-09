@@ -24,6 +24,8 @@ import {
 } from '../services/savedWordsService';
 import { syncStatsToFirestore } from '../services/statsService';
 import { recordScanToday } from '../services/notificationService';
+import { logContentEvent } from '../services/contentAnalyticsService';
+import { getWordPackId, getWordPackLabel } from '../constants/packAccents';
 
 interface UseWordSavingProps {
   activeWord: string;
@@ -60,6 +62,13 @@ export const useWordSaving = ({
 
     if (user) {
       saveWordToFirestore(user.uid, activeWord).catch(() => {});
+      logContentEvent(user.uid, {
+        type: 'word_saved',
+        word: activeWord,
+        packId: getWordPackId(activeWord) ?? undefined,
+        packName: getWordPackLabel(activeWord) || undefined,
+        source: 'save',
+      }).catch(() => {});
       newAchievements.forEach((a) => {
         syncAchievementToFirestore(user.uid, {
           id: a.id,
